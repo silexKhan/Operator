@@ -17,6 +17,7 @@ class GDRAxioms:
     COMBINE_NAMING_STRICT = True # No 'Subject' suffix
     NO_UNNECESSARY_WEAK_SELF = True # 클로저 내 self 미사용 시 [weak self] 제거
     DEPENDENCY_INTEGRITY_REQUIRED = True # 인터페이스 수정 시 의존성 전수 수정 의무
+    AUTONOMOUS_DELEGATION_REQUIRED = True # 대규모 작업 시 generalist 부사수 활용 의무
     
     # --- [Core Philosophy] ---
     NICKNAME = "대장님"
@@ -32,6 +33,7 @@ class GDRAxioms:
                 "Safety-First (No Forced Unwrapping)",
                 "Standardized Combine Naming",
                 "[weak self] Optimization (No weak self if self is unused)",
-                "Dependency Integrity (Recursive Update Required)"
+                "Dependency Integrity (Recursive Update Required)",
+                "Autonomous Delegation (Use 'generalist' for large tasks)"
             ]
         }

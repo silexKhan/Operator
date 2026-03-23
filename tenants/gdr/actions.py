@@ -105,6 +105,7 @@ class GDRTenant(BaseTenant):
                 else:
                     self.logger.log("ViewModel 연쇄 수정 리마인더 추가", 1)
                     results.append("💡 [Dependency] ViewModel의 인터페이스(Output)가 수정되었다면, 이를 사용하는 ViewController의 바인딩 코드도 반드시 전수 업데이트하십시오. (GDR 공리: 연쇄 수정 의무)")
+                    results.append("👥 [Delegation] 작업 범위가 넓거나(3개 파일 이상) 반복적인 작업인 경우, 'generalist' 부사수를 투입하여 자율적으로 완수하도록 지휘하십시오. (GDR 공리: 자율 위임 의무)")
 
             # 4. Project Integrity Check (Project 파일 전용)
             if file_path.endswith(".pbxproj"):
