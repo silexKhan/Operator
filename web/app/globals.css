@@ -1,0 +1,149 @@
+/* 
+ * globals.css - Operator Command Center Global Styles 🛡️⚡️
+ * Theme: Cyberpunk / High-Contrast Dashboard
+ */
+
+:root {
+  --bg-dark: #0a0a0a;
+  --bg-card: rgba(20, 20, 20, 0.8);
+  --border-color: #2a2a2a;
+  
+  /* Accent Colors */
+  --cyber-cyan: #00f3ff;
+  --cyber-amber: #ffcc00;
+  --cyber-red: #ff3366;
+  --text-main: #e0e0e0;
+  --text-dim: #888888;
+  
+  /* Glassmorphism */
+  --glass-blur: blur(12px);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* 📞 Operator Layout System */
+.operator-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  transition: all 0.3s ease;
+}
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid var(--border-color);
+  background: rgba(15, 15, 15, 0.95);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+  min-width: 70px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--cyber-cyan);
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+  text-shadow: 0 0 10px var(--cyber-cyan);
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background: radial-gradient(circle at top right, rgba(0, 243, 255, 0.05), transparent);
+  transition: all 0.3s ease;
+}
+
+/* UI Elements */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--cyber-cyan);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.neon-text {
+  color: var(--cyber-cyan);
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  background: rgba(0, 243, 255, 0.1);
+  color: var(--cyber-cyan);
+  border: 1px solid var(--cyber-cyan);
+}
+
+/* 📞 Sidebar Navigation Item Styles */
+.nav-item {
+  padding: 0.75rem 1rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  padding-left: 1.5rem;
+}
+
+.nav-item.active {
+  color: var(--cyber-cyan);
+  background: rgba(0, 243, 255, 0.05);
+  border-left-color: var(--cyber-cyan);
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+}

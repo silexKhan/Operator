@@ -1,116 +1,101 @@
 #
-#  server.py - Silex MCP Hub Core Server Orchestrator
+#  server.py - Autonomous Watcher Operator Server 🛡️⚡️
 #
 
 import asyncio
+import os
+import mcp.types as types
 from mcp.server.models import InitializationOptions
 from mcp.server import NotificationOptions, Server
 from mcp.server.stdio import stdio_server
-import mcp.types as types
 
-from core.logger import HubLogger
+from circuits.manager import CircuitManager
 from core.actions import CoreActions
-from tenants.manager import TenantManager
+from core.logger import OperatorLogger
 
-class HubServer:
+class OperatorServer:
     def __init__(self):
-        self.server = Server("Silex MCP Hub")
-        self.logger = HubLogger("MasterHub")
-        self.tenant_manager = TenantManager()
-        self.core_actions = CoreActions(self.tenant_manager, self.logger)
-        
-        self._register_handlers()
+        self.logger = OperatorLogger("MasterOperator")
+        self.circuit_manager = CircuitManager()
+        self.core_actions = CoreActions(self.circuit_manager, self.logger)
+        self.server = Server("operator-hub")
+        self._setup_handlers()
+        # [대장님 🎯] 마지막으로 확인된 회선 목록을 기억합니다.
+        self.last_circuit_keys = set(self.circuit_manager.circuits.keys())
 
-    def _register_handlers(self):
-        """MCP 서버 핸들러 등록 (Routing)"""
-        
+    def _setup_handlers(self):
         @self.server.list_tools()
         async def handle_list_tools() -> list[types.Tool]:
-            # 1. Core 공통 도구 정의
             tools = [
-                types.Tool(
-                    name="get_hub_status",
-                    description="Silex MCP Hub의 현재 상태 및 활성 테넌트 정보를 확인합니다.",
-                    inputSchema={"type": "object", "properties": {}},
-                ),
-                types.Tool(
-                    name="set_active_tenant",
-                    description="특정 테넌트를 강제로 활성화합니다.",
-                    inputSchema={
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string", "description": "활성화할 테넌트 이름 (예: GDR)"}
-                        },
-                        "required": ["name"]
-                    },
-                ),
-                types.Tool(
-                    name="sync_hub_path",
-                    description="Hub의 현재 작업 경로를 외부 환경과 동기화하여 자동 감지를 수행합니다.",
-                    inputSchema={
-                        "type": "object",
-                        "properties": {
-                            "path": {"type": "string", "description": "현재 작업 디렉토리 절대 경로"}
-                        },
-                        "required": ["path"]
-                    },
-                )
+                types.Tool(name="get_operator_status", description="상태 확인", inputSchema={"type": "object", "properties": {}}),
+                types.Tool(name="set_active_circuit", description="회선 연결", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
+                types.Tool(name="sync_operator_path", description="경로 동기화", inputSchema={"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}),
+                types.Tool(name="reload_operator", description="엔진 리로드 🛡️⚡️", inputSchema={"type": "object", "properties": {}})
             ]
-            
-            # 2. 모든 테넌트 도구 통합 노출
-            for tenant in self.tenant_manager.tenants.values():
-                tools.extend(tenant.get_tools())
-                
+            # 중복 방지하며 회선 도구 통합
+            seen = {t.name for t in tools}
+            for circuit in self.circuit_manager.circuits.values():
+                for t in circuit.get_tools():
+                    if t.name not in seen:
+                        tools.append(t)
+                        seen.add(t.name)
             return tools
 
         @self.server.call_tool()
         async def handle_call_tool(name: str, arguments: dict | None) -> list[types.TextContent]:
-            self.logger.log(f"도구 실행 요청: {name}", 0)
             args = arguments or {}
+            if name == "get_operator_status": return self.core_actions.get_operator_status()
+            elif name == "set_active_circuit": return self.core_actions.set_active_circuit(args.get("name", ""))
+            elif name == "sync_operator_path": return self.core_actions.sync_operator_path(args.get("path", ""))
+            elif name == "reload_operator": return await self.reload_operator()
 
-            # 1. Core Tools 라우팅
-            if name == "get_hub_status":
-                return self.core_actions.get_hub_status()
-            elif name == "set_active_tenant":
-                return self.core_actions.set_active_tenant(args.get("name", ""))
-            elif name == "sync_hub_path":
-                return self.core_actions.sync_hub_path(args.get("path", ""))
+            for circuit in self.circuit_manager.circuits.values():
+                if name in [t.name for t in circuit.get_tools()]:
+                    return await circuit.call_tool(name, args)
+            raise ValueError(f"Tool not found: {name}")
 
-            # 2. Tenant Tools 라우팅 및 위임
-            active_tenant = self.tenant_manager.get_active_tenant()
-            if active_tenant:
-                tenant_prefix = active_tenant.get_name().lower() + "_"
-                tenant_tool_names = [t.name for t in active_tenant.get_tools()]
+    async def reload_operator(self) -> list[types.TextContent]:
+        """[대장님 🎯] 수동으로 지휘소의 모든 정보를 최신화합니다."""
+        try:
+            self.circuit_manager._discover_circuits()
+            self.core_actions = CoreActions(self.circuit_manager, self.logger)
+            self.last_circuit_keys = set(self.circuit_manager.circuits.keys())
+            return [types.TextContent(type="text", text="✅ 지휘소 상태 동기화 완료! 🛡️⚡️")]
+        except Exception as e:
+            return [types.TextContent(type="text", text=f"❌ 동기화 실패: {str(e)}")]
+
+    async def _autonomous_watcher(self):
+        """[대장님 🎯] 5초마다 파일 시스템을 훑어 회선 변화를 감지하는 자율 감시 루프입니다. 🕵️‍♂️✨"""
+        while True:
+            await asyncio.sleep(5)
+            try:
+                # 현재 물리적 회선 상태 재탐색
+                self.circuit_manager._discover_circuits()
+                current_keys = set(self.circuit_manager.circuits.keys())
                 
-                if name.startswith(tenant_prefix) or name in tenant_tool_names:
-                    self.logger.log(f"테넌트 '{active_tenant.get_name()}' 도구 실행 위임: {name}", 1)
-                    return await active_tenant.call_tool(name, args)
-            
-            # 3. Fallback: 타 테넌트 도구 검색
-            for tenant in self.tenant_manager.tenants.values():
-                if name.startswith(tenant.get_name().lower() + "_") or name in [t.name for t in tenant.get_tools()]:
-                    self.logger.log(f"타 테넌트 '{tenant.get_name()}' 도구 발견, 실행 위임: {name}", 1)
-                    return await tenant.call_tool(name, args)
-
-            raise ValueError(f"Tool not found or Tenant not active: {name}")
+                # 변화 감지 시 자동 리로드 및 보고 📡
+                if current_keys != self.last_circuit_keys:
+                    added = current_keys - self.last_circuit_keys
+                    removed = self.last_circuit_keys - current_keys
+                    self.last_circuit_keys = current_keys
+                    self.core_actions = CoreActions(self.circuit_manager, self.logger)
+                    
+                    if added: self.logger.log(f"🆕 새 회선 자율 감지됨: {added}", 0)
+                    if removed: self.logger.log(f"🗑️ 삭제된 회선 메모리 정화: {removed}", 0)
+                    
+                    # [중요] 클라이언트에게 도구 목록이 바뀌었음을 알립니다 (지원 시) 🔔
+                    if hasattr(self.server, "request_context"):
+                        try: await self.server.request_context.session.send_notification("notifications/tools/list_changed", None)
+                        except: pass
+            except: pass
 
     async def start(self):
-        """MCP 서버 실행 루프 시작"""
-        self.logger.log("🚀 Silex MCP Hub 기동 중...", 0)
-        async with stdio_server() as (read_stream, write_server):
-            await self.server.run(
-                read_stream,
-                write_server,
-                InitializationOptions(
-                    server_name="Silex MCP Hub",
-                    server_version="1.0.0",
-                    capabilities=self.server.get_capabilities(
-                        notification_options=NotificationOptions(),
-                        experimental_capabilities={},
-                    ),
-                ),
-            )
+        self.logger.log("🚀 Operator (교환) 자율 감시 모드 기동!", 0)
+        # 자율 감시 루프를 백그라운드에서 가동합니다. 🛡️⚡️
+        asyncio.create_task(self._autonomous_watcher())
+        
+        async with stdio_server() as (read_stream, write_stream):
+            await self.server.run(read_stream, write_stream, InitializationOptions(server_name="operator", server_version="1.0.0", capabilities=self.server.get_capabilities(notification_options=NotificationOptions(), experimental_capabilities={})))
 
 if __name__ == "__main__":
-    hub = HubServer()
-    asyncio.run(hub.start())
+    asyncio.run(OperatorServer().start())

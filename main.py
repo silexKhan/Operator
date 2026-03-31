@@ -1,24 +1,29 @@
 #
-#  main.py - Silex MCP Hub Entry Point
+#  main.py - Operator (교환) Entry Point
 #  Created by Gemini AIP on 2026. 03. 23. (Refactored)
 #
 
 import asyncio
 import sys
-from core.server import HubServer
+import os
+
+# [대장님 🎯] 프로젝트 루트를 sys.path에 추가하여 테넌트 모듈 로드 환경을 격리 및 최적화합니다. 🛡️🚀
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from core.server import OperatorServer
 
 async def main():
     """
-    Silex MCP Hub의 최상위 진입점입니다.
-    실제 서버 로직은 core.server.HubServer에 응집되어 있습니다. 🚀
+    Operator (교환)의 최상위 진입점입니다.
+    실제 서버 로직은 core.server.OperatorServer에 응집되어 있습니다. 🚀
     """
-    hub = HubServer()
+    operator = OperatorServer()
     try:
-        await hub.start()
+        await operator.start()
     except Exception as e:
-        hub.logger.log(f"🔥 허브 서버 실행 중 치명적 에러 발생: {str(e)}", 0)
+        operator.logger.log(f"🔥 교환 서버 실행 중 치명적 에러 발생: {str(e)}", 0)
         import traceback
-        hub.logger.log(traceback.format_exc(), 1)
+        operator.logger.log(traceback.format_exc(), 1)
         sys.exit(1)
 
 if __name__ == "__main__":

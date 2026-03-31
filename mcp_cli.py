@@ -1,78 +1,76 @@
 #
-#  mcp_cli.py - Silex MCP Hub CLI Controller 🛠️🚀
+#  mcp_cli.py - Operator (교환) Command Line Interface 📞⚡️
 #
 
+import argparse
 import sys
 import os
-import argparse
-from tenants.manager import TenantManager
-from core.logger import HubLogger
+import json
+import asyncio
+
+# 프로젝트 루트를 sys.path 에 추가 🛡️
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from circuits.manager import CircuitManager
+from core.logger import OperatorLogger
 
 def main():
-    parser = argparse.ArgumentParser(description="🛡️ Silex MCP Hub CLI Controller")
-    subparsers = parser.add_subparsers(dest="command", help="Commands")
+    parser = argparse.ArgumentParser(description="📞 Operator (교환) CLI - Circuit & Protocol Management")
+    subparsers = parser.add_subparsers(dest="command", help="사용 가능한 명령")
 
-    # status
-    subparsers.add_parser("status", help="허브 및 테넌트 활성 상태 확인")
+    # 1. 상태 조회
+    subparsers.add_parser("status", help="교환 및 회선(Circuit) 활성 상태 확인")
 
-    # list
-    subparsers.add_parser("list", help="등록된 모든 테넌트 목록 출력")
+    # 2. 회선 목록
+    subparsers.add_parser("list", help="등록된 모든 회선(Circuit) 목록 출력")
 
-    # set [name]
-    set_parser = subparsers.add_parser("set", help="테넌트 강제 활성화")
-    set_parser.add_argument("name", type=str, help="활성화할 테넌트 이름 (예: gdr, auth)")
+    # 3. 회선 연결 (Set Active)
+    set_parser = subparsers.add_parser("connect", help="특정 회선(Circuit) 강제 연결")
+    set_parser.add_argument("name", type=str, help="연결할 회선 이름 (예: gdr, mcp)")
 
-    # audit [file]
-    audit_parser = subparsers.add_parser("audit", help="현재 테넌트 공리로 파일 검증")
-    audit_parser.add_argument("file", type=str, help="검증할 파일 경로")
+    # 4. 규약 검증 (Audit)
+    audit_parser = subparsers.add_parser("audit", help="현재 회선 규약(Protocols)으로 파일 검증")
+    audit_parser.add_argument("path", type=str, help="검증할 파일 경로")
 
     args = parser.parse_args()
-
-    # Hub 인스턴스 초기화 (Manager를 통해 상태 공유)
-    manager = TenantManager()
-    logger = HubLogger("MCP-CLI")
+    manager = CircuitManager()
 
     if args.command == "status":
-        active = manager.get_active_tenant()
+        active = manager.get_active_circuit()
         active_name = active.get_name() if active else "None"
-        print(f"\n🚀 [Hub Status: Online]")
+        print(f"\n🚀 Operator Status: Online")
         print(f"📍 Current Path: {manager.current_path}")
-        print(f"🏢 Active Tenant: \033[92m{active_name}\033[0m")
-        print(f"📋 Registered: {list(manager.tenants.keys())}\n")
+        print(f"🏢 Active Circuit: \033[92m{active_name}\033[0m")
+        print(f"📋 Registered Lines: {list(manager.circuits.keys())}\n")
 
     elif args.command == "list":
-        print(f"\n📋 [Registered Tenants]")
-        for key in manager.tenants.keys():
+        print(f"\n📋 [Registered Circuits]")
+        for key in manager.circuits.keys():
             print(f"  - {key}")
         print("")
 
-    elif args.command == "set":
-        if manager.set_active_tenant(args.name):
-            print(f"✅ \033[92m{args.name}\033[0m 테넌트가 활성화되었습니다!")
+    elif args.command == "connect":
+        if manager.set_active_circuit(args.name):
+            print(f"✅ \033[92m{args.name}\033[0m 회선이 연결되었습니다!")
         else:
-            print(f"❌ '{args.name}' 테넌트를 찾을 수 없습니다.")
+            print(f"❌ '{args.name}' 회선을 찾을 수 없습니다.")
 
     elif args.command == "audit":
-        active = manager.get_active_tenant()
+        active = manager.get_active_circuit()
         if not active:
-            print("⚠️ 활성화된 테넌트가 없습니다. 먼저 'set' 명령으로 테넌트를 지정하세요.")
+            print("⚠️ 연결된 회선이 없습니다. 먼저 'connect' 명령으로 회선을 지정하세요.")
             return
 
-        # 테넌트의 call_tool을 호출하여 audit 수행 (MCP 프로토콜 모사)
-        import asyncio
-        import mcp.types as types
-        
         async def run_audit():
-            # 테넌트마다 audit_rules 도구 이름이 다를 수 있으므로 prefix 확인
-            tool_name = "audit_rules"
-            prefix = active.get_name().lower() + "_"
+            print(f"🔍 [{active.get_name()}] 규약 검수 시작: {args.path}")
+            tools = active.get_tools()
+            audit_tool = next((t for t in tools if "audit" in t.name), None)
             
-            # 테넌트 내부의 _audit 메서드 직접 호출 (CLI 편의상)
-            if hasattr(active, "_audit"):
-                result = active._audit(args.file)
-                print(f"\n{result}\n")
+            if audit_tool:
+                result = await active.call_tool(audit_tool.name, {"file_path": args.path})
+                print(f"\n{result[0].text}")
             else:
-                print(f"❌ {active.get_name()} 테넌트는 audit 도구를 지원하지 않습니다.")
+                print(f"❌ {active.get_name()} 회선은 audit 도구를 지원하지 않습니다.")
 
         asyncio.run(run_audit())
 

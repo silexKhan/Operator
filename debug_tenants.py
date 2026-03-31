@@ -12,7 +12,7 @@ from tenants.base import BaseTenant
 
 def test_discovery():
     base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tenants")
-    search_roots = ["projects"]
+    search_roots = ["registry", "libraries"]
     
     for root in search_roots:
         root_path = os.path.join(base_dir, root)
