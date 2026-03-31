@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const targetPath = searchParams.get('path') || '/Users/silex';
+  const targetPath = searchParams.get('path') || '.';
 
   return new Promise((resolve) => {
     const projectRoot = path.join(process.cwd(), '..');

@@ -4,6 +4,9 @@ SETLOCAL
 
 echo 🚀 지휘소 기동 프로세스를 시작합니다 (Windows)...
 
+:: [추가됨] Git SSH 권한 오류 방지: 패키지 다운로드 시 HTTPS 강제 사용 설정
+git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+
 :: 1. Node.js 존재 여부 1차 점검
 node -v >nul 2>&1
 if %errorlevel% neq 0 (

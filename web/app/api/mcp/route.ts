@@ -14,7 +14,10 @@ export async function GET() {
       : path.join(projectRoot, '.venv', 'bin', 'python');
     
     const scriptPath = path.join(projectRoot, 'main.py');
-    const mcpProcess = spawn(pythonPath, [scriptPath]);
+    const mcpProcess = spawn(pythonPath, [scriptPath], {
+      cwd: projectRoot,
+      env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+    });
     
     // 1. 초기화 (지휘권 확립)
     mcpProcess.stdin.write(JSON.stringify({
@@ -22,15 +25,21 @@ export async function GET() {
       params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Registry-V3", version: "3.0.0" } }
     }) + '\n');
 
-    // 2. 전체 구조(JSON) 요청 - [대장님 🎯] 호출명을 백엔드와 일치시킵니다. 📡
+    // 2. 전체 구조(JSON) 요청 - [대장님 🎯] 통신 규약 준수 📡
+    const initializedMessage = JSON.stringify({
+      jsonrpc: "2.0", method: "notifications/initialized"
+    }) + '\n';
+    
     const callMessage = JSON.stringify({
       jsonrpc: "2.0", id: 2, method: "tools/call",
       params: { name: "mcp_operator_get_full_json_structure", arguments: {} }
     }) + '\n';
 
     setTimeout(() => {
+      mcpProcess.stdin.write(initializedMessage);
       mcpProcess.stdin.write(callMessage);
     }, 500);
+
 
     let fullData = "";
 

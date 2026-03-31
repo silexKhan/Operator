@@ -9,8 +9,8 @@ interface PathBrowserModalProps {
   initialPath: string;
 }
 
-export default function PathBrowserModal({ isOpen, onClose, onSelect, initialPath }: PathBrowserModalProps) {
-  const [currentPath, setCurrentPath] = useState(initialPath || '/Users/silex');
+export default function PathBrowserModal({ isOpen, onClose, initialPath, onSelect }: PathBrowserModalProps) {
+  const [currentPath, setCurrentPath] = useState(initialPath || '.');
   const [folders, setFolders] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 

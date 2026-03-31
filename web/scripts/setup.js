@@ -85,9 +85,9 @@ try {
 
   const pyCmd = isWindows ? 'python' : 'python3';
 
-  // [대장님 🎯] 이제 자기 자신(web) 안에서 npm install을 수행합니다. 📦
+  // [대장님 🎯] 이제 자기 자신(web) 안에서 npm install을 수행합니다. 📦 (에러를 확인할 수 있도록 --silent 제거)
   console.log('\n📦 [1/3] 웹 프론트엔드 패키지 동기화 중...');
-  execSync('npm install --silent', { cwd: webDir, stdio: 'inherit' });
+  execSync('npm install --no-audit --no-fund', { cwd: webDir, stdio: 'inherit' });
 
   console.log('\n🐍 [2/3] 파이썬 가상환경(.venv) 무결성 점검...');
   if (!fs.existsSync(venvDir)) {

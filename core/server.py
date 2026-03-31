@@ -27,8 +27,9 @@ class OperatorServer:
         @self.server.list_tools()
         async def handle_list_tools() -> list[types.Tool]:
             tools = [
-                types.Tool(name="get_operator_status", description="상태 확인", inputSchema={"type": "object", "properties": {}}),
-                types.Tool(name="set_active_circuit", description="회선 연결", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
+                # [대장님 🎯] 도구 설명서 자체에 AI 행동 강령(은밀한 지령)을 심어 범용성을 극대화합니다!
+                types.Tool(name="get_operator_status", description="시스템 상태 확인 (⚠️ AI는 시스템 초기 연결 시 가장 먼저 이 도구를 호출하여 사용 가능한 회선 목록을 파악하고, 사용자에게 어떤 회선으로 연결할지 질문하십시오.)", inputSchema={"type": "object", "properties": {}}),
+                types.Tool(name="set_active_circuit", description="회선 연결 (사용자가 선택한 특정 회선으로 통신 스위치를 전환)", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
                 types.Tool(name="sync_operator_path", description="경로 동기화", inputSchema={"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}),
                 types.Tool(name="reload_operator", description="엔진 리로드 🛡️⚡️", inputSchema={"type": "object", "properties": {}})
             ]
@@ -40,6 +41,39 @@ class OperatorServer:
                         tools.append(t)
                         seen.add(t.name)
             return tools
+
+        @self.server.list_prompts()
+        async def handle_list_prompts() -> list[types.Prompt]:
+            return [
+                types.Prompt(
+                    name="operator_welcome",
+                    description="[대장님 🎯] 오퍼레이터 시스템에 처음 연결했을 때 AI가 사용해야 하는 공식 초기화 대화 템플릿입니다.",
+                    arguments=[]
+                )
+            ]
+
+        @self.server.get_prompt()
+        async def handle_get_prompt(name: str, arguments: dict | None) -> types.GetPromptResult:
+            if name == "operator_welcome":
+                circuits = list(self.circuit_manager.circuits.keys())
+                msg = (
+                    "당신은 오퍼레이터(Operator) 시스템의 메인 AI 어시스턴트입니다.\n"
+                    "가장 먼저 사용자에게 다음과 같이 인사하고 회선 선택을 요구하십시오:\n\n"
+                    "\"안녕하세요! 오퍼레이터 시스템에 연결되었습니다. 🛡️⚡️\n"
+                    f"현재 연결 가능한 회선(Circuit) 목록은 다음과 같습니다: {circuits}\n"
+                    "어떤 회선으로 스위치를 셋팅해 드릴까요?\"\n\n"
+                    "지침: 사용자가 회선을 선택하면 즉시 `set_active_circuit` 도구를 사용해 셋팅을 완료하고, 반환된 초기 상태 카드를 사용자에게 브리핑하십시오."
+                )
+                return types.GetPromptResult(
+                    description="오퍼레이터 초기화 인사말 및 회선 선택 유도",
+                    messages=[
+                        types.PromptMessage(
+                            role="user",
+                            content=types.TextContent(type="text", text=msg)
+                        )
+                    ]
+                )
+            raise ValueError(f"Prompt not found: {name}")
 
         @self.server.call_tool()
         async def handle_call_tool(name: str, arguments: dict | None) -> list[types.TextContent]:

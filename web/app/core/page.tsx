@@ -53,7 +53,7 @@ export default function CoreStatusPage() {
             <span style={{ color: 'var(--text-main)' }}>연결 상태: 안정적</span>
           </div>
           <div style={{ fontSize: '0.9rem', color: 'var(--text-dim)' }}>
-            📍 작업 경로: /Users/silex/workspace/private/MCP
+            📍 작업 공간을 자동으로 감지합니다.
           </div>
         </section>
 

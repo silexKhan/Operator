@@ -6,7 +6,7 @@ import os
 from core.scanner import CodeScanner
 
 class BluePrint:
-    PROJECT_ROOT = "/Users/silex/workspace/private/MCP"
+    PROJECT_ROOT = __import__('os').path.abspath(__import__('os').path.join(__import__('os').path.dirname(__file__), "../../../../"))
     
     @classmethod
     def get_master(cls) -> dict:
