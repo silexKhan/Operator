@@ -28,5 +28,8 @@ if %errorlevel% neq 0 (
 
 :: 3. 웹 서버 가동
 echo 📡 회선 연결 중... (Dashboard: http://localhost:3000)
+pushd ..
+set MCP_ROOT=%CD%
+popd
 npm run dev
 pause

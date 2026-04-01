@@ -10,7 +10,7 @@ interface UnitInfo {
 }
 
 /**
- * [대장님 🎯] 지휘소에 등록된 전문 기술 유닛(Units)을 관리하는 허브입니다. 🛡️⚡️
+ * [사용자] 지휘소에 등록된 전문 기술 유닛(Units)을 관리하는 허브입니다. 
  * 각 유닛 카드를 클릭하면 정밀 지휘 화면으로 이동합니다.
  */
 export default function UnitRegistryPage() {
@@ -33,7 +33,7 @@ export default function UnitRegistryPage() {
       const res = await fetch('/api/mcp/units');
       const data = await res.json();
       
-      // [대장님 🎯] unit이 이제 {name, path} 구조이므로 name을 정확히 타격합니다. 🕵️‍♂️
+      // [사용자] unit이 이제 {name, path} 구조이므로 name을 정확히 타격합니다. 
       const unitDetails = data.units.map((unit: any) => ({
         name: unit.name,
         icon: getUnitIcon(unit.name)
@@ -48,10 +48,10 @@ export default function UnitRegistryPage() {
 
   const getUnitIcon = (unit: string) => {
     const u = unit.toLowerCase();
-    if (u.includes('python')) return '🐍';
-    if (u.includes('swift')) return '🍎';
-    if (u.includes('markdown')) return '📝';
-    return '🛠️';
+    if (u.includes('python')) return '';
+    if (u.includes('swift')) return '';
+    if (u.includes('markdown')) return '';
+    return '';
   };
 
   const handleCreateUnit = async (e: React.FormEvent) => {
@@ -66,7 +66,7 @@ export default function UnitRegistryPage() {
         body: JSON.stringify({ name: newUnitName.toLowerCase() })
       });
       if (res.ok) {
-        alert(`🆕 전문 유닛 '${newUnitName.toUpperCase()}' 부대가 창설되었습니다! 🛡️⚡️`);
+        alert(` 전문 유닛 '${newUnitName.toUpperCase()}' 부대가 창설되었습니다! `);
         setNewUnitName('');
         setShowAddForm(false);
         fetchUnits();
@@ -125,7 +125,7 @@ export default function UnitRegistryPage() {
                 border: 'none', color: 'white', fontWeight: 'bold', 
                 cursor: 'pointer', borderRadius: '4px' 
               }}>
-              {loading ? 'CREATING...' : 'ESTABLISH UNIT 🚀'}
+              {loading ? 'CREATING...' : 'ESTABLISH UNIT '}
             </button>
           </form>
         </section>
@@ -133,7 +133,7 @@ export default function UnitRegistryPage() {
 
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
         {loading && !units.length ? (
-          <p style={{ color: 'var(--text-dim)' }}>Scanning Tactical Units... 🕵️‍♂️</p>
+          <p style={{ color: 'var(--text-dim)' }}>Scanning Tactical Units... </p>
         ) : (
           units.map(unit => (
             <Link key={unit.name} href={`/units/${unit.name.toLowerCase()}`} style={{ textDecoration: 'none' }}>
@@ -165,7 +165,7 @@ export default function UnitRegistryPage() {
 
       {units.length === 0 && !loading && (
         <div className="card" style={{ borderStyle: 'dashed', textAlign: 'center', padding: '4rem', borderColor: 'var(--cyber-pink)' }}>
-          <p style={{ color: 'var(--text-dim)' }}>No Tactical Units found. Establish your first unit! 🛡️⚡️</p>
+          <p style={{ color: 'var(--text-dim)' }}>No Tactical Units found. Establish your first unit! </p>
         </div>
       )}
     </div>

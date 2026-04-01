@@ -3,14 +3,14 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 
-// ForceGraph는 클라이언트 사이드에서만 렌더링되도록 dynamic import 처리합니다. 📞⚡️
+// ForceGraph는 클라이언트 사이드에서만 렌더링되도록 dynamic import 처리합니다. 
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), { ssr: false });
 
 /**
- * [대장님 🎯] 모든 Circuit 간의 의존성 및 연결 상태를 시각화하는 다이어그램입니다. 🛰️⚡️
+ * [사용자] 모든 Circuit 간의 의존성 및 연결 상태를 시각화하는 다이어그램입니다. 
  */
 export default function CircuitMap({ graphData, onNodeClick }: { graphData: any, onNodeClick: (name: string) => void }) {
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
   const [windowSize, setWindowSize] = useState({ width: 800, height: 500 });
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function CircuitMap({ graphData, onNodeClick }: { graphData: any,
   return (
     <div className="card" style={{ padding: '1rem', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
       <h5 className="neon-text" style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10 }}>
-        🛰️ CIRCUIT ARCHITECTURE MAP
+         CIRCUIT ARCHITECTURE MAP
       </h5>
       
       <ForceGraph2D

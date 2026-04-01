@@ -1,5 +1,5 @@
 /* 
- * globals.css - Operator Command Center Global Styles 🛡️⚡️
+ * globals.css - Operator Command Center Global Styles 
  * Theme: Cyberpunk / High-Contrast Dashboard
  */
 
@@ -34,7 +34,7 @@ body {
   line-height: 1.6;
 }
 
-/* 📞 Operator Layout System */
+/*  Operator Layout System */
 .operator-layout {
   display: flex;
   height: 100vh;
@@ -124,7 +124,7 @@ body {
   border: 1px solid var(--cyber-cyan);
 }
 
-/* 📞 Sidebar Navigation Item Styles */
+/*  Sidebar Navigation Item Styles */
 .nav-item {
   padding: 0.75rem 1rem;
   color: var(--text-dim);

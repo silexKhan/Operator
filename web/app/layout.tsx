@@ -3,7 +3,7 @@ import "./globals.css";
 import Sidebar from "./components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Operator Web Control Center 🛡️⚡️",
+  title: "Operator Web Control Center ",
   description: "Advanced Multi-Circuit Management Dashboard",
 };
 

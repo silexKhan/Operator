@@ -3,14 +3,14 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 /**
- * [대장님 🎯] 웹에서 수정한 규약(Protocols), 개요(Overview), 유닛(Units) 정보를 실제 소스 코드에 반영하는 Write Bridge입니다. 🛡️⚡️
- * UNITS_UPDATE 액션 및 데이터 전달 로직이 완비되었습니다. 🚀
+ * [사용자] 웹에서 수정한 규약(Protocols), 개요(Overview), 유닛(Units) 정보를 실제 소스 코드에 반영하는 Write Bridge입니다. 
+ * UNITS_UPDATE 액션 및 데이터 전달 로직이 완비되었습니다. 
  */
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   const { circuit_name, rules, description, project_path, units, action } = await request.json();
 
   return new Promise((resolve) => {
-    const projectRoot = path.join(process.cwd(), '..');
+    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
     const isWindows = process.platform === 'win32';
     const pythonPath = isWindows 
       ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')
@@ -24,11 +24,11 @@ export async function POST(request: Request) {
       params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Reflector-Dynamic", version: "1.5.0" } }
     }) + '\n');
 
-    // 상황에 따른 도구 호출 분기 🛡️
+    // 상황에 따른 도구 호출 분기 
     let callMessage = '';
     
     if (action === 'OVERVIEW_UPDATE' || action === 'UNITS_UPDATE') {
-      // [대장님 🎯] 유닛(units) 정보를 포함하여 백엔드 도구를 호출합니다. 🕵️‍♂️🚀
+      // [사용자] 유닛(units) 정보를 포함하여 백엔드 도구를 호출합니다. 
       callMessage = JSON.stringify({
         jsonrpc: "2.0", id: 2, method: "tools/call",
         params: {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
             circuit_name, 
             description, 
             project_path, 
-            units // 유닛 데이터 명시적 전달 🛡️
+            units // 유닛 데이터 명시적 전달 
           }
         }
       }) + '\n';

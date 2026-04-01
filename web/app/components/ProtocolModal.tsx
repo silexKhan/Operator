@@ -11,8 +11,8 @@ interface ProtocolModalProps {
 }
 
 /**
- * [대장님 🎯] 개별 AI 행동 규약을 정밀 수정하거나 삭제하는 작전 창입니다. 🛡️⚡️
- * 배경(Dimmed Area) 클릭 시 자동으로 닫히는 인터랙션이 추가되었습니다. ✨
+ * [사용자] 개별 AI 행동 규약을 정밀 수정하거나 삭제하는 작전 창입니다. 
+ * 배경(Dimmed Area) 클릭 시 자동으로 닫히는 인터랙션이 추가되었습니다. 
  */
 export default function ProtocolModal({ isOpen, onClose, onSave, onDelete, initialText }: ProtocolModalProps) {
   const [text, setText] = useState(initialText);
@@ -25,7 +25,7 @@ export default function ProtocolModal({ isOpen, onClose, onSave, onDelete, initi
 
   return (
     <div 
-      onClick={onClose} // [대장님 🎯] 배경 클릭 시 창을 닫습니다. 🛡️⚡️
+      onClick={onClose} // [사용자] 배경 클릭 시 창을 닫습니다. 
       style={{
         position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
         background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
@@ -34,7 +34,7 @@ export default function ProtocolModal({ isOpen, onClose, onSave, onDelete, initi
       }}
     >
       <div 
-        onClick={(e) => e.stopPropagation()} // [대장님 🎯] 내부 클릭 시 이벤트 전파를 차단하여 창이 닫히지 않게 합니다. 🛡️🔥
+        onClick={(e) => e.stopPropagation()} // [사용자] 내부 클릭 시 이벤트 전파를 차단하여 창이 닫히지 않게 합니다. 
         className="card" 
         style={{ 
           width: '600px', 
@@ -43,7 +43,7 @@ export default function ProtocolModal({ isOpen, onClose, onSave, onDelete, initi
           cursor: 'default' // 내부는 일반 커서 유지
         }}
       >
-        <h3 className="neon-text" style={{ marginBottom: '1.5rem' }}>🛠️ EDIT PROTOCOL</h3>
+        <h3 className="neon-text" style={{ marginBottom: '1.5rem' }}> EDIT PROTOCOL</h3>
         
         <div style={{ marginBottom: '2rem' }}>
           <label style={{ display: 'block', color: 'var(--text-dim)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>규약 내용 (Protocol Content)</label>
@@ -61,7 +61,7 @@ export default function ProtocolModal({ isOpen, onClose, onSave, onDelete, initi
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button 
             onClick={() => {
-              if(confirm('이 규약을 영구적으로 삭제하시겠습니까? 🛡️⚠️')) {
+              if(confirm('이 규약을 영구적으로 삭제하시겠습니까? ')) {
                 onDelete();
                 onClose();
               }

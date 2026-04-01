@@ -3,40 +3,39 @@ import fs from 'fs';
 import path from 'path';
 
 /**
- * [대장님 🎯] 특정 전문 유닛(Unit)의 독자적인 프로토콜을 읽고 수정합니다. 🛡️⚡️
- * 정교화된 정규표현식을 통해 문장 내부의 따옴표를 구분자로 오인하지 않도록 개선했습니다.
+ * [사용자] 특정 전문 유닛(Unit)의 독자적인 프로토콜을 읽고 수정합니다. 
+ * 백엔드의 새로운 설계(protocols.json 기반)를 완벽히 준수하도록 개편되었습니다.
  */
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const unitName = searchParams.get('unit');
   
   if (!unitName) return NextResponse.json({ error: 'Unit name is required' }, { status: 400 });
 
   try {
-    const protocolsPath = path.join(process.cwd(), '..', 'units', unitName.toLowerCase(), 'protocols.py');
+    const protocolsJsonPath = process.env.MCP_ROOT ? path.join(process.env.MCP_ROOT, 'units', unitName.toLowerCase(), 'protocols.json') : path.join(process.cwd(), '..', 'units', unitName.toLowerCase(), 'protocols.json');
     
-    if (!fs.existsSync(protocolsPath)) {
-      return NextResponse.json({ rules: [] });
+    // 1. JSON 파일이 존재하면 JSON에서 읽습니다. (신규 아키텍처)
+    if (fs.existsSync(protocolsJsonPath)) {
+      const content = fs.readFileSync(protocolsJsonPath, 'utf-8');
+      const data = JSON.parse(content);
+      return NextResponse.json({ rules: data.RULES || [] });
     }
 
-    const content = fs.readFileSync(protocolsPath, 'utf-8');
-    
-    // [대장님 🎯] UNIT_RULES 리스트 본체를 추출합니다.
-    const match = content.match(/UNIT_RULES = \[(.*?)\]/s);
-    if (match) {
-      const rulesStr = match[1];
-      
-      // [대장님 🎯] 각 행에서 바깥쪽 따옴표(")로 감싸진 전체 문장만 정확히 추출합니다. 🕵️‍♂️
-      // 내부의 작은따옴표(')나 쉼표(,)에 현혹되지 않습니다.
-      const rules = Array.from(rulesStr.matchAll(/^\s*"(.*?)"\s*(?:,|$)/gm)).map(m => m[1]);
-      
-      // 만약 큰따옴표 매칭이 실패할 경우(작은따옴표 사용 시)를 대비한 보조 매칭
-      if (rules.length === 0) {
-        const fallbackRules = Array.from(rulesStr.matchAll(/^\s*'(.*?)'\s*(?:,|$)/gm)).map(m => m[1]);
-        return NextResponse.json({ rules: fallbackRules });
+    // 2. 하위 호환성 (Fallback): 구형 protocols.py 파일 파싱
+    const protocolsPyPath = process.env.MCP_ROOT ? path.join(process.env.MCP_ROOT, 'units', unitName.toLowerCase(), 'protocols.py') : path.join(process.cwd(), '..', 'units', unitName.toLowerCase(), 'protocols.py');
+    if (fs.existsSync(protocolsPyPath)) {
+      const content = fs.readFileSync(protocolsPyPath, 'utf-8');
+      const match = content.match(/UNIT_RULES = \[([\s\S]*?)\]/);
+      if (match) {
+        const rulesStr = match[1];
+        const rules = Array.from(rulesStr.matchAll(/^\s*"(.*?)"\s*(?:,|$)/gm)).map(m => m[1]);
+        if (rules.length === 0) {
+          const fallbackRules = Array.from(rulesStr.matchAll(/^\s*'(.*?)'\s*(?:,|$)/gm)).map(m => m[1]);
+          return NextResponse.json({ rules: fallbackRules });
+        }
+        return NextResponse.json({ rules });
       }
-
-      return NextResponse.json({ rules });
     }
 
     return NextResponse.json({ rules: [] });
@@ -46,27 +45,26 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const { name, rules } = await request.json();
     if (!name || !rules) return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
 
-    const protocolsPath = path.join(process.cwd(), '..', 'units', name.toLowerCase(), 'protocols.py');
+    const protocolsJsonPath = process.env.MCP_ROOT ? path.join(process.env.MCP_ROOT, 'units', name.toLowerCase(), 'protocols.json') : path.join(process.cwd(), '..', 'units', name.toLowerCase(), 'protocols.json');
     
-    if (!fs.existsSync(protocolsPath)) {
-      return NextResponse.json({ error: 'Unit protocols file not found' }, { status: 404 });
+    let data: { OVERVIEW?: string; RULES: string[] } = { RULES: [] };
+    
+    // 기존 JSON 파일이 있다면 병합 (OVERVIEW 등 보존)
+    if (fs.existsSync(protocolsJsonPath)) {
+      const content = fs.readFileSync(protocolsJsonPath, 'utf-8');
+      data = JSON.parse(content);
     }
-
-    let content = fs.readFileSync(protocolsPath, 'utf-8');
     
-    // [대장님 🎯] 리스트 내용을 표준 규격으로 포맷팅하여 치환합니다.
-    const newRulesStr = rules.map((r: string) => `            "${r}"`).join(',\n');
-    const updatedContent = content.replace(
-      /UNIT_RULES = \[(.*?)\]/s, 
-      `UNIT_RULES = [\n${newRulesStr}\n        ]`
-    );
+    data.RULES = rules;
 
-    fs.writeFileSync(protocolsPath, updatedContent);
+    // JSON 규격으로 파일 작성 (AST를 훼손하던 기존 fs.writeFileSync 방식 탈피)
+    fs.writeFileSync(protocolsJsonPath, JSON.stringify(data, null, 2), 'utf-8');
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to update unit protocols:', error);

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import CircuitMap from './components/CircuitMap';
 
 /**
- * [대장님 🎯] 모든 Circuit의 가동 상태를 조망하는 통합 상황실입니다. 🛡️⚡️
+ * [사용자] 모든 Circuit의 가동 상태를 조망하는 통합 상황실입니다. 
  */
 export default function Home() {
   const [data, setData] = useState<any>(null);
@@ -65,72 +65,91 @@ export default function Home() {
           <CircuitMap graphData={data.dependency_graph} onNodeClick={handleNodeClick} />
         ) : (
           <div className="card" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderStyle: 'dashed' }}>
-            <p style={{ color: 'var(--text-dim)' }}>Initializing Architecture Map... 📡</p>
+            <p style={{ color: 'var(--text-dim)' }}>Initializing Architecture Map... </p>
           </div>
         )}
       </section>
 
       {/* Summary Cards */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+      <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
         <div className="card">
-          <h3 style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>ACTIVE CIRCUITS</h3>
+          <h3 style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>
+            {mounted ? 'ACTIVE CIRCUITS' : 'CIRC_DISCOVERY'}
+          </h3>
           <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-            {mounted && data ? (data.registered_circuits?.length || 0) : '0'} Lines
+            {mounted && data?.registered_circuits ? data.registered_circuits.join(', ').toUpperCase() : 'SEARCHING...'}
           </div>
           <div style={{ marginTop: '0.5rem', color: 'var(--cyber-cyan)', fontSize: '0.8rem' }}>
-            {data ? '🟢 Connection Stable' : '⚪ Standby'}
+             Domain Isolation Lines Established
           </div>
         </div>
         
         <div className="card">
           <h3 style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>SYSTEM LOAD</h3>
           <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>0.02ms</div>
-          <div style={{ marginTop: '0.5rem', color: 'var(--cyber-amber)', fontSize: '0.8rem' }}>Low Latency</div>
-        </div>
-
-        <div className="card">
-          <h3 style={{ fontSize: '0.9rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>MODULES SCANNED</h3>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-            {mounted && data ? (Object.keys(data.core?.files || {}).length + Object.keys(data.circuits?.files || {}).length) : '0'} Units
-          </div>
-          <div style={{ marginTop: '0.5rem', color: 'var(--cyber-cyan)', fontSize: '0.8rem' }}>AST Discovery Complete</div>
+          <div style={{ marginTop: '0.5rem', color: 'var(--cyber-amber)', fontSize: '0.8rem' }}>Low Latency Architecture</div>
         </div>
       </section>
 
-      {/* Domain Details (Vertical Stack for Mobile 📱) */}
+      {/* Domain Details (Vertical Stack for Mobile ) */}
       {mounted && data && (
         <section style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {/* CORE Domain */}
+          {/* CIRCUITS REGISTRY */}
           <div className="card">
             <h5 className="neon-text" style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-              📂 CORE ENGINE
+               CIRCUITS REGISTRY
             </h5>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {data.core?.files ? Object.entries(data.core.files).map(([path, info]: [string, any]) => (
-                <div key={path} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
-                  <span style={{ color: 'var(--cyber-amber)', fontWeight: 'bold' }}>📄 {path}</span>
-                  <div style={{ marginTop: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {Object.keys(info.classes || {}).map(c => <span key={c} style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'rgba(0, 243, 255, 0.1)', color: 'var(--cyber-cyan)', borderRadius: '4px' }}>{c}</span>)}
-                  </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+              {data.registered_circuits?.length > 0 ? data.registered_circuits.map((name: string) => (
+                <div 
+                  key={name} 
+                  onClick={() => handleNodeClick(name)}
+                  style={{ 
+                    padding: '1rem 2rem', 
+                    background: 'rgba(255, 204, 0, 0.05)', 
+                    border: '1px solid var(--cyber-amber)', 
+                    color: 'var(--cyber-amber)',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    minWidth: '150px'
+                  }}>
+                  {name.toUpperCase()}
                 </div>
-              )) : <p style={{color:'var(--text-dim)'}}>No core modules found.</p>}
+              )) : <p style={{color:'var(--text-dim)'}}>No registered circuits found.</p>}
             </div>
           </div>
 
-          {/* CIRCUITS Domain */}
+          {/* OPERATIONAL UNITS (3-Line Scrollable Section) */}
           <div className="card">
             <h5 className="neon-text" style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-              🏢 CIRCUITS REGISTRY
+               OPERATIONAL UNITS
             </h5>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {data.circuits?.files ? Object.entries(data.circuits.files).map(([path, info]: [string, any]) => (
-                <div key={path} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
-                  <span style={{ color: 'var(--cyber-amber)', fontWeight: 'bold' }}>📄 {path}</span>
-                  <div style={{ marginTop: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {Object.keys(info.classes || {}).map(c => <span key={c} style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'rgba(255, 204, 0, 0.1)', color: 'var(--cyber-amber)', borderRadius: '4px' }}>{c}</span>)}
-                  </div>
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: '0.75rem', 
+              maxHeight: '180px', 
+              overflowY: 'auto',
+              paddingRight: '0.5rem'
+            }}>
+              {data.active_units?.length > 0 ? data.active_units.map((unit: string) => (
+                <div 
+                  key={unit} 
+                  style={{ 
+                    padding: '0.75rem 1.5rem', 
+                    background: 'rgba(0, 243, 255, 0.05)', 
+                    border: '1px solid var(--cyber-cyan)', 
+                    color: 'var(--cyber-cyan)',
+                    borderRadius: '4px',
+                    fontSize: '0.85rem',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase'
+                  }}>
+                  {unit} UNIT
                 </div>
-              )) : <p style={{color:'var(--text-dim)'}}>No circuits found in registry.</p>}
+              )) : <p style={{color:'var(--text-dim)'}}>No operational units detected.</p>}
             </div>
           </div>
         </section>

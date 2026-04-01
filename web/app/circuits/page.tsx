@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 /**
- * [대장님 🎯] 오퍼레이터 시스템에 등록된 모든 Circuits를 관리하는 허브입니다. 🛡️⚡️
+ * [사용자] 오퍼레이터 시스템에 등록된 모든 Circuits를 관리하는 허브입니다. 
  */
 export default function CircuitsRegistryPage() {
   const [circuits, setCircuits] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [newCircuitName, setNewCircuitName] = useState('');
-  const [inheritGlobal, setInheritGlobal] = useState(true); // 상속 여부 상태 추가 🛡️
+  const [inheritGlobal, setInheritGlobal] = useState(true); // 상속 여부 상태 추가 
   const [showAddForm, setShowAddForm] = useState(false);
 
   const fetchCircuits = async () => {
@@ -37,7 +37,7 @@ export default function CircuitsRegistryPage() {
         body: JSON.stringify({ name: newCircuitName, role: 'development', inherit_global: inheritGlobal })
       });
       if (res.ok) {
-        alert(`✅ Circuit '${newCircuitName}' established! 🛡️⚡️\nInheritance: ${inheritGlobal ? 'ON' : 'OFF'}`);
+        alert(` Circuit '${newCircuitName}' established! \nInheritance: ${inheritGlobal ? 'ON' : 'OFF'}`);
         setNewCircuitName('');
         setInheritGlobal(true);
         setShowAddForm(false);
@@ -102,11 +102,11 @@ export default function CircuitsRegistryPage() {
                   border: 'none', color: 'var(--bg-dark)', fontWeight: 'bold', 
                   cursor: 'pointer', borderRadius: '4px' 
                 }}>
-                {loading ? 'ESTABLISHING...' : 'ESTABLISH LINE 🚀'}
+                {loading ? 'ESTABLISHING...' : 'ESTABLISH LINE '}
               </button>
             </div>
             
-            {/* [대장님 🎯] 상위 규약 상속 토글 UI 🛡️⚡️ */}
+            {/* [사용자] 상위 규약 상속 토글 UI  */}
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', color: 'var(--cyber-amber)' }}>
               <input 
                 type="checkbox" 
@@ -122,7 +122,7 @@ export default function CircuitsRegistryPage() {
 
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
         {loading && !circuits.length ? (
-          <p style={{ color: 'var(--text-dim)' }}>Scanning lines... 🕵️‍♂️</p>
+          <p style={{ color: 'var(--text-dim)' }}>Scanning lines... </p>
         ) : (
           circuits.map(name => (
             <Link key={name} href={`/circuits/${name.toLowerCase()}`} style={{ textDecoration: 'none' }}>
@@ -140,7 +140,7 @@ export default function CircuitsRegistryPage() {
 
       {circuits.length === 0 && !loading && (
         <div className="card" style={{ borderStyle: 'dashed', textAlign: 'center', padding: '4rem' }}>
-          <p style={{ color: 'var(--text-dim)' }}>No Circuits found. Establish your first line! 🛡️⚡️</p>
+          <p style={{ color: 'var(--text-dim)' }}>No Circuits found. Establish your first line! </p>
         </div>
       )}
     </div>

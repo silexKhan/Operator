@@ -8,7 +8,7 @@ import DependencyModal from '../../components/DependencyModal';
 import UnitModal from '../../components/UnitModal';
 
 /**
- * [대장님 🎯] 각 Circuit의 모든 면모를 지휘하는 통합 사령탑입니다. 🛡️⚡️
+ * [사용자] 각 Circuit의 모든 면모를 지휘하는 통합 사령탑입니다. 
  */
 export default function CircuitCommandPage() {
   const params = useParams();
@@ -19,7 +19,7 @@ export default function CircuitCommandPage() {
   const [projectPath, setProjectPath] = useState<string>('');
   const [dependencies, setDependencies] = useState<string[]>([]);
   const [units, setUnits] = useState<string[]>([]);
-  const [availableUnits, setAvailableUnits] = useState<string[]>([]); // 이름 리스트로 관리 🛡️
+  const [availableUnits, setAvailableUnits] = useState<string[]>([]); // 이름 리스트로 관리 
   const [allCircuits, setAllCircuits] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -69,7 +69,7 @@ export default function CircuitCommandPage() {
     try {
       const res = await fetch('/api/mcp/units');
       const data = await res.json();
-      // [대장님 🎯] 객체 리스트에서 이름만 추출하여 가용 유닛 목록을 구성합니다. 🕵️‍♂️
+      // [사용자] 객체 리스트에서 이름만 추출하여 가용 유닛 목록을 구성합니다. 
       const unitNames = (data.units || []).map((u: any) => u.name);
       setAvailableUnits(unitNames);
     } catch (e) {
@@ -86,7 +86,7 @@ export default function CircuitCommandPage() {
   };
 
   const handleDeleteCircuit = async () => {
-    const confirmed = window.confirm(`⚠️ [위험] 회선 '${circuitName.toUpperCase()}'을 영구 삭제하시겠습니까?\n이 작업은 물리적 소스 코드를 삭제하며 복구가 불가능합니다.`);
+    const confirmed = window.confirm(` [위험] 회선 '${circuitName.toUpperCase()}'을 영구 삭제하시겠습니까?\n이 작업은 물리적 소스 코드를 삭제하며 복구가 불가능합니다.`);
     if (!confirmed) return;
 
     setLoading(true);
@@ -97,13 +97,13 @@ export default function CircuitCommandPage() {
         body: JSON.stringify({ name: circuitName })
       });
       if (res.ok) {
-        alert(`🔥 회선 '${circuitName.toUpperCase()}'이 성공적으로 폐기되었습니다.`);
+        alert(` 회선 '${circuitName.toUpperCase()}'이 성공적으로 폐기되었습니다.`);
         router.push('/circuits');
       } else {
-        showToast('❌ 삭제 권한이 없거나 실패했습니다.');
+        showToast(' 삭제 권한이 없거나 실패했습니다.');
       }
     } catch (e) {
-      showToast('❌ 에러 발생');
+      showToast(' 에러 발생');
     }
     setLoading(false);
   };
@@ -116,10 +116,10 @@ export default function CircuitCommandPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ circuit_name: circuitName, rules: updatedRules })
       });
-      showToast('✅ 규약(Protocols)이 성공적으로 반영되었습니다.');
+      showToast(' 규약(Protocols)이 성공적으로 반영되었습니다.');
       fetchData();
     } catch (e) {
-      showToast('❌ 반영 실패');
+      showToast(' 반영 실패');
     }
     setLoading(false);
   };
@@ -139,10 +139,10 @@ export default function CircuitCommandPage() {
           action: 'OVERVIEW_UPDATE'
         })
       });
-      showToast(updatedDeps ? '🔗 회선 연결망 업데이트 완료' : '✅ 개요 및 경로 저장 완료');
+      showToast(updatedDeps ? ' 회선 연결망 업데이트 완료' : ' 개요 및 경로 저장 완료');
       fetchData();
     } catch (e) {
-      showToast('❌ 업데이트 실패');
+      showToast(' 업데이트 실패');
     }
     setLoading(false);
   };
@@ -161,9 +161,9 @@ export default function CircuitCommandPage() {
       });
       setUnits(newUnits);
       setIsUnitModalOpen(false);
-      showToast('🛡️ 전문 유닛 배속 정보가 갱신되었습니다.');
+      showToast(' 전문 유닛 배속 정보가 갱신되었습니다.');
     } catch (e) {
-      showToast('❌ 유닛 갱신 실패');
+      showToast(' 유닛 갱신 실패');
     }
     setLoading(false);
   };
@@ -173,7 +173,7 @@ export default function CircuitCommandPage() {
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <button onClick={() => router.push('/circuits')} style={{ alignSelf: 'flex-start', background: 'transparent', border: 'none', color: 'var(--cyber-cyan)', cursor: 'pointer', marginBottom: '1rem', padding: 0 }}>
-            {mounted ? '← BACK TO REGISTRY' : '←'}
+            {mounted ? ' BACK TO REGISTRY' : ''}
           </button>
           <h2 className="neon-text" style={{ fontSize: '2.5rem' }}>
             {mounted ? `CIRCUIT COMMAND: ${circuitName?.toUpperCase()}` : 'CIRCUIT COMMAND'}
@@ -194,7 +194,7 @@ export default function CircuitCommandPage() {
               transition: 'all 0.2s'
             }}
           >
-            🗑️ DELETE CIRCUIT
+             DELETE CIRCUIT
           </button>
         )}
       </header>
@@ -203,7 +203,7 @@ export default function CircuitCommandPage() {
         <section style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div className="card" style={{ borderLeft: '4px solid var(--cyber-amber)', background: 'rgba(255, 179, 0, 0.02)' }}>
             <div onClick={() => setIsGlobalVisible(!isGlobalVisible)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <h4 style={{ color: 'var(--cyber-amber)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏛️ INHERITED GLOBAL CONSTITUTION</h4>
+              <h4 style={{ color: 'var(--cyber-amber)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}> INHERITED GLOBAL CONSTITUTION</h4>
               <span style={{ color: 'var(--cyber-amber)', fontWeight: 'bold' }}>{isGlobalVisible ? '▼ CLOSE' : '▶ VIEW'}</span>
             </div>
             {isGlobalVisible && (
@@ -217,7 +217,7 @@ export default function CircuitCommandPage() {
 
           <div className="card" style={{ borderLeft: '4px solid var(--cyber-pink)', background: 'rgba(255, 0, 255, 0.02)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h4 style={{ color: 'var(--cyber-pink)' }}>🛠️ ASSIGNED SPECIAL UNITS</h4>
+              <h4 style={{ color: 'var(--cyber-pink)' }}> ASSIGNED SPECIAL UNITS</h4>
               <button 
                 onClick={() => setIsUnitModalOpen(true)}
                 disabled={loading}
@@ -248,7 +248,7 @@ export default function CircuitCommandPage() {
                     gap: '0.5rem'
                   }}
                 >
-                  {unit.includes('python') ? '🐍' : unit.includes('swift') ? '🍎' : unit.includes('markdown') ? '📝' : '🛠️'} {unit.toUpperCase()}
+                  {unit.includes('python') ? '' : unit.includes('swift') ? '' : unit.includes('markdown') ? '' : ''} {unit.toUpperCase()}
                 </div>
               ))}
               {units.length === 0 && (
@@ -261,7 +261,7 @@ export default function CircuitCommandPage() {
 
           <div className="card" style={{ borderLeft: '4px solid var(--cyber-cyan)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h4 style={{ color: 'var(--cyber-cyan)' }}>🔍 OVERVIEW & LINE CONNECTIONS</h4>
+              <h4 style={{ color: 'var(--cyber-cyan)' }}> OVERVIEW & LINE CONNECTIONS</h4>
               <button onClick={() => handleUpdateOverview()} disabled={loading} style={{ padding: '0.5rem 1.5rem', background: 'var(--cyber-cyan)', border: 'none', color: 'var(--bg-dark)', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' }}>SAVE CHANGES</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -270,7 +270,7 @@ export default function CircuitCommandPage() {
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} style={{ width: '100%', minHeight: '150px', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', color: 'white', borderRadius: '8px', fontSize: '1.1rem', lineHeight: '1.8', resize: 'vertical', outline: 'none' }} />
               </div>
               <div>
-                <label style={{ display: 'block', color: 'var(--cyber-cyan)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>🔗 CONNECTED CIRCUITS (DEPENDENCIES)</label>
+                <label style={{ display: 'block', color: 'var(--cyber-cyan)', fontSize: '0.8rem', marginBottom: '0.5rem' }}> CONNECTED CIRCUITS (DEPENDENCIES)</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
                   {dependencies.map(name => (
                     <span key={name} style={{ padding: '0.4rem 1rem', background: 'rgba(0, 243, 255, 0.1)', border: '1px solid var(--cyber-cyan)', color: 'var(--cyber-cyan)', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>{name.toUpperCase()}</span>
@@ -290,15 +290,17 @@ export default function CircuitCommandPage() {
           </div>
 
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h3 style={{ color: 'var(--cyber-cyan)', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>📜 ACTIVE PROTOCOLS</h3>
+            <h3 style={{ color: 'var(--cyber-cyan)', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}> ACTIVE PROTOCOLS</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(45%, 1fr))', gap: '1rem' }}>
-              {rules.map((rule, idx) => (
+              {mounted && Array.isArray(rules) ? rules.map((rule, idx) => (
                 <button key={idx} onClick={() => { setEditingIdx(idx); setIsProtocolModalOpen(true); }} className="nav-item" style={{ textAlign: 'left', background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '1rem', lineHeight: '1.5', cursor: 'pointer' }}>{rule}</button>
-              ))}
-              <button onClick={() => { const newRules = [...rules, "Protocol P-X (New): Description"]; setRules(newRules); setEditingIdx(newRules.length - 1); setIsProtocolModalOpen(true); }} style={{ textAlign: 'center', background: 'transparent', padding: '1.5rem', borderRadius: '8px', border: '1px dashed var(--text-dim)', color: 'var(--text-dim)', cursor: 'pointer' }}>+ ADD NEW PROTOCOL</button>
+              )) : <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem', padding: '1rem 0' }}>Syncing Protocols...</div>}
+              {mounted && (
+                <button onClick={() => { const newRules = [...(Array.isArray(rules) ? rules : []), "Protocol P-X (New): Description"]; setRules(newRules); setEditingIdx(newRules.length - 1); setIsProtocolModalOpen(true); }} style={{ textAlign: 'center', background: 'transparent', padding: '1.5rem', borderRadius: '8px', border: '1px dashed var(--text-dim)', color: 'var(--text-dim)', cursor: 'pointer' }}>+ ADD NEW PROTOCOL</button>
+              )}
             </div>
             <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '2rem', display: 'flex', justifyContent: 'center' }}>
-              <button onClick={() => saveProtocols(rules)} disabled={loading} style={{ padding: '1.2rem 4rem', background: 'var(--cyber-cyan)', border: 'none', color: 'var(--bg-dark)', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer', borderRadius: '4px', boxShadow: '0 0 30px rgba(0, 243, 255, 0.4)', width: '100%', maxWidth: '500px' }}>{loading ? 'DEPLOYING...' : 'DEPLOY PROTOCOLS TO AI 🚀'}</button>
+              <button onClick={() => saveProtocols(rules)} disabled={loading} style={{ padding: '1.2rem 4rem', background: 'var(--cyber-cyan)', border: 'none', color: 'var(--bg-dark)', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer', borderRadius: '4px', boxShadow: '0 0 30px rgba(0, 243, 255, 0.4)', width: '100%', maxWidth: '500px' }}>{loading ? 'DEPLOYING...' : 'DEPLOY PROTOCOLS TO AI '}</button>
             </div>
           </div>
         </section>

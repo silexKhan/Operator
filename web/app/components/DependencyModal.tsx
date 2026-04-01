@@ -11,7 +11,7 @@ interface DependencyModalProps {
 }
 
 /**
- * [대장님 🎯] 수많은 회선 중 필요한 연결 고리를 정밀하게 선택하는 전용 지휘창입니다. 🔗⚡️
+ * [사용자] 수많은 회선 중 필요한 연결 고리를 정밀하게 선택하는 전용 지휘창입니다. 
  */
 export default function DependencyModal({ isOpen, onClose, onSave, allCircuits, initialSelected }: DependencyModalProps) {
   const [selected, setSelected] = useState<string[]>(initialSelected);
@@ -50,9 +50,9 @@ export default function DependencyModal({ isOpen, onClose, onSave, allCircuits, 
         className="card" 
         style={{ width: '500px', border: '1px solid var(--cyber-cyan)', boxShadow: '0 0 40px rgba(0, 229, 255, 0.2)' }}
       >
-        <h3 className="neon-text" style={{ marginBottom: '1.5rem' }}>🔗 MANAGE LINE CONNECTIONS</h3>
+        <h3 className="neon-text" style={{ marginBottom: '1.5rem' }}> MANAGE LINE CONNECTIONS</h3>
         
-        {/* Search Bar 🔍 */}
+        {/* Search Bar  */}
         <input 
           placeholder="회선 이름 검색..."
           value={searchTerm}
@@ -84,7 +84,7 @@ export default function DependencyModal({ isOpen, onClose, onSave, allCircuits, 
                   borderRadius: '3px', background: isChecked ? 'var(--cyber-cyan)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'black'
                 }}>
-                  {isChecked && '✓'}
+                  {isChecked && ''}
                 </div>
                 <span style={{ color: isChecked ? 'var(--cyber-cyan)' : 'var(--text-main)', fontWeight: isChecked ? 'bold' : 'normal' }}>
                   {name.toUpperCase()}

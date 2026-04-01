@@ -11,7 +11,7 @@ interface CodeModalProps {
 }
 
 /**
- * [대장님 🎯] 전문 유닛의 핵심 엔진(Auditor.py) 소스 코드를 정밀 분석하고 수정하는 코드 에디터입니다. 🛡️⚡️
+ * [사용자] 전문 유닛의 핵심 엔진(Auditor.py) 소스 코드를 정밀 분석하고 수정하는 코드 에디터입니다. 
  */
 export default function CodeModal({ isOpen, onClose, title, initialCode, onSave }: CodeModalProps) {
   const [code, setCode] = useState(initialCode);
@@ -36,7 +36,7 @@ export default function CodeModal({ isOpen, onClose, title, initialCode, onSave 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <div>
             <h3 style={{ color: 'var(--cyber-cyan)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              🕵️‍♂️ ENGINE INSIGHT: {title}
+               ENGINE INSIGHT: {title}
             </h3>
             <p style={{ color: 'var(--text-dim)', fontSize: '0.8rem', marginTop: '0.3rem' }}>
               유닛의 핵심 감사 로직(Auditor.py)을 정밀 제어합니다. 파이썬 문법을 준수하십시오.
@@ -46,7 +46,7 @@ export default function CodeModal({ isOpen, onClose, title, initialCode, onSave 
             onClick={onClose}
             style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '1.5rem', cursor: 'pointer' }}
           >
-            ✕
+            
           </button>
         </div>
 
@@ -80,7 +80,7 @@ export default function CodeModal({ isOpen, onClose, title, initialCode, onSave 
               boxShadow: '0 0 20px rgba(0, 243, 255, 0.3)'
             }}
           >
-            OVERWRITE ENGINE ⚡️
+            OVERWRITE ENGINE 
           </button>
         </div>
       </div>

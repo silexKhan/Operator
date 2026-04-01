@@ -3,13 +3,13 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 /**
- * [대장님 🎯] Circuit을 물리적으로 영구 삭제하는 API입니다. 🛡️💥
+ * [사용자] Circuit을 물리적으로 영구 삭제하는 API입니다. 
  */
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   const { name } = await request.json();
 
   return new Promise((resolve) => {
-    const projectRoot = path.join(process.cwd(), '..');
+    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
     const isWindows = process.platform === 'win32';
     const pythonPath = isWindows 
       ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')

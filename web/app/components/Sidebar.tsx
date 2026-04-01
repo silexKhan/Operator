@@ -10,14 +10,14 @@ interface CircuitInfo {
 }
 
 /**
- * [대장님 🎯] 햄버거 메뉴로 여닫을 수 있는 세련된 사이드바 지휘 메뉴입니다. 🛡️⚡️
+ * [사용자] 햄버거 메뉴로 여닫을 수 있는 세련된 사이드바 지휘 메뉴입니다. 
  * 활성 회선과 등록된 모든 유닛을 실시간으로 감시하는 기능이 통합되었습니다.
  */
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [circuits, setCircuits] = useState<CircuitInfo[]>([]);
-  const [availableUnits, setAvailableUnits] = useState<any[]>([]); // 유닛 객체 리스트 🛡️
+  const [availableUnits, setAvailableUnits] = useState<any[]>([]); // 유닛 객체 리스트 
   const pathname = usePathname();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function Sidebar() {
         setCircuits(details);
       }
 
-      // 2. 등록된 전체 유닛 리스트 가져오기 ({name, path} 구조) 🛡️⚡️
+      // 2. 등록된 전체 유닛 리스트 가져오기 ({name, path} 구조) 
       const unitRes = await fetch('/api/mcp/units');
       const unitData = await unitRes.json();
       setAvailableUnits(unitData.units || []);
@@ -57,18 +57,18 @@ export default function Sidebar() {
 
   const getUnitIcon = (unitName: string) => {
     const u = unitName.toLowerCase();
-    if (u.includes('python')) return '🐍';
-    if (u.includes('swift')) return '🍎';
-    if (u.includes('markdown')) return '📝';
-    return '🛠️';
+    if (u.includes('python')) return '';
+    if (u.includes('swift')) return '';
+    if (u.includes('markdown')) return '';
+    return '';
   };
 
   const menuItems = [
-    { name: 'Dashboard', path: '/', icon: '📊' },
-    { name: 'Circuits Registry', path: '/circuits', icon: '🏢' },
-    { name: 'Units Registry', path: '/units', icon: '🛠️' },
-    { name: 'Global Protocols', path: '/protocols', icon: '📜' },
-    { name: 'System Status', path: '/core', icon: '📡' },
+    { name: 'Dashboard', path: '/', icon: '' },
+    { name: 'Circuits Registry', path: '/circuits', icon: '' },
+    { name: 'Units Registry', path: '/units', icon: '' },
+    { name: 'Global Protocols', path: '/protocols', icon: '' },
+    { name: 'System Status', path: '/core', icon: '' },
   ];
 
   const sidebarBaseClass = "sidebar";
@@ -79,7 +79,7 @@ export default function Sidebar() {
       <div className="sidebar-header" suppressHydrationWarning>
         {(!isCollapsed && mounted) && (
           <div suppressHydrationWarning>
-            <h1 className="neon-text" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>📞 OPERATOR</h1>
+            <h1 className="neon-text" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}> OPERATOR</h1>
             <p style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>CONTROL CENTER v1.5</p>
           </div>
         )}
@@ -87,7 +87,7 @@ export default function Sidebar() {
           className="toggle-btn" 
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
-          {mounted ? (isCollapsed ? '☰' : '✕') : '☰'}
+          {mounted ? (isCollapsed ? '' : '') : ''}
         </button>
       </div>
       
@@ -176,7 +176,7 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Units Section 🛡️⚡️ */}
+        {/* Units Section  */}
         {mounted && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }} suppressHydrationWarning>
             {!isCollapsed && (

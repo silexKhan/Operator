@@ -54,10 +54,10 @@ export default function PathBrowserModal({ isOpen, onClose, initialPath, onSelec
         className="card" 
         style={{ width: '700px', border: '1px solid var(--cyber-amber)', boxShadow: '0 0 40px rgba(255, 179, 0, 0.2)' }}
       >
-        <h3 style={{ color: 'var(--cyber-amber)', marginBottom: '1.5rem' }}>📂 PROJECT PATH EXPLORER</h3>
+        <h3 style={{ color: 'var(--cyber-amber)', marginBottom: '1.5rem' }}> PROJECT PATH EXPLORER</h3>
         
         <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <button onClick={goUp} style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer' }}>⬆ UP</button>
+          <button onClick={goUp} style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer' }}> UP</button>
           <div style={{ flex: 1, padding: '0.5rem', background: 'rgba(0,0,0,0.3)', borderRadius: '4px', fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--cyber-cyan)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {currentPath}
           </div>
@@ -65,7 +65,7 @@ export default function PathBrowserModal({ isOpen, onClose, initialPath, onSelec
 
         <div style={{ height: '350px', overflowY: 'auto', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem' }}>
           {loading ? (
-            <p style={{ color: 'var(--text-dim)' }}>Scanning directories... 📡</p>
+            <p style={{ color: 'var(--text-dim)' }}>Scanning directories... </p>
           ) : (
             folders.map(folder => (
               <div 
@@ -79,7 +79,7 @@ export default function PathBrowserModal({ isOpen, onClose, initialPath, onSelec
                 onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--cyber-amber)'}
                 onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
               >
-                📁 {folder}
+                 {folder}
               </div>
             ))
           )}

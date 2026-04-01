@@ -1,5 +1,5 @@
 #
-#  mcp_cli.py - Operator (교환) Command Line Interface 📞⚡️
+#  mcp_cli.py - Operator (교환) Command Line Interface 
 #
 
 import argparse
@@ -8,14 +8,14 @@ import os
 import json
 import asyncio
 
-# 프로젝트 루트를 sys.path 에 추가 🛡️
+# 프로젝트 루트를 sys.path 에 추가 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from circuits.manager import CircuitManager
 from core.logger import OperatorLogger
 
 def main():
-    parser = argparse.ArgumentParser(description="📞 Operator (교환) CLI - Circuit & Protocol Management")
+    parser = argparse.ArgumentParser(description=" Operator (교환) CLI - Circuit & Protocol Management")
     subparsers = parser.add_subparsers(dest="command", help="사용 가능한 명령")
 
     # 1. 상태 조회
@@ -38,31 +38,31 @@ def main():
     if args.command == "status":
         active = manager.get_active_circuit()
         active_name = active.get_name() if active else "None"
-        print(f"\n🚀 Operator Status: Online")
-        print(f"📍 Current Path: {manager.current_path}")
-        print(f"🏢 Active Circuit: \033[92m{active_name}\033[0m")
-        print(f"📋 Registered Lines: {list(manager.circuits.keys())}\n")
+        print(f"\n Operator Status: Online")
+        print(f" Current Path: {manager.current_path}")
+        print(f" Active Circuit: \033[92m{active_name}\033[0m")
+        print(f" Registered Lines: {list(manager.circuits.keys())}\n")
 
     elif args.command == "list":
-        print(f"\n📋 [Registered Circuits]")
+        print(f"\n [Registered Circuits]")
         for key in manager.circuits.keys():
             print(f"  - {key}")
         print("")
 
     elif args.command == "connect":
         if manager.set_active_circuit(args.name):
-            print(f"✅ \033[92m{args.name}\033[0m 회선이 연결되었습니다!")
+            print(f" \033[92m{args.name}\033[0m 회선이 연결되었습니다!")
         else:
-            print(f"❌ '{args.name}' 회선을 찾을 수 없습니다.")
+            print(f" '{args.name}' 회선을 찾을 수 없습니다.")
 
     elif args.command == "audit":
         active = manager.get_active_circuit()
         if not active:
-            print("⚠️ 연결된 회선이 없습니다. 먼저 'connect' 명령으로 회선을 지정하세요.")
+            print(" 연결된 회선이 없습니다. 먼저 'connect' 명령으로 회선을 지정하세요.")
             return
 
         async def run_audit():
-            print(f"🔍 [{active.get_name()}] 규약 검수 시작: {args.path}")
+            print(f" [{active.get_name()}] 규약 검수 시작: {args.path}")
             tools = active.get_tools()
             audit_tool = next((t for t in tools if "audit" in t.name), None)
             
@@ -70,7 +70,7 @@ def main():
                 result = await active.call_tool(audit_tool.name, {"file_path": args.path})
                 print(f"\n{result[0].text}")
             else:
-                print(f"❌ {active.get_name()} 회선은 audit 도구를 지원하지 않습니다.")
+                print(f" {active.get_name()} 회선은 audit 도구를 지원하지 않습니다.")
 
         asyncio.run(run_audit())
 

@@ -11,7 +11,7 @@ interface UnitModalProps {
 }
 
 /**
- * [대장님 🎯] 회선에 투입할 전문 기술 유닛(Unit)을 정밀 선택하는 모달입니다. 🛡️⚡️
+ * [사용자] 회선에 투입할 전문 기술 유닛(Unit)을 정밀 선택하는 모달입니다. 
  */
 export default function UnitModal({ isOpen, onClose, allUnits, initialSelected, onSave }: UnitModalProps) {
   const [selected, setSelected] = useState<string[]>(initialSelected);
@@ -29,10 +29,10 @@ export default function UnitModal({ isOpen, onClose, allUnits, initialSelected, 
   };
 
   const getUnitIcon = (unit: string) => {
-    if (unit.includes('python')) return '🐍';
-    if (unit.includes('swift')) return '🍎';
-    if (unit.includes('markdown')) return '📝';
-    return '🛠️';
+    if (unit.includes('python')) return '';
+    if (unit.includes('swift')) return '';
+    if (unit.includes('markdown')) return '';
+    return '';
   };
 
   return (
@@ -47,7 +47,7 @@ export default function UnitModal({ isOpen, onClose, allUnits, initialSelected, 
         boxShadow: '0 0 40px rgba(255, 0, 255, 0.2)'
       }}>
         <h3 style={{ color: 'var(--cyber-pink)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          🛠️ MANAGE SPECIAL UNITS
+           MANAGE SPECIAL UNITS
         </h3>
         
         <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', marginBottom: '2rem' }}>
@@ -92,7 +92,7 @@ export default function UnitModal({ isOpen, onClose, allUnits, initialSelected, 
                   boxShadow: isSelected ? '0 0 10px var(--cyber-pink)' : 'none',
                   transition: 'all 0.2s'
                 }}>
-                  {isSelected && <span style={{ color: 'white', fontSize: '1rem', fontWeight: 'bold' }}>✓</span>}
+                  {isSelected && <span style={{ color: 'white', fontSize: '1rem', fontWeight: 'bold' }}></span>}
                 </div>
               </div>
             );
@@ -117,7 +117,7 @@ export default function UnitModal({ isOpen, onClose, allUnits, initialSelected, 
               boxShadow: '0 0 20px rgba(255, 0, 255, 0.3)'
             }}
           >
-            DEPLOY UNITS 🚀
+            DEPLOY UNITS 
           </button>
         </div>
       </div>

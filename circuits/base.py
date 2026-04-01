@@ -1,22 +1,23 @@
 #
-#  base.py - Base Circuit Definition 📞⚡️
+#  base.py - Base Circuit Definition 
 #
 
 from abc import ABC, abstractmethod
+from shared.models import TextResponse
 import mcp.types as types
 from typing import Optional, Any
 from core.interfaces import BaseProtocols, BaseAuditor
 
 class BaseCircuit(ABC):
     """
-    [대장님 🎯] 모든 회선(Circuit)의 최상위 추상화 클래스입니다. 📞
-    inherit_global 속성을 통해 상위 규약 상속 여부를 결정합니다. 🛡️⚡️
+    [사용자] 모든 회선(Circuit)의 최상위 추상화 클래스입니다. 
+    inherit_global 속성을 통해 상위 규약 상속 여부를 결정합니다. 
     """
     def __init__(self, manager=None):
         self.manager = manager
-        # [대장님 🎯] 기본값은 상속 허용(True)입니다.
+        # [사용자] 기본값은 상속 허용(True)입니다.
         self.inherit_global = True
-        # [대장님 🎯] 기본 배속된 유닛(Unit)은 비어있습니다.
+        # [사용자] 기본 배속된 유닛(Unit)은 비어있습니다.
         self.units = []
 
     def get_units(self) -> list[str]:

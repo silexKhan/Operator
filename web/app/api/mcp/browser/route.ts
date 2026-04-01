@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const targetPath = searchParams.get('path') || '.';
 
   return new Promise((resolve) => {
-    const projectRoot = path.join(process.cwd(), '..');
+    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
     const isWindows = process.platform === 'win32';
     const pythonPath = isWindows 
       ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')

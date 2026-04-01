@@ -16,7 +16,7 @@ def test_discovery():
     
     for root in search_roots:
         root_path = os.path.join(base_dir, root)
-        print(f"🔎 Searching in: {root_path}")
+        print(f" Searching in: {root_path}")
         
         for dirpath, _, filenames in os.walk(root_path):
             if "actions.py" in filenames:
@@ -28,9 +28,9 @@ def test_discovery():
                     module = importlib.import_module(module_name)
                     for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj) and issubclass(obj, BaseTenant) and obj is not BaseTenant:
-                            print(f"✅ Found Tenant Class: {name} in {module_name}")
+                            print(f" Found Tenant Class: {name} in {module_name}")
                 except Exception as e:
-                    print(f"❌ Failed to load {module_name}: {str(e)}")
+                    print(f" Failed to load {module_name}: {str(e)}")
                     traceback.print_exc()
 
 if __name__ == "__main__":

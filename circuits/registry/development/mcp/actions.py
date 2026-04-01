@@ -2,6 +2,7 @@
 #  actions.py - Standard MCP Domain Actions (Naming Fixed) 
 #
 
+from shared.models import TextResponse, JsonResponse
 import mcp.types as types
 import os
 import inspect
@@ -14,6 +15,7 @@ from circuits.registry.development.mcp.overview import Overview
 from circuits.registry.development.mcp.blueprint import BluePrint
 from core.protocols import GlobalProtocols
 from core.logger import OperatorLogger
+from shared.utils import get_project_root, read_json_safely, write_json_safely
 
 class MCPCircuit(BaseCircuit):
     def __init__(self, manager=None):
@@ -74,35 +76,45 @@ class MCPCircuit(BaseCircuit):
         if func_name == "get_blueprint":
             domain = arguments.get("domain")
             if domain:
-                return [types.TextContent(type="text", text=json.dumps(BluePrint.get_domain_spec(domain), indent=4, ensure_ascii=False))]
+                return JsonResponse(BluePrint.get_domain_spec(domain))
             # 도메인 지정이 없으면 Master Blueprint(스펙 목차 포함)를 반환합니다. 
-            return [types.TextContent(type="text", text=json.dumps(BluePrint.get_master(), indent=4, ensure_ascii=False))]
+            return JsonResponse(BluePrint.get_master())
         
         elif func_name == "get_spec_content":
             spec_file = arguments.get("spec_file")
-            return [types.TextContent(type="text", text=json.dumps(BluePrint.get_spec_detail(spec_file), indent=4, ensure_ascii=False))]
+            return JsonResponse(BluePrint.get_spec_detail(spec_file))
 
         elif func_name == "get_overview":
-            # [사용자] 메모리 캐시를 피하기 위해 물리적 파일을 직접 읽어 파싱합니다. 
             try:
-                # 현재 회선 위치에서 overview.py 경로 확보
+                base_dir = os.path.dirname(os.path.abspath(__file__))
+                json_path = os.path.join(base_dir, "overview.json")
+                if os.path.exists(json_path):
+                    with open(json_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        res = {
+                            "name": data.get("name", ""),
+                            "description": data.get("description", ""),
+                            "units": data.get("units", []),
+                            "dependencies": data.get("dependencies", []),
+                            "path": Overview.PROJECT_PATH
+                        }
+                        return JsonResponse(res)
+            except Exception as e:
+                pass
+            
+            # 폴백
+            try:
                 base_dir = os.path.dirname(os.path.abspath(__file__))
                 path = os.path.join(base_dir, "overview.py")
                 with open(path, "r", encoding="utf-8") as f: content = f.read()
                 
-                # 정규표현식으로 핵심 필드 추출
                 name = re.search(r'NAME\s*=\s*["\'](.*?)["\']', content).group(1)
-                # DESCRIPTION 추출: 괄호와 개행에 상관없이 따옴표 안의 내용만 순수하게 합칩니다. 
                 desc_block = re.search(r'DESCRIPTION\s*=\s*(.*?)\s*UNITS\s*=', content, re.DOTALL).group(1)
-                # 각 행의 따옴표 안의 텍스트만 쏙쏙 뽑아냅니다.
-                description = "".join(re.findall(r'["\'](.*?)["\']', desc_block, re.DOTALL))
-                description = description.strip()
+                description = "".join(re.findall(r'["\'](.*?)["\']', desc_block, re.DOTALL)).strip()
                 
-                # UNITS 추출: 리스트 내의 따옴표 텍스트만 직접 낚아챕니다. 
                 units_match = re.search(r'UNITS\s*=\s*\[(.*?)\]', content, re.DOTALL)
                 units = re.findall(r'["\'](.*?)["\']', units_match.group(1), re.DOTALL) if units_match else []
                 
-                # DEPENDENCIES 추출: 동일 방식 적용
                 deps_match = re.search(r'DEPENDENCIES\s*=\s*\[(.*?)\]', content, re.DOTALL)
                 deps = re.findall(r'["\'](.*?)["\']', deps_match.group(1), re.DOTALL) if deps_match else []
 
@@ -111,40 +123,132 @@ class MCPCircuit(BaseCircuit):
                     "description": description,
                     "units": units,
                     "dependencies": deps,
-                    "path": Overview.PROJECT_PATH # 경로는 클래스 정적 변수 사용 (변동폭 낮음)
+                    "path": Overview.PROJECT_PATH
                 }
-                return [types.TextContent(type="text", text=json.dumps(res, ensure_ascii=False))]
+                return JsonResponse(res)
             except Exception as e:
                 self.logger.log(f"Fail to direct read overview: {str(e)}", 0)
-                return [types.TextContent(type="text", text=json.dumps(Overview.get_briefing(), ensure_ascii=False))]
+                return JsonResponse(Overview.get_briefing())
         elif func_name == "get_global_protocols":
-            # [사용자] 복잡한 행 단위 파싱을 버리고, 따옴표 안의 규칙들만 직접 타격하여 추출합니다. 
+            # [사용자] JSON으로 분리된 전사 규약을 GlobalProtocols를 통해 로드합니다.
             try:
-                root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-                path = os.path.join(root, "core/protocols.py")
-                with open(path, "r", encoding="utf-8") as f: content = f.read()
+                rules = GlobalProtocols.get_rules()
+                return JsonResponse(rules)
+            except Exception as e:
+                self.logger.log(f"Fail to read global protocols: {str(e)}", 0)
+                return TextResponse("[]")
                 
-                # GLOBAL_RULES 리스트 영역 확보
-                match = re.search(r"GLOBAL_RULES = \[(.*?)\]", content, re.DOTALL)
-                if match:
-                    rules_block = match.group(1)
-                    # 따옴표(") 또는 (')로 감싸진 모든 문장을 리스트로 추출
-                    rules = re.findall(r'["\'](.*?)["\']', rules_block, re.DOTALL)
-                    return [types.TextContent(type="text", text=json.dumps(rules, ensure_ascii=False))]
-            except Exception as e: self.logger.log(f"Fail to read global protocols: {str(e)}", 0)
-            return [types.TextContent(type="text", text=json.dumps(GlobalProtocols.get_rules(), ensure_ascii=False))]
+        elif func_name == "create_new_circuit":
+            name = arguments.get("name", "").lower()
+            role = arguments.get("role", "development")
+            if not name: return TextResponse(" Error: Name is required")
+            
+            try:
+                root = get_project_root()
+                circuit_path = os.path.join(root, "circuits", "registry", role, name)
+                
+                if os.path.exists(circuit_path):
+                    return TextResponse(f" Error: Circuit '{name}' already exists")
+                    
+                os.makedirs(circuit_path, exist_ok=True)
+                
+                # 1. overview.json 생성
+                overview_data = {
+                    "name": name,
+                    "description": f"새로운 {name.upper()} 회선입니다.",
+                    "project_path": "",
+                    "dependencies": [],
+                    "units": []
+                }
+                with open(os.path.join(circuit_path, "overview.json"), "w", encoding="utf-8") as f:
+                    json.dump(overview_data, f, indent=2, ensure_ascii=False)
+                    
+                # 하위 호환성을 위한 최소한의 overview.py 생성 (추후 완전 제거 가능)
+                overview_content = f'''#
+#  overview.py - {name.upper()} Circuit Overview (Legacy Fallback)
+#  Data is now primarily managed in overview.json
+#
+
+class Overview:
+    NAME = "{name}"
+    UNITS = []
+    
+    @classmethod
+    def get_briefing(cls) -> dict:
+        import json, os
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "overview.json"), "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {{"name": cls.NAME, "description": "", "path": "", "dependencies": [], "units": cls.UNITS}}
+'''
+                with open(os.path.join(circuit_path, "overview.py"), "w", encoding="utf-8") as f:
+                    f.write(overview_content)
+                    
+                # 2. protocols.json 생성 (신규 JSON 설계 준수)
+                protocols_data = {
+                    "RULES": [
+                        f"Protocol {name.upper()}-1 (Identity): {name.upper()} 회선의 고유한 목적을 유지한다."
+                    ]
+                }
+                with open(os.path.join(circuit_path, "protocols.json"), "w", encoding="utf-8") as f:
+                    json.dump(protocols_data, f, indent=2, ensure_ascii=False)
+                    
+                # 3. actions.py 생성
+                actions_content = f'''#
+#  actions.py - {name.upper()} Circuit Actions
+#
+
+from circuits.base import BaseCircuit
+import os
+import json
+from mcp import types
+
+class {name.capitalize()}Circuit(BaseCircuit):
+    def __init__(self, manager=None):
+        super().__init__(manager)
+        self.units = []
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "overview.json"), "r", encoding="utf-8") as f:
+                data = json.load(f)
+                self.units = data.get("units", [])
+        except Exception:
+            pass
+
+    def get_name(self) -> str: return "{name}"
+    
+    def get_tools(self) -> list[types.Tool]:
+        return [
+            types.Tool(name="{name}_get_overview", description="{name.upper()} 프로젝트 요약 정보 확인", inputSchema={{"type": "object", "properties": {{}}}})
+        ]
+        
+    async def call_tool(self, name: str, arguments: dict) -> list[types.TextContent]:
+        return TextResponse("Success")
+'''
+                with open(os.path.join(circuit_path, "actions.py"), "w", encoding="utf-8") as f:
+                    f.write(actions_content)
+                
+                # __init__.py 생성
+                with open(os.path.join(circuit_path, "__init__.py"), "w", encoding="utf-8") as f:
+                    pass
+                
+                return TextResponse(f" '{name}' Circuit Created successfully.")
+            except Exception as e:
+                return TextResponse(f" Error: {{str(e)}}")
         elif func_name == "get_full_json_structure":
-            return [types.TextContent(type="text", text=json.dumps(BluePrint.get_full_structure(), indent=4, ensure_ascii=False))]
+            return JsonResponse(BluePrint.get_full_structure(self.manager))
         elif func_name == "browse_directory":
-            path = arguments.get("path", "/Users/silex")
+            path = arguments.get("path")
+            if not path:
+                path = os.path.expanduser("~")
             try:
                 items = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d)) and not d.startswith(".")]
-                return [types.TextContent(type="text", text=json.dumps({"current": path, "folders": sorted(items)}, ensure_ascii=False))]
-            except Exception as e: return [types.TextContent(type="text", text=f'{{"error": "{str(e)}"}}')]
+                return JsonResponse({"current": path, "folders": sorted(items)})
+            except Exception as e: return TextResponse(f'{{"error": "{str(e)}"}}')
         elif func_name == "get_circuit_protocols":
             target_name = arguments.get("circuit_name", "").lower()
             target = self.manager.circuits.get(target_name)
-            if not target: return [types.TextContent(type="text", text="[]")]
+            if not target: return TextResponse("[]")
             
             try:
                 circuit_dir = os.path.dirname(inspect.getfile(target.__class__))
@@ -152,55 +256,67 @@ class MCPCircuit(BaseCircuit):
                 if os.path.exists(json_path):
                     with open(json_path, "r", encoding="utf-8") as f:
                         data = json.load(f)
-                        return [types.TextContent(type="text", text=json.dumps(data.get("RULES", []), ensure_ascii=False))]
+                        return JsonResponse(data.get("RULES", []))
             except Exception: pass
             
             # JSON이 없으면 기존 방식(클래스 참조)으로 폴백
             rules = getattr(target.get_protocols(), "RULES", []) if target else []
-            return [types.TextContent(type="text", text=json.dumps(rules, ensure_ascii=False))]
+            return JsonResponse(rules)
         elif func_name == "delete_circuit":
             target_name = arguments.get("name", "").lower()
-            if target_name in ["mcp", "core"]: return [types.TextContent(type="text", text=" Protection Active")]
+            if target_name in ["mcp", "core"]: return TextResponse(" Protection Active")
             target = self.manager.circuits.get(target_name)
-            if not target: return [types.TextContent(type="text", text=" Not Found")]
+            if not target: return TextResponse(" Not Found")
             try:
                 path = os.path.dirname(inspect.getfile(target.__class__))
-                shutil.rmtree(path); return [types.TextContent(type="text", text=f" '{target_name}' Decommissioned.")]
-            except Exception as e: return [types.TextContent(type="text", text=f" Error: {str(e)}")]
+                shutil.rmtree(path); return TextResponse(f" '{target_name}' Decommissioned.")
+            except Exception as e: return TextResponse(f" Error: {str(e)}")
         elif func_name == "update_circuit_overview":
             target_name = arguments.get("circuit_name", "").lower()
             target = self.manager.circuits.get(target_name)
-            if not target: return [types.TextContent(type="text", text=" Not Found")]
+            if not target: return TextResponse(" Not Found")
             try:
-                path = os.path.join(os.path.dirname(inspect.getfile(target.__class__)), "overview.py")
-                with open(path, "r", encoding="utf-8") as f: content = f.read()
-                new_content = content
-                if arguments.get("description"): new_content = re.sub(r'DESCRIPTION = \(.*?\)|DESCRIPTION = ".*?"', f'DESCRIPTION = ("{arguments["description"]}")', new_content, flags=re.DOTALL)
-                if arguments.get("project_path"): new_content = re.sub(r'PROJECT_PATH = ".*?"', f'PROJECT_PATH = "{arguments["project_path"]}"', new_content)
-                if arguments.get("dependencies") is not None: new_content = re.sub(r'DEPENDENCIES = \[.*?\]', f'DEPENDENCIES = {json.dumps(arguments["dependencies"], ensure_ascii=False)}', new_content, flags=re.DOTALL)
+                circuit_dir = os.path.dirname(inspect.getfile(target.__class__))
+                json_path = os.path.join(circuit_dir, "overview.json")
                 
-                # [사용자] UNITS 리스트 교체 로직 강화 (가장 확실한 라인 치환 방식) 
-                if arguments.get("units") is not None:
-                    new_units_val = json.dumps(arguments["units"], ensure_ascii=False)
-                    # UNITS = [...] 형태의 라인을 찾아 통째로 교체합니다.
-                    new_content = re.sub(r'UNITS\s*=\s*\[.*?\]', f'UNITS = {new_units_val}', new_content, flags=re.DOTALL)
-                    # 만약 위 매칭이 실패할 경우를 대비한 2차 타격
-                    if f'UNITS = {new_units_val}' not in new_content:
-                        lines = new_content.split('\n')
-                        for i, line in enumerate(lines):
-                            if 'UNITS =' in line:
-                                lines[i] = f'    UNITS = {new_units_val}'
-                                break
-                        new_content = '\n'.join(lines)
+                # 기존 데이터 로드 (없으면 기본값 사용)
+                data = {}
+                if os.path.exists(json_path):
+                    with open(json_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                else:
+                    # 마이그레이션을 위해 overview.py에서 읽어오기 시도
+                    try:
+                        from importlib import import_module
+                        module_name = f"circuits.registry.development.{target_name}.overview"
+                        mod = import_module(module_name)
+                        OverviewClass = getattr(mod, "Overview")
+                        data = {
+                            "name": OverviewClass.NAME,
+                            "description": OverviewClass.DESCRIPTION,
+                            "units": OverviewClass.UNITS,
+                            "dependencies": OverviewClass.DEPENDENCIES,
+                            "project_path": OverviewClass.PROJECT_PATH
+                        }
+                    except Exception:
+                        pass
                 
-                with open(path, "w", encoding="utf-8") as f: f.write(new_content)
-                return [types.TextContent(type="text", text=f" '{target_name}' Overview Updated with Units.")]
-            except Exception as e: return [types.TextContent(type="text", text=f" Fail: {str(e)}")]
+                # 업데이트 수행
+                if arguments.get("description"): data["description"] = arguments["description"]
+                if arguments.get("project_path") is not None: data["project_path"] = arguments["project_path"]
+                if arguments.get("dependencies") is not None: data["dependencies"] = arguments["dependencies"]
+                if arguments.get("units") is not None: data["units"] = arguments["units"]
+
+                with open(json_path, "w", encoding="utf-8") as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+                    
+                return TextResponse(f" '{target_name}' Overview Updated in JSON.")
+            except Exception as e: return TextResponse(f" Fail: {str(e)}")
         
         elif func_name == "update_circuit_protocols":
             target_name = arguments.get("circuit_name", "").lower()
             target = self.manager.circuits.get(target_name)
-            if not target: return [types.TextContent(type="text", text=" Not Found")]
+            if not target: return TextResponse(" Not Found")
             
             try:
                 # 회선 물리 경로 하위의 protocols.json 타겟팅 
@@ -219,13 +335,13 @@ class MCPCircuit(BaseCircuit):
                 with open(json_path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 
-                return [types.TextContent(type="text", text=f" '{target_name}' Protocols JSON Updated.")]
+                return TextResponse(f" '{target_name}' Protocols JSON Updated.")
             except Exception as e:
-                return [types.TextContent(type="text", text=f" Fail: {str(e)}")]
+                return TextResponse(f" Fail: {str(e)}")
 
         # --- Sentinel Logic ---
         elif func_name == "sentinel_set_mission":
-            root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+            root = get_project_root()
             path = os.path.join(root, "mission.json")
             data = {
                 "objective": arguments.get("objective"),
@@ -236,19 +352,19 @@ class MCPCircuit(BaseCircuit):
             }
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
-            return [types.TextContent(type="text", text=f" [SENTINEL] 미션 목표 설정 완료: {data['objective']}")]
+            return TextResponse(f" [SENTINEL] 미션 목표 설정 완료: {data['objective']}")
 
         elif func_name == "sentinel_get_mission":
-            root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+            root = get_project_root()
             path = os.path.join(root, "mission.json")
-            if not os.path.exists(path): return [types.TextContent(type="text", text=" [SENTINEL] 활성화된 미션이 없습니다.")]
+            if not os.path.exists(path): return TextResponse(" [SENTINEL] 활성화된 미션이 없습니다.")
             with open(path, "r", encoding="utf-8") as f:
-                return [types.TextContent(type="text", text=f.read())]
+                return TextResponse(f.read())
 
         elif func_name == "sentinel_evaluate":
-            root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+            root = get_project_root()
             path = os.path.join(root, "mission.json")
-            if not os.path.exists(path): return [types.TextContent(type="text", text=" [SENTINEL] 평가할 미션이 없습니다.")]
+            if not os.path.exists(path): return TextResponse(" [SENTINEL] 평가할 미션이 없습니다.")
             
             with open(path, "r", encoding="utf-8") as f:
                 mission = json.load(f)
@@ -260,12 +376,12 @@ class MCPCircuit(BaseCircuit):
             if mission["iteration"] >= max_iteration:
                 mission["status"] = "HARD_FAIL"
                 with open(path, "w", encoding="utf-8") as f: json.dump(mission, f, indent=4, ensure_ascii=False)
-                return [types.TextContent(type="text", text=f" [SENTINEL] HARD FAIL: 최대 재시도 횟수({max_iteration}회)를 초과했습니다. 무한 루프 방지를 위해 작업을 강제 종료합니다. (현재 상태: {mission['status']})")]
+                return TextResponse(f" [SENTINEL] HARD FAIL: 최대 재시도 횟수({max_iteration}회)를 초과했습니다. 무한 루프 방지를 위해 작업을 강제 종료합니다. (현재 상태: {mission['status']})")
 
             if len(evidence.strip()) < 10:
                 mission["iteration"] += 1
                 with open(path, "w", encoding="utf-8") as f: json.dump(mission, f, indent=4, ensure_ascii=False)
-                return [types.TextContent(type="text", text=f" [SENTINEL] FAIL (Iteration {mission['iteration']}): 성공 기준(criteria)에 대한 구체적인 증거(evidence)가 부족합니다. 다시 시도하십시오.")]
+                return TextResponse(f" [SENTINEL] FAIL (Iteration {mission['iteration']}): 성공 기준(criteria)에 대한 구체적인 증거(evidence)가 부족합니다. 다시 시도하십시오.")
 
             if test_command:
                 import subprocess
@@ -275,15 +391,15 @@ class MCPCircuit(BaseCircuit):
                         mission["iteration"] += 1
                         with open(path, "w", encoding="utf-8") as f: json.dump(mission, f, indent=4, ensure_ascii=False)
                         res = f" [SENTINEL] FAIL (Iteration {mission['iteration']}): 테스트 명령어 실패.\n명령어: {test_command}\n종료 코드: {result.returncode}\n출력: {result.stdout}\n에러: {result.stderr}"
-                        return [types.TextContent(type="text", text=res)]
+                        return TextResponse(res)
                 except Exception as e:
                     mission["iteration"] += 1
                     with open(path, "w", encoding="utf-8") as f: json.dump(mission, f, indent=4, ensure_ascii=False)
-                    return [types.TextContent(type="text", text=f" [SENTINEL] FAIL (Iteration {mission['iteration']}): 테스트 명령어 실행 중 오류 발생: {str(e)}")]
+                    return TextResponse(f" [SENTINEL] FAIL (Iteration {mission['iteration']}): 테스트 명령어 실행 중 오류 발생: {str(e)}")
 
             mission["status"] = "PASS"
             with open(path, "w", encoding="utf-8") as f: json.dump(mission, f, indent=4, ensure_ascii=False)
-            return [types.TextContent(type="text", text=" [SENTINEL] FINAL PASS: 모든 미션 기준과 테스트가 충족되었습니다! 작전을 성공적으로 종료해도 좋습니다.")]
+            return TextResponse(" [SENTINEL] FINAL PASS: 모든 미션 기준과 테스트가 충족되었습니다! 작전을 성공적으로 종료해도 좋습니다.")
 
         # (기타 도구 생략... 필요시 복구)
-        return [types.TextContent(type="text", text="Success")]
+        return TextResponse("Success")

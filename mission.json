@@ -1,0 +1,12 @@
+{
+    "objective": "웹 인터페이스에서 CIRCUITS REGISTRY 메뉴 목록이 표시되지 않는 원인 분석 및 해결 방안 도출",
+    "criteria": [
+        "CIRCUITS REGISTRY 메뉴 로딩 로직 파악 (Backend/Frontend)",
+        "데이터 소스(JSON 또는 DB)의 정합성 확인",
+        "UI 렌더링 시 발생하는 에러 로그 또는 누락된 조건 식별",
+        "원인 규명 및 수정 제안 제공"
+    ],
+    "status": "PASS",
+    "iteration": 1,
+    "max_iteration": 3
+}

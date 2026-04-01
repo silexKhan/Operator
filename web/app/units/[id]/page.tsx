@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import ProtocolModal from '../../components/ProtocolModal';
 
 /**
- * [대장님 🎯] 전문 기술 유닛의 핵심 정체성과 수칙을 관리하는 정밀 사령탑입니다. 🛡️⚡️
+ * [사용자] 전문 기술 유닛의 핵심 정체성과 수칙을 관리하는 정밀 사령탑입니다. 
  * 서버와 클라이언트의 초기 렌더링 구조를 완벽히 일치시켜 Hydration 에러를 영구 봉쇄합니다.
  */
 export default function UnitCommandPage() {
@@ -54,7 +54,7 @@ export default function UnitCommandPage() {
   };
 
   const handleDeleteUnit = async () => {
-    const confirmed = window.confirm(`⚠️ [위험] 전문 유닛 '${displayUnitName}' 부대를 영구 해체하시겠습니까?`);
+    const confirmed = window.confirm(` [위험] 전문 유닛 '${displayUnitName}' 부대를 영구 해체하시겠습니까?`);
     if (!confirmed) return;
 
     setLoading(true);
@@ -65,11 +65,11 @@ export default function UnitCommandPage() {
         body: JSON.stringify({ name: unitId })
       });
       if (res.ok) {
-        alert(`🔥 전문 유닛 '${displayUnitName}' 부대가 해체되었습니다.`);
+        alert(` 전문 유닛 '${displayUnitName}' 부대가 해체되었습니다.`);
         router.push('/units');
       }
     } catch (e) {
-      showToast('❌ 에러 발생');
+      showToast(' 에러 발생');
     }
     setLoading(false);
   };
@@ -83,7 +83,7 @@ export default function UnitCommandPage() {
         body: JSON.stringify({ name: unitId, rules: updatedRules })
       });
       setRules(updatedRules);
-      showToast('✅ 유닛 기술 수칙이 성공적으로 반영되었습니다.');
+      showToast(' 유닛 기술 수칙이 성공적으로 반영되었습니다.');
     } catch (e) {}
     setLoading(false);
   };
@@ -96,7 +96,7 @@ export default function UnitCommandPage() {
             onClick={() => router.push('/units')} 
             style={{ alignSelf: 'flex-start', background: 'transparent', border: 'none', color: 'var(--cyber-pink)', cursor: 'pointer', marginBottom: '1rem', padding: 0 }}
           >
-            ← BACK TO REGISTRY
+             BACK TO REGISTRY
           </button>
           <h2 className="neon-text" style={{ fontSize: '2.5rem', color: 'var(--cyber-pink)', textShadow: '0 0 20px rgba(255, 0, 255, 0.5)' }}>
             UNIT COMMAND: {displayUnitName}
@@ -153,7 +153,7 @@ export default function UnitCommandPage() {
           </div>
           <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '2rem', display: 'flex', justifyContent: 'center' }}>
             <button onClick={() => saveProtocols(rules)} disabled={loading} style={{ padding: '1.2rem 4rem', background: 'var(--cyber-pink)', border: 'none', color: 'white', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'pointer', borderRadius: '4px', boxShadow: '0 0 30px rgba(255, 0, 255, 0.4)', width: '100%', maxWidth: '500px' }}>
-              {loading ? 'DEPLOYING...' : 'UPDATE UNIT RULES 🚀'}
+              {loading ? 'DEPLOYING...' : 'UPDATE UNIT RULES '}
             </button>
           </div>
         </div>

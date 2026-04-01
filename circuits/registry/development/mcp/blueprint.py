@@ -1,33 +1,54 @@
 #
-#  blueprint.py - Dynamic Architecture Detail (Circuit & Protocol Edition) 📞⚡️
+#  blueprint.py - Dynamic Architecture Detail (Circuit & Protocol Edition) 
 #
 
 import os
+import inspect
 from core.scanner import CodeScanner
+from core.protocols import GlobalProtocols
 
 class BluePrint:
     PROJECT_ROOT = __import__('os').path.abspath(__import__('os').path.join(__import__('os').path.dirname(__file__), "../../../../"))
     
     @classmethod
     def get_master(cls) -> dict:
-        """[대장님 🎯] 전체 시스템의 데이터 흐름과 메인 설계를 반환합니다. 🛡️⚡️"""
+        """[사용자] 전체 시스템의 데이터 흐름과 메인 설계를 반환합니다. 
+        추가로 'specs/' 폴더 내의 기획 문서 목차(Metadata)를 제공합니다. (Lazy Load) 
+        """
+        scanner = CodeScanner(cls.PROJECT_ROOT)
+        circuit_path = os.path.dirname(__file__)
+        specs_metadata = scanner.scan_specs(circuit_path)
+
         return {
             "flow": {
                 "Data": "MCP Client (Gemini) -> Operator (교환) (Python) -> Circuit Line -> Protocol Logic",
-                "Navigation": "Circuit Selection -> Path Sync -> Action Trigger -> Result Return"
+                "Navigation": "Circuit Selection -> Path Sync -> Action Trigger -> Result Return",
+                "Spec_Mode": "Lazy Load (Index-based) "
             },
             "bindings": {
                 "CircuitManager": "Dynamic line discovery & connection",
                 "OperatorLogger": "Centralized emoji logging system",
                 "MCPServer": "Protocol handling via Hub Engine"
-            }
+            },
+            "spec_index": specs_metadata if specs_metadata else "No spec documents found in 'specs/'"
         }
 
     @classmethod
-    def get_domain_spec(cls, domain: str) -> dict:
-        """[대장님 🎯] 특정 도메인을 실시간으로 분석하여 상세 설계도를 생성합니다. 🕵️‍♂️🔥"""
+    def get_spec_detail(cls, spec_file: str) -> dict:
+        """[사용자] 특정 스펙 파일의 상세 내용을 로드합니다. (Surgical Load) """
         scanner = CodeScanner(cls.PROJECT_ROOT)
-        # 용어 정규화: Circuits 체계 준수 🛡️
+        circuit_path = os.path.dirname(__file__)
+        content = scanner.read_spec_content(circuit_path, spec_file)
+        
+        if content:
+            return {"file": spec_file, "content": content}
+        return {"error": f"Spec file '{spec_file}' not found."}
+
+    @classmethod
+    def get_domain_spec(cls, domain: str) -> dict:
+        """[사용자] 특정 도메인을 실시간으로 분석하여 상세 설계도를 생성합니다. """
+        scanner = CodeScanner(cls.PROJECT_ROOT)
+        # 용어 정규화: Circuits 체계 준수 
         target_domain = "circuits" if domain.lower() in ["tenants", "circuits"] else domain.lower()
         
         if target_domain in ["core", "circuits", "language"]:
@@ -58,33 +79,51 @@ class BluePrint:
         return {"error": f"'{domain}' 도메인은 동적 분석 대상이 아닙니다."}
 
     @classmethod
-    def get_full_structure(cls) -> dict:
-        """[대장님 🎯] 웹 UI 구축을 위한 전 프로젝트의 JSON 명세 및 의존성 지도를 생성합니다. 🌐✨"""
+    def get_full_structure(cls, manager=None) -> dict:
+        """[사용자] 웹 UI 구축을 위한 오퍼레이터의 가용 역량(Capability) 지도를 생성합니다. """
         scanner = CodeScanner(cls.PROJECT_ROOT)
         
-        # [대장님 🎯] 물리적 폴더명인 circuits를 정확히 스캔합니다! 🛡️⚡️
+        # 1. 시스템 기본 정보
+        active_circuit = manager.get_active_circuit() if manager else None
         structure = {
-            "core": scanner.scan_directory("core"),
-            "circuits": scanner.scan_directory("circuits"),
-            "language": scanner.scan_directory("language"),
+            "system": {
+                "status": "Online",
+                "active_circuit": active_circuit.get_name() if active_circuit else "None",
+                "project_root": cls.PROJECT_ROOT
+            },
+            "global_protocols": GlobalProtocols.get_rules(),
+            "circuits": []
         }
 
-        registry_path = os.path.join(cls.PROJECT_ROOT, "circuits", "registry")
-        registered_circuits = []
-        for root, dirs, files in os.walk(registry_path):
-            if "actions.py" in files:
-                registered_circuits.append(os.path.basename(root))
-        
-        structure["registered_circuits"] = registered_circuits
-        structure["dependency_graph"] = cls._extract_dependencies(registered_circuits)
+        # 2. 회선별 상세 역량 맵핑
+        if manager:
+            for name, circuit in manager.circuits.items():
+                try:
+                    circuit_dir = os.path.dirname(inspect.getfile(circuit.__class__))
+                    
+                    # 운영 메타데이터 스캔 (overview, protocols)
+                    meta = scanner.scan_operational_metadata(circuit_dir)
+                    
+                    # 유닛별 미션/규약 정밀 분석
+                    units_detail = []
+                    for unit_name in meta.get("units", []):
+                        units_detail.append(scanner.read_unit_protocols(unit_name))
+                    
+                    circuit_info = {
+                        "id": name.upper(),
+                        "name": meta.get("name"),
+                        "description": meta.get("description"),
+                        "units": units_detail,
+                        "protocols": meta.get("rules", []),
+                        "actions": [
+                            {"name": t.name, "description": t.description} 
+                            for t in circuit.get_tools()
+                        ],
+                        "dependencies": meta.get("dependencies", []),
+                        "is_active": (active_circuit == circuit)
+                    }
+                    structure["circuits"].append(circuit_info)
+                except Exception:
+                    continue
         
         return structure
-
-    @classmethod
-    def _extract_dependencies(cls, circuits: list) -> dict:
-        nodes = []
-        for c in circuits:
-            # MCP_Operator는 특별 대우 🛡️
-            group = 3 if c.lower() == "mcp" else 1
-            nodes.append({"id": c.upper(), "group": group})
-        return {"nodes": nodes, "links": []}
