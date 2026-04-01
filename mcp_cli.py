@@ -15,6 +15,11 @@ from circuits.manager import CircuitManager
 from core.logger import OperatorLogger
 
 def main():
+    # [사용자] 가용한 회선 목록을 실시간으로 추출하여 도움말에 동적으로 주입합니다. 
+    manager = CircuitManager()
+    available_list = ", ".join(manager.circuits.keys())
+    hint = f"(현재 가용: {available_list})" if available_list else "(가용 회선 없음)"
+
     parser = argparse.ArgumentParser(description=" Operator (교환) CLI - Circuit & Protocol Management")
     subparsers = parser.add_subparsers(dest="command", help="사용 가능한 명령")
 
@@ -26,14 +31,14 @@ def main():
 
     # 3. 회선 연결 (Set Active)
     set_parser = subparsers.add_parser("connect", help="특정 회선(Circuit) 강제 연결")
-    set_parser.add_argument("name", type=str, help="연결할 회선 이름 (예: gdr, mcp)")
+    set_parser.add_argument("name", type=str, help=f"연결할 회선 이름 {hint}")
 
     # 4. 규약 검증 (Audit)
     audit_parser = subparsers.add_parser("audit", help="현재 회선 규약(Protocols)으로 파일 검증")
     audit_parser.add_argument("path", type=str, help="검증할 파일 경로")
 
     args = parser.parse_args()
-    manager = CircuitManager()
+
 
     if args.command == "status":
         active = manager.get_active_circuit()

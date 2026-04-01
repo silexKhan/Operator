@@ -33,7 +33,7 @@ class PythonAuditor:
         # 3. Async/Await (Protocol P-3)
         if ("main.py" in file_path or "/core/" in file_path) and "async def" not in content and "def " in content:
             self.log("Async IO 위반 의심", 1)
-            results.append(" WARNING: Protocol P-3 (Async IO) - MCP 코어 로직은 비동기(async def)를 권장합니다.")
+            results.append(" WARNING: Protocol P-3 (Async IO) - 시스템 코어 로직은 비동기(async def)를 권장합니다.")
 
         # 4. Naming Convention (Protocol P-4)
         bad_names = ["vc", "nav", "topVC", "vc_controller"]
