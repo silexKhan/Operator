@@ -19,24 +19,21 @@ class CoreActions:
         self.logger = logger
 
     def get_operator_status(self) -> list[types.TextContent]:
-        """[사용자] 시스템의 생동감 넘치는 상태를 보고합니다."""
+        """[사용자] 시스템의 상태를 빠르게 보고합니다."""
         active = self.manager.get_active_circuit()
         active_name = active.get_name() if active else "None"
         
-        # [사용자] manager.discovery_log가 없을 경우를 대비해 안전하게 처리합니다.
-        discovery_log = getattr(self.manager, "discovery_log", [])
-        current_path = getattr(self.manager, "current_path", os.getcwd())
+        current_path = getattr(self.manager, "current_path", "Unknown")
+        registered = list(self.manager.circuits.keys())
         
         res = (
             f" Operator Status: Online\n"
             f" Path: {current_path}\n"
             f" Active Circuit: {active_name}\n"
-            f" Total Registered: {list(self.manager.circuits.keys())}\n\n"
-            f" Discovery Log:\n" + "\n".join(discovery_log[-5:]) + "\n\n"
-            f" [SYSTEM MESSAGE 1]: 연결을 완료하려면 반드시 'set_active_circuit(name=\"회선명\")'을 호출하여 세션을 명시적으로 확정하십시오.\n"
-            f" [SYSTEM MESSAGE 2]: 기술 유닛이나 규약이 적용되는 작업을 시작할 때는 반드시 '어떤 유닛을 사용하여 어떤 프로토콜들을 준수해서 작업을 진행하겠습니다.'와 같이 사용할 유닛과 규약을 복명복창하십시오. "
+            f" Total Registered: {registered}\n\n"
+            f" [SYSTEM MESSAGE 1]: 'set_active_circuit(name=\"회선명\")'으로 세션을 확정하십시오.\n"
+            f" [SYSTEM MESSAGE 2]: 작업 시작 전 사용할 유닛과 규약을 복명복창하십시오. "
         )
-        # [사용자] 문자열이 아닌 TextContent 객체 리스트로 반환합니다! 
         return TextResponse(res)
 
     def set_active_circuit(self, name: str) -> list[types.TextContent]:

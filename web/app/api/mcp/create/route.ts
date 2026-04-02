@@ -1,59 +1,40 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
+import { McpClient } from '@/lib/mcpClient';
 
 /**
- * [사용자] 웹에서 새로운 Circuit을 동적으로 생성하는 API입니다. 
+ * [사용자] 새로운 Circuit을 물리적으로 생성하고 엔진을 동기화하는 API입니다.
+ * McpClient를 통해 생성과 리로드를 통합 관리합니다.
  */
 export async function POST(request: Request): Promise<Response> {
   const { name, role, inherit_global } = await request.json();
+  const client = new McpClient();
 
-  return new Promise((resolve) => {
-    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
-    const isWindows = process.platform === 'win32';
-    const pythonPath = isWindows 
-      ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')
-      : path.join(projectRoot, '.venv', 'bin', 'python');
-    
-    const scriptPath = path.join(projectRoot, 'main.py');
-    const mcpProcess = spawn(pythonPath, [scriptPath]);
-    
-    mcpProcess.stdin.write(JSON.stringify({
-      jsonrpc: "2.0", id: 1, method: "initialize",
-      params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Creator-V2", version: "1.7.0" } }
-    }) + '\n');
-
-    const callMessage = JSON.stringify({
-      jsonrpc: "2.0", id: 2, method: "tools/call",
-      params: { 
-        name: "mcp_operator_create_new_circuit", 
-        arguments: { name, role: role || "development", inherit_global: inherit_global !== false } 
-      }
-    }) + '\n';
-
-    const reloadMessage = JSON.stringify({
-      jsonrpc: "2.0", id: 3, method: "tools/call",
-      params: { name: "mcp_operator_reload_operator", arguments: {} }
-    }) + '\n';
-
-    setTimeout(() => {
-      mcpProcess.stdin.write(callMessage);
-      setTimeout(() => {
-        mcpProcess.stdin.write(reloadMessage);
-      }, 500);
-    }, 500);
-
-    mcpProcess.stdout.on('data', (data) => {
-      try {
-        const jsonResponse = JSON.parse(data.toString());
-        if (jsonResponse.id === 3) {
-          mcpProcess.kill();
-          resolve(NextResponse.json({ success: true, message: "New Circuit established with inheritance settings!" }));
+  try {
+    const results = await client.callTools({
+      create: {
+        name: "mcp_operator_create_new_circuit",
+        args: { 
+          name, 
+          role: role || "development", 
+          inherit_global: inherit_global !== false 
         }
-      } catch (e) {}
+      },
+      reload: {
+        name: "mcp_operator_reload_operator",
+        args: {}
+      }
     });
 
-    mcpProcess.stderr.on('data', (data) => { console.log(`[MCP-SYSTEM] ${data}`); });
-    setTimeout(() => { mcpProcess.kill(); resolve(NextResponse.json({ error: "Timeout" }, { status: 504 })); }, 10000);
-  });
+    return NextResponse.json({ 
+      success: true, 
+      message: "Circuit creation and sync complete",
+      details: results 
+    });
+
+  } catch (error) {
+    console.error('Create Bridge Error:', error);
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : 'Creation failed' 
+    }, { status: 500 });
+  }
 }

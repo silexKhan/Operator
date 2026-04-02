@@ -28,12 +28,13 @@
 - **Type B (Circuit)**: 각 회선별로 정의된 가변 기술 표준.
 - **Priority**: Global > Circuit > Spec (상충 시 Global 우선).
 
-### 2.4 Harness Engineering (물리적 거부 장치)
-- **Logic**: Input -> [Harness Check] -> Execution.
-- **Enforcement**:
-  - 조건 1: 명시된 규격(Naming, Structure 등) 위반 시 즉시 Rejection 처리.
-  - 조건 2: 위반 사항 발생 시 사용자에게 `Violation Report`를 제출하고 작업을 중단함.
-- **Target File**: `core/harness.py`
+### 2.4 Sentinel Engineering (Auto-pilot)
+- **Logic**: Input -> [Sentinel Core Mission] -> [Autonomous Execution] -> [Audit].
+- **Auto-pilot Mechanism**:
+  - Detection: `specs/` 내 스펙 변화 감지 시 자율 주행 모드 자동 활성화.
+  - Mission Setup: `sentinel_set_mission`을 통한 실시간 목표 수립.
+  - Evaluation: 모든 산출물에 대해 `sentinel_evaluate`를 통한 품질 승인(PASS) 필수.
+- **Target File**: `units/sentinel/` 및 전체 에셋 동기화.
 
 ### 2.5 Specs (실무 기획 명세)
 - **Location**: `{circuit_path}/specs/*.md`

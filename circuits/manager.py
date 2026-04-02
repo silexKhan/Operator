@@ -140,7 +140,7 @@ class CircuitManager:
         self.current_path = state.get("current_path", "")
 
     def sync_path(self, path: str):
-        if os.path.exists(path):
+        if os.path.exists(path) and self.current_path != path:
             self.current_path = path
             self._save_state()
             self._discover_circuits()

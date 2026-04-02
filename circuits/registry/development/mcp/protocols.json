@@ -3,8 +3,14 @@
   "RULES": [
     "Protocol P-1 (데이터 계약 무결성): Pydantic 등을 활용하여 데이터 스키마를 엄격히 검증하고 시스템 전반의 안정성을 확보한다.",
     "Protocol P-2 (독립적 도구 설계): 각 도구(Action)는 단일 책임을 가지며, 서로 간섭하지 않도록 모듈화하여 철저히 격리한다.",
+    "Protocol P-3 (Tool Interface Integrity): 모든 MCP 도구의 call_tool 구현 시 반드시 (name, arguments) 두 인자를 명시적으로 수용해야 하며, 서버의 도구 맵핑 로직은 인자 누락 방지를 위해 핸들러의 시그니처를 엄격히 검증하고 비동기 호출(await)을 보장해야 한다.",
     "Protocol W-1 (사용자 중심 관제): 웹 인터페이스는 기술적 용어를 배제하고 'AI 행동 규약 관리'라는 본질적 가치에 집중한다.",
     "Protocol W-2 (Circuits 미학 유지): 모든 UI는 세로형 반응형 구조를 우선시하며 핵심 정보의 가독성을 해치지 않는 레이아웃을 설계한다.",
-    "Protocol W-3 (일관된 언어 체계): Circuits, Protocols 등 핵심 용어는 원어 그대로 사용하며 UI와 시스템 전체에 일관되게 적용한다."
+    "Protocol W-3 (일관된 언어 체계): Circuits, Protocols 등 핵심 용어는 원어 그대로 사용하며 UI와 시스템 전체에 일관되게 적용한다.",
+    "Protocol S-1 (Sentinel-driven Auto-pilot): specs/spec.md의 업데이트가 감지되면, 오퍼레이터는 즉시 sentinel_set_mission을 자동 호출하여 설계-구현-검증의 자율 주행 시퀀스를 가동한다.",
+    "Protocol S-2 (Autonomous Quality Assurance): 모든 산출물은 반드시 sentinel_evaluate의 최종 승인(PASS)을 득해야 하며, 미충족 시 에이전트 재파견(Re-work)을 수행한다.",
+    "Protocol S-3 (Session Integrity): 자율 주행 중 발생하는 모든 서브 태스크는 --worktree를 통해 상호 간섭 없이 독립적으로 수행되어야 한다.",
+    "Protocol S-4 (Engine Discovery & Adaptation): 오퍼레이터는 자율 운행 시작 전 반드시 sentinel_engines.json을 참조하여 가용한 엔진과 옵션을 식별하고, 이를 환경 변수로 주입하여 실행한다.",
+    "Protocol S-8 (Recursive Spec Discovery): 오퍼레이터는 작업을 시작하기 전, 활성 회선 및 등록된 모든 기술 유닛(Units)의 specs/ 디렉토리를 스캔한다. 이 디렉토리에는 [구현할 개발 스펙], [참조할 기술 문서], [아키텍처 컨벤션] 등이 포함되며, 오퍼레이터는 이를 자동 병합하여 해당 작업의 최우선 가이드라인으로 삼는다."
   ]
 }

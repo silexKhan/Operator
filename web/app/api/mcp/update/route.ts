@@ -1,79 +1,49 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
+import { McpClient } from '@/lib/mcpClient';
 
 /**
- * [사용자] 웹에서 수정한 규약(Protocols), 개요(Overview), 유닛(Units) 정보를 실제 소스 코드에 반영하는 Write Bridge입니다. 
- * UNITS_UPDATE 액션 및 데이터 전달 로직이 완비되었습니다. 
+ * [사용자] 웹에서 수정한 정보를 소스 코드에 반영하고 엔진을 동기화하는 통합 쓰기 API입니다.
+ * McpClient를 통해 쓰기 작업과 리로드를 원자적으로 처리합니다.
  */
 export async function POST(request: Request): Promise<Response> {
   const { circuit_name, rules, description, project_path, units, action } = await request.json();
+  const client = new McpClient();
 
-  return new Promise((resolve) => {
-    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
-    const isWindows = process.platform === 'win32';
-    const pythonPath = isWindows 
-      ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')
-      : path.join(projectRoot, '.venv', 'bin', 'python');
-    
-    const scriptPath = path.join(projectRoot, 'main.py');
-    const mcpProcess = spawn(pythonPath, [scriptPath]);
-    
-    mcpProcess.stdin.write(JSON.stringify({
-      jsonrpc: "2.0", id: 1, method: "initialize",
-      params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Reflector-Dynamic", version: "1.5.0" } }
-    }) + '\n');
+  try {
+    const toolsToCall: any = {};
 
-    // 상황에 따른 도구 호출 분기 
-    let callMessage = '';
-    
+    // 1. 정보 업데이트 도구 정의
     if (action === 'OVERVIEW_UPDATE' || action === 'UNITS_UPDATE') {
-      // [사용자] 유닛(units) 정보를 포함하여 백엔드 도구를 호출합니다. 
-      callMessage = JSON.stringify({
-        jsonrpc: "2.0", id: 2, method: "tools/call",
-        params: {
-          name: "mcp_operator_update_circuit_overview",
-          arguments: { 
-            circuit_name, 
-            description, 
-            project_path, 
-            units // 유닛 데이터 명시적 전달 
-          }
-        }
-      }) + '\n';
+      toolsToCall.update = {
+        name: "mcp_operator_update_circuit_overview",
+        args: { circuit_name, description, project_path, units }
+      };
     } else {
-      callMessage = JSON.stringify({
-        jsonrpc: "2.0", id: 2, method: "tools/call",
-        params: {
-          name: "mcp_operator_update_circuit_protocols",
-          arguments: { circuit_name, rules }
-        }
-      }) + '\n';
+      toolsToCall.update = {
+        name: "mcp_operator_update_circuit_protocols",
+        args: { circuit_name, rules }
+      };
     }
 
-    const reloadMessage = JSON.stringify({
-      jsonrpc: "2.0", id: 3, method: "tools/call",
-      params: { name: "mcp_operator_reload_operator", arguments: {} }
-    }) + '\n';
+    // 2. 엔진 리로드 도구 추가 (업데이트 직후 즉시 실행)
+    toolsToCall.reload = {
+      name: "mcp_operator_reload_operator",
+      args: {}
+    };
 
-    setTimeout(() => {
-      mcpProcess.stdin.write(callMessage);
-      setTimeout(() => {
-        mcpProcess.stdin.write(reloadMessage);
-      }, 500);
-    }, 500);
+    // [사용자] 모든 작업을 일괄 요청하고 응답을 대기합니다.
+    const results = await client.callTools(toolsToCall);
 
-    mcpProcess.stdout.on('data', (data) => {
-      try {
-        const jsonResponse = JSON.parse(data.toString());
-        if (jsonResponse.id === 3) {
-          mcpProcess.kill();
-          resolve(NextResponse.json({ success: true, message: "Units and Overview reflected!" }));
-        }
-      } catch (e) {}
+    return NextResponse.json({ 
+      success: true, 
+      message: "Sync complete",
+      details: results 
     });
 
-    mcpProcess.stderr.on('data', (data) => { console.log(`[MCP-SYSTEM] ${data}`); });
-    setTimeout(() => { mcpProcess.kill(); resolve(NextResponse.json({ error: "Timeout" }, { status: 504 })); }, 10000);
-  });
+  } catch (error) {
+    console.error('Update Bridge Error:', error);
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : 'Update failed' 
+    }, { status: 500 });
+  }
 }

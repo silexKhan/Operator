@@ -1,47 +1,30 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
+import { McpClient } from '@/lib/mcpClient';
 
+/**
+ * [사용자] 서버의 물리적 디렉토리 구조를 탐색하는 API입니다.
+ * McpClient를 통해 안정적인 스트림 데이터 수집을 보장합니다.
+ */
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const targetPath = searchParams.get('path') || '.';
 
-  return new Promise((resolve) => {
-    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
-    const isWindows = process.platform === 'win32';
-    const pythonPath = isWindows 
-      ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')
-      : path.join(projectRoot, '.venv', 'bin', 'python');
-    
-    const scriptPath = path.join(projectRoot, 'main.py');
-    const mcpProcess = spawn(pythonPath, [scriptPath]);
-    
-    mcpProcess.stdin.write(JSON.stringify({
-      jsonrpc: "2.0", id: 1, method: "initialize",
-      params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Browser-Universal", version: "1.6.0" } }
-    }) + '\n');
+  const client = new McpClient();
 
-    const callMessage = JSON.stringify({
-      jsonrpc: "2.0", id: 2, method: "tools/call",
-      params: { name: "mcp_operator_browse_directory", arguments: { path: targetPath } }
-    }) + '\n';
-
-    setTimeout(() => {
-      mcpProcess.stdin.write(callMessage);
-    }, 500);
-
-    mcpProcess.stdout.on('data', (data) => {
-      try {
-        const jsonResponse = JSON.parse(data.toString());
-        if (jsonResponse.id === 2 && jsonResponse.result) {
-          const result = JSON.parse(jsonResponse.result.content[0].text);
-          mcpProcess.kill();
-          resolve(NextResponse.json(result));
-        }
-      } catch (e) {}
+  try {
+    const results = await client.callTools({
+      browser: {
+        name: "mcp_operator_browse_directory",
+        args: { path: targetPath }
+      }
     });
 
-    mcpProcess.stderr.on('data', (data) => { console.log(`[MCP-SYSTEM] ${data}`); });
-    setTimeout(() => { mcpProcess.kill(); resolve(NextResponse.json({ error: "Timeout" }, { status: 504 })); }, 5000);
-  });
+    return NextResponse.json(results.browser || { current: targetPath, folders: [], files: [] });
+
+  } catch (error) {
+    console.error('Browser Bridge Error:', error);
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : 'Path traversal failed' 
+    }, { status: 500 });
+  }
 }

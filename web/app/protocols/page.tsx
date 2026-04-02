@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 /**
  * [사용자] 모든 Circuits가 상속받는 최상위 행동 규약(Protocols)을 관리하는 구역입니다. 
- * 용어 정규화: Axiom -> Protocol 전면 적용 완료. 
+ * 하드코딩된 데이터를 제거하고, 실시간 API(SSOT) 연동 체계로 전면 전환하였습니다.
  */
 export default function ProtocolsRepositoryPage() {
   const [globalProtocols, setGlobalProtocols] = useState<any[]>([]);
@@ -12,17 +12,31 @@ export default function ProtocolsRepositoryPage() {
 
   const fetchInheritedProtocols = async () => {
     setLoading(true);
-    // [사용자] core/protocols.py 에 정의된 조직의 근본 규약들입니다. 
-    const topLevelRules = [
-      { id: "0-1", name: "Mechanical Integrity", rule: "코드나 문서 내에 '...' 또는 '중략' 금지. 완전한 텍스트 의무화.", emoji: "" },
-      { id: "0-2", name: "Content Preservation", rule: "기존의 유효한 정보, 섹션, 예시를 임의로 삭제하지 않음.", emoji: "" },
-      { id: "0-4", name: "Security First", rule: "비밀번호, API Key 등 보안 정보 노출 절대 금지.", emoji: "" },
-      { id: "0-5", name: "Single Responsibility", rule: "하나의 기능이나 문서는 하나의 책임만 가짐 (KISS 원칙).", emoji: "" },
-      { id: "0-6", name: "Explain Before Acting", rule: "모든 작업 시작 전 의도와 전략을 선제 보고함.", emoji: "" },
-      { id: "0-8", name: "Proactive Specification", rule: "모든 제안은 구체적인 예시와 기대 효과를 포함함.", emoji: "" }
-    ];
-    setGlobalProtocols(topLevelRules);
-    setLoading(false);
+    try {
+      // [사용자] 리팩토링된 MCP Bridge API를 통해 실제 물리적 JSON 데이터를 가져옵니다.
+      const res = await fetch('/api/mcp/protocols?circuit=mcp');
+      const data = await res.json();
+      
+      if (data.globalRules && Array.isArray(data.globalRules)) {
+        // "Protocol 0-X (Name): Description" 형식을 파싱하여 객체화
+        const parsedRules = data.globalRules.map((ruleStr: string) => {
+          const match = ruleStr.match(/Protocol\s+([\d-]+)\s+\((.*?)\):\s*(.*)/);
+          if (match) {
+            return {
+              id: match[1],
+              name: match[2],
+              rule: match[3]
+            };
+          }
+          return { id: '?', name: 'Unknown', rule: ruleStr };
+        });
+        setGlobalProtocols(parsedRules);
+      }
+    } catch (error) {
+      console.error('Failed to fetch global protocols:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -32,12 +46,23 @@ export default function ProtocolsRepositoryPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header>
-        <h2 className="neon-text" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-          PROTOCOLS
-        </h2>
-        <p style={{ color: 'var(--text-dim)' }}>
-          모든 Circuits가 공통으로 상속받아 준수해야 할 최상위 절대 규약입니다.
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 className="neon-text" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+              PROTOCOLS
+            </h2>
+            <p style={{ color: 'var(--text-dim)' }}>
+              모든 Circuits가 공통으로 상속받아 준수해야 할 최상위 절대 규약입니다.
+            </p>
+          </div>
+          <button 
+            onClick={fetchInheritedProtocols}
+            className="status-badge" 
+            style={{ cursor: 'pointer', background: 'rgba(0, 243, 255, 0.1)', padding: '0.5rem 1rem' }}
+          >
+            {loading ? 'SYNCING...' : 'FORCE RELOAD'}
+          </button>
+        </div>
       </header>
 
       {/* Inherited Top-Level Rules */}
@@ -46,9 +71,11 @@ export default function ProtocolsRepositoryPage() {
            GLOBAL CONSTITUTION
         </h3>
         
+        {loading && <p style={{ textAlign: 'center', color: 'var(--cyber-cyan)' }}>지휘소 데이터 동기화 중...</p>}
+        
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {globalProtocols.map((item) => (
-            <div key={item.id} style={{ 
+          {globalProtocols.map((item, index) => (
+            <div key={index} style={{ 
               padding: '1.5rem', 
               background: 'rgba(255, 204, 0, 0.02)', 
               border: '1px solid rgba(255, 204, 0, 0.1)', 
@@ -59,7 +86,7 @@ export default function ProtocolsRepositoryPage() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: 'var(--cyber-amber)', fontWeight: 'bold', fontSize: '1.1rem' }}>
-                  {item.emoji} Protocol {item.id} ({item.name})
+                  Protocol {item.id} ({item.name})
                 </span>
                 <div className="status-badge" style={{ borderColor: 'var(--cyber-amber)', color: 'var(--cyber-amber)', background: 'transparent' }}>
                   CORE MANDATE

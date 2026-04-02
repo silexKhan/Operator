@@ -1,23 +1,33 @@
 #
-#  protocols.py - Standard Swift & MVVM Architecture Rules
+#  protocols.py - Standard Swift & MVVM Architecture Rules (Hot Sync)
 #  (Level 2: Unit Protocols - Software Engineering / Swift)
 #
+
+import os
+import json
 
 class SwiftProtocols:
     """
     [사용자] Swift 유닛 전용 전문 기술 수칙입니다.
-    상위 규약은 회선(Circuit)에서 상속받으므로, 여기서는 기술 본질에만 집중합니다. 
+    데이터 무결성을 위해 실시간으로 protocols.json에서 정보를 로드합니다. 
     """
-    OVERVIEW = "모든 Swift 코드를 작성할 때는 아래 기술 수칙들을 단 하나의 예외 없이 엄격히 준수하여 안전하고 명확한 결과물을 보장해야 한다. "
+
+    @classmethod
+    def _load_data(cls):
+        """[사용자] 물리적 JSON 파일을 직접 읽어 실시간성을 확보합니다."""
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(base_dir, "protocols.json")
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {"OVERVIEW": "", "RULES": []}
+
+    @property
+    def OVERVIEW(self):
+        return self._load_data().get("OVERVIEW", "")
 
     @classmethod
     def get_rules(cls):
-        UNIT_RULES = [
-            "Protocol S-1 (Strict Safety): 강제 언래핑(!)을 금지하고 옵셔널 바인딩(guard/if-let)을 철저히 수행한다. ",
-            "Protocol S-2 (Modern Concurrency): Swift 6의 Async/Await 및 TaskGroup을 통한 비동기 무결성을 보장한다. ",
-            "Protocol S-3 (Declarative Flow): Combine 및 SwiftUI 바인딩을 활용한 선언적 데이터 흐름을 지향한다. ",
-            "Protocol S-4 (API Design Guidelines): Swift 공식 명명 규칙(Design Guidelines)을 준수하여 명확성을 확보한다. ",
-            "Protocol S-5 (Value-Type First): 데이터 모델 설계 시 Class보다 Struct와 Enum 등 값 타입을 우선적으로 활용한다. ",
-            "Protocol S-6 (Protocol Oriented): 구체적 타입보다 프로토콜을 통한 추상화와 결합도 분리를 실천한다. "
-        ]
-        return UNIT_RULES
+        """[사용자] 런타임에 JSON 데이터를 반환하여 웹 대시보드와 AI의 동기화를 보장합니다."""
+        return cls._load_data().get("RULES", [])

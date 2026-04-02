@@ -1,0 +1,7 @@
+{
+  "OVERVIEW": "SWIFT_MVVM_CONVENTION 전문 기술 유닛을 위한 독자적인 프로토콜입니다. ",
+  "RULES": [
+    "Protocol S-1 (Identity): SWIFT_MVVM_CONVENTION 유닛의 전문성을 유지한다.",
+    "Protocol S-2 (Compliance): 해당 기술 스택의 표준 규격을 준수한다."
+  ]
+}

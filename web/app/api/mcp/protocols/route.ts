@@ -1,84 +1,47 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
+import { McpClient } from '@/lib/mcpClient';
 
 /**
- * [사용자] 특정 Circuit의 정보를 순수 JSON 형태로 추출하는 현대적 브릿지입니다. 
+ * [사용자] 특정 Circuit의 정보를 통합 추출하는 API입니다.
+ * McpClient 공통 모듈을 사용하여 비동기 정합성과 ID 관리를 자동화했습니다.
  */
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const circuitName = searchParams.get('circuit') || 'mcp';
 
-  return new Promise((resolve) => {
-    const projectRoot = process.env.MCP_ROOT || path.join(process.cwd(), '..');
-    const isWindows = process.platform === 'win32';
-    const pythonPath = isWindows 
-      ? path.join(projectRoot, '.venv', 'Scripts', 'python.exe')
-      : path.join(projectRoot, '.venv', 'bin', 'python');
-    
-    const scriptPath = path.join(projectRoot, 'main.py');
-    const mcpProcess = spawn(pythonPath, [scriptPath]);
-    
-    mcpProcess.stdin.write(JSON.stringify({
-      jsonrpc: "2.0", id: 1, method: "initialize",
-      params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Explorer-Pure", version: "3.0.0" } }
-    }) + '\n');
+  const client = new McpClient();
 
-    // 1. 규약(Protocols) 요청
-    const callProtocols = JSON.stringify({
-      jsonrpc: "2.0", id: 2, method: "tools/call",
-      params: { name: "mcp_operator_get_circuit_protocols", arguments: { circuit_name: circuitName } }
-    }) + '\n';
-
-    // 2. 전사 공통 규약 요청
-    const callGlobalProtocols = JSON.stringify({
-      jsonrpc: "2.0", id: 3, method: "tools/call",
-      params: { name: "mcp_operator_get_global_protocols", arguments: {} }
-    }) + '\n';
-
-    // 3. 개요(Overview) 요청 - [사용자] 공통 도구를 사용하여 안정성을 확보합니다.
-    const callOverview = JSON.stringify({
-      jsonrpc: "2.0", id: 4, method: "tools/call",
-      params: { name: "mcp_operator_get_blueprint", arguments: { domain: circuitName } }
-    }) + '\n';
-
-    setTimeout(() => {
-      mcpProcess.stdin.write(callProtocols);
-      setTimeout(() => {
-        mcpProcess.stdin.write(callGlobalProtocols);
-        setTimeout(() => { mcpProcess.stdin.write(callOverview); }, 200);
-      }, 200);
-    }, 500);
-
-    let rules: string[] = [];
-    let globalRules: string[] = [];
-    let briefing: any = {};
-
-    mcpProcess.stdout.on('data', (data) => {
-      const output = data.toString();
-      try {
-        const lines = output.split('\n');
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          const jsonResponse = JSON.parse(line);
-          
-          if (jsonResponse.id === 2) {
-            const protoData = JSON.parse(jsonResponse.result.content[0].text);
-            rules = protoData.protocols || [];
-          }
-          if (jsonResponse.id === 3) globalRules = JSON.parse(jsonResponse.result.content[0].text);
-          if (jsonResponse.id === 4) {
-            // [사용자] 텍스트 파싱 대신 순수 JSON 파싱을 수행합니다! 
-            briefing = JSON.parse(jsonResponse.result.content[0].text);
-            
-            mcpProcess.kill();
-            resolve(NextResponse.json({ rules, globalRules, briefing }));
-          }
-        }
-      } catch (e) {}
+  try {
+    // [사용자] 필요한 도구들을 한 번에 정의하여 호출합니다.
+    const results = await client.callTools({
+      circuitProtocols: { 
+        name: "mcp_operator_get_circuit_protocols", 
+        args: { circuit_name: circuitName } 
+      },
+      globalProtocols: { 
+        name: "mcp_operator_get_global_protocols", 
+        args: {} 
+      },
+      briefing: { 
+        name: "mcp_operator_get_blueprint", 
+        args: { domain: circuitName } 
+      }
     });
 
-    mcpProcess.stderr.on('data', (data) => { console.log(`[MCP-SYSTEM] ${data}`); });
-    setTimeout(() => { mcpProcess.kill(); resolve(NextResponse.json({ error: "Timeout" }, { status: 504 })); }, 10000);
-  });
+    // 결과 정제 및 반환
+    return NextResponse.json({
+      rules: results.circuitProtocols?.protocols || [],
+      globalRules: results.globalProtocols || [],
+      briefing: results.briefing || {}
+    });
+
+  } catch (error) {
+    console.error('MCP Bridge Error:', error);
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      rules: [], 
+      globalRules: [], 
+      briefing: {} 
+    }, { status: 500 });
+  }
 }

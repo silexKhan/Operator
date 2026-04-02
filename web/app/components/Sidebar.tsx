@@ -10,14 +10,14 @@ interface CircuitInfo {
 }
 
 /**
- * [사용자] 햄버거 메뉴로 여닫을 수 있는 세련된 사이드바 지휘 메뉴입니다. 
- * 활성 회선과 등록된 모든 유닛을 실시간으로 감시하는 기능이 통합되었습니다.
+ * [사용자] 통합 API를 통해 실시간 지휘소 정보를 출력하는 고성능 사이드바입니다. 
+ * McpClient 기반의 Batching API를 활용하여 로딩 속도를 최적화했습니다.
  */
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [circuits, setCircuits] = useState<CircuitInfo[]>([]);
-  const [availableUnits, setAvailableUnits] = useState<any[]>([]); // 유닛 객체 리스트 
+  const [availableUnits, setAvailableUnits] = useState<string[]>([]); 
   const pathname = usePathname();
 
   useEffect(() => {
@@ -27,28 +27,19 @@ export default function Sidebar() {
 
   const fetchData = async () => {
     try {
-      // 1. 등록된 회선 및 상세 정보 가져오기
+      // [사용자] 통합 API(/api/mcp)로부터 모든 정보를 한 번에 가져옵니다.
       const res = await fetch('/api/mcp');
       const data = await res.json();
       
       if (data.registered_circuits) {
-        const details = await Promise.all(
-          data.registered_circuits.map(async (name: string) => {
-            const detailRes = await fetch(`/api/mcp/protocols?circuit=${name}`);
-            const detailData = await detailRes.json();
-            return {
-              name,
-              units: detailData.briefing?.units || []
-            };
-          })
-        );
+        const details = data.registered_circuits.map((name: string) => ({
+          name,
+          units: data.circuit_details?.[name]?.units || []
+        }));
         setCircuits(details);
       }
 
-      // 2. 등록된 전체 유닛 리스트 가져오기 ({name, path} 구조) 
-      const unitRes = await fetch('/api/mcp/units');
-      const unitData = await unitRes.json();
-      setAvailableUnits(unitData.units || []);
+      setAvailableUnits(data.active_units || []);
 
     } catch (e) {
       console.error("Failed to fetch sidebar data", e);
@@ -57,18 +48,23 @@ export default function Sidebar() {
 
   const getUnitIcon = (unitName: string) => {
     const u = unitName.toLowerCase();
-    if (u.includes('python')) return '';
-    if (u.includes('swift')) return '';
-    if (u.includes('markdown')) return '';
-    return '';
+    const iconMap: { [key: string]: string } = {
+      'python': '🐍',
+      'swift': '🍎',
+      'markdown': '📝',
+      'sentinel': '🛡️',
+      'logic': '⚙️',
+      'design': '🎨'
+    };
+    return iconMap[u] || '🔹';
   };
 
   const menuItems = [
-    { name: 'Dashboard', path: '/', icon: '' },
-    { name: 'Circuits Registry', path: '/circuits', icon: '' },
-    { name: 'Units Registry', path: '/units', icon: '' },
-    { name: 'Global Protocols', path: '/protocols', icon: '' },
-    { name: 'System Status', path: '/core', icon: '' },
+    { name: 'Dashboard', path: '/', icon: '📊' },
+    { name: 'Circuits Registry', path: '/circuits', icon: '⚡' },
+    { name: 'Units Registry', path: '/units', icon: '🧩' },
+    { name: 'Global Protocols', path: '/protocols', icon: '📜' },
+    { name: 'System Status', path: '/core', icon: '🖥️' },
   ];
 
   const sidebarBaseClass = "sidebar";
@@ -80,14 +76,15 @@ export default function Sidebar() {
         {(!isCollapsed && mounted) && (
           <div suppressHydrationWarning>
             <h1 className="neon-text" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}> OPERATOR</h1>
-            <p style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>CONTROL CENTER v1.5</p>
+            <p style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>CONTROL CENTER v2.0</p>
           </div>
         )}
         <button 
           className="toggle-btn" 
           onClick={() => setIsCollapsed(!isCollapsed)}
+          style={{ cursor: 'pointer' }}
         >
-          {mounted ? (isCollapsed ? '' : '') : ''}
+          {mounted ? (isCollapsed ? '▶' : '◀') : ''}
         </button>
       </div>
       
@@ -109,15 +106,11 @@ export default function Sidebar() {
                     alignItems: 'center',
                     gap: isCollapsed ? '0' : '1rem',
                     justifyContent: isCollapsed ? 'center' : 'flex-start',
-                    padding: isCollapsed ? '0.75rem 1rem' : '0.75rem 1rem'
+                    padding: '0.75rem 1rem'
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem', display: 'flex' }} suppressHydrationWarning>{item.icon}</span>
-                  {(!isCollapsed && mounted) && (
-                    <span suppressHydrationWarning>
-                      {item.name}
-                    </span>
-                  )}
+                  <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                  {(!isCollapsed && mounted) && <span>{item.name}</span>}
                 </Link>
               </li>
             );
@@ -125,13 +118,10 @@ export default function Sidebar() {
         </ul>
 
         {/* Active Circuits Section */}
-        {mounted && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }} suppressHydrationWarning>
+        {mounted && circuits.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {!isCollapsed && (
-              <h5 style={{ 
-                padding: '0 1rem', fontSize: '0.7rem', color: 'var(--cyber-pink)', 
-                letterSpacing: '0.1rem', marginBottom: '0.5rem' 
-              }}>
+              <h5 style={{ padding: '0 1.2rem', fontSize: '0.7rem', color: 'var(--cyber-pink)', letterSpacing: '0.1rem' }}>
                 ACTIVE CIRCUITS
               </h5>
             )}
@@ -152,19 +142,16 @@ export default function Sidebar() {
                         background: isActive ? 'rgba(255, 0, 255, 0.05)' : 'transparent',
                         borderLeft: isActive ? '2px solid var(--cyber-pink)' : '2px solid transparent',
                         color: isActive ? 'var(--cyber-pink)' : 'var(--text-dim)',
-                        fontSize: '0.85rem',
-                        transition: 'all 0.2s'
+                        fontSize: '0.85rem'
                       }}
                     >
                       {isCollapsed ? (
-                        <span style={{ fontSize: '0.8rem' }}>●</span>
+                        <span>●</span>
                       ) : (
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                          <span style={{ fontWeight: isActive ? 'bold' : 'normal' }}>{circuit.name.toUpperCase()}</span>
+                          <span>{circuit.name.toUpperCase()}</span>
                           <div style={{ display: 'flex', gap: '0.2rem' }}>
-                            {circuit.units.map((unitName, i) => (
-                              <span key={i} title={unitName}>{getUnitIcon(unitName)}</span>
-                            ))}
+                            {circuit.units.map((u, i) => <span key={i}>{getUnitIcon(u)}</span>)}
                           </div>
                         </div>
                       )}
@@ -176,48 +163,35 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Units Section  */}
-        {mounted && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }} suppressHydrationWarning>
+        {/* Registered Units Section */}
+        {mounted && availableUnits.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {!isCollapsed && (
-              <h5 style={{ 
-                padding: '0 1rem', fontSize: '0.7rem', color: 'var(--cyber-cyan)', 
-                letterSpacing: '0.1rem', marginBottom: '0.5rem' 
-              }}>
+              <h5 style={{ padding: '0 1.2rem', fontSize: '0.7rem', color: 'var(--cyber-cyan)', letterSpacing: '0.1rem' }}>
                 REGISTERED UNITS
               </h5>
             )}
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              {availableUnits.map((unit) => {
-                const name = unit.name;
-                return (
-                  <li key={name}>
-                    <Link
-                      href={`/units/${name.toLowerCase()}`}
-                      style={{ 
-                        textDecoration: 'none',
-                        display: 'flex', 
-                        alignItems: 'center',
-                        gap: isCollapsed ? '0' : '1rem',
-                        justifyContent: isCollapsed ? 'center' : 'flex-start',
-                        padding: '0.5rem 1rem',
-                        color: 'var(--text-dim)',
-                        fontSize: '0.85rem',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      {isCollapsed ? (
-                        <span style={{ fontSize: '1rem' }}>{getUnitIcon(name)}</span>
-                      ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          <span style={{ fontSize: '1rem' }}>{getUnitIcon(name)}</span>
-                          <span>{name.toUpperCase()}</span>
-                        </div>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
+              {availableUnits.map((unit) => (
+                <li key={unit}>
+                  <Link
+                    href={`/units/${unit.toLowerCase()}`}
+                    style={{ 
+                      textDecoration: 'none',
+                      display: 'flex', 
+                      alignItems: 'center',
+                      gap: isCollapsed ? '0' : '1rem',
+                      justifyContent: isCollapsed ? 'center' : 'flex-start',
+                      padding: '0.5rem 1rem',
+                      color: 'var(--text-dim)',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    <span>{getUnitIcon(unit)}</span>
+                    {!isCollapsed && <span>{unit.toUpperCase()}</span>}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         )}
@@ -226,13 +200,9 @@ export default function Sidebar() {
       <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.8rem' }} suppressHydrationWarning>
         {mounted && (
           !isCollapsed ? (
-            <div className="status-badge" style={{ textAlign: 'center' }} suppressHydrationWarning>
-              ● ONLINE
-            </div>
+            <div className="status-badge" style={{ textAlign: 'center' }}>● ONLINE</div>
           ) : (
-            <div style={{ textAlign: 'center', color: 'var(--cyber-cyan)' }} suppressHydrationWarning>
-              ●
-            </div>
+            <div style={{ textAlign: 'center', color: 'var(--cyber-cyan)' }}>●</div>
           )
         )}
       </div>
