@@ -6,8 +6,8 @@ from shared.models import TextResponse, JsonResponse
 import mcp.types as types
 import os
 from circuits.base import BaseCircuit
-from circuits.registry.development.research.protocols import Protocols
-from circuits.registry.development.research.overview import Overview
+from .protocols import Protocols
+from .overview import Overview
 from core.logger import OperatorLogger
 
 class ResearchCircuit(BaseCircuit):

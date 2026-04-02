@@ -6,8 +6,8 @@ import os
 
 class Protocols:
     PROJECT_NAME = "Operator (교환)"
-    # 상위 4단계 폴더로 이동 (mcp -> development -> registry -> circuits -> root)
-    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    # 상위 3단계 폴더로 이동 (mcp -> registry -> circuits -> root)
+    PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     
     RULES = [
         "Protocol P-1 (데이터 계약 무결성): Pydantic 등을 활용하여 데이터 스키마를 엄격히 검증하고 시스템 전반의 안정성을 확보한다. ",

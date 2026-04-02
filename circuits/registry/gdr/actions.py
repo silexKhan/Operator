@@ -29,7 +29,7 @@ class GdrCircuit(BaseCircuit):
         func_name = name.replace("gdr_", "")
         
         if func_name == "get_overview":
-            from circuits.registry.development.gdr.overview import Overview
+            from .overview import Overview
             res = f" [GDR MISSION CENTER]\n- NAME: {Overview.NAME}\n- ROLE: {Overview.ROLE}\n- STATUS: ACTIVE"
             return TextResponse(res)
             
@@ -46,9 +46,9 @@ class GdrCircuit(BaseCircuit):
         raise ValueError(f"Tool not found: {name}")
 
     def get_protocols(self):
-        from circuits.registry.development.gdr.protocols import Protocols
+        from .protocols import Protocols
         return Protocols
 
     def get_blueprint(self):
-        from circuits.registry.development.gdr.blueprint import BluePrint
+        from .blueprint import BluePrint
         return BluePrint()

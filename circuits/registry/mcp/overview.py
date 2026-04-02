@@ -21,8 +21,8 @@ class Overview:
     UNITS = ["python", "markdown", "sentinel"]
 
     # [사용자] 하드코딩 완전 박멸! 현재 위치를 기준으로 프로젝트 루트를 자동 감지합니다. 
-    # mcp -> development -> registry -> circuits -> root (상위 4단계)
-    PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    # mcp -> registry -> circuits -> root (상위 3단계)
+    PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     
     DEPENDENCIES = []
 

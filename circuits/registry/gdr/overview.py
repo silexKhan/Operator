@@ -6,4 +6,4 @@ class Overview:
     ROLE = "Explorer & Strategic Analyst"
     UNITS = ["markdown", "sentinel", "swift"]
     DEPENDENCIES = []
-    PROJECT_PATH = "circuits/registry/development/gdr"
+    PROJECT_PATH = "circuits/registry/gdr"
