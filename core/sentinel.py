@@ -1,24 +1,24 @@
 #
-#  harness.py - Physical Action Enforcement Unit 
+#  sentinel.py - Physical Action Enforcement Unit (Auto-pilot Sentinel)
 #
 
 from typing import Dict, List, Any, Optional
 from core.logger import OperatorLogger
 from shared.history import history_logger
 
-class ActionHarness:
+class Sentinel:
     """
     [사용자] AI의 행동이 규약(Protocols)의 궤적을 벗어나지 않도록 
-    물리적으로 구속하고 강제하는 하네스 유닛입니다. 
+    물리적으로 구속하고 강제하는 우리의 '자동주행(Auto-pilot)' 센티널 유닛입니다. 
     """
     def __init__(self):
-        self.logger = OperatorLogger("ActionHarness")
+        self.logger = OperatorLogger("Sentinel")
 
     def validate_action(self, circuit_name: str, action_type: str, data: Any, auditor: Any) -> Dict[str, Any]:
         """
         [사용자] 행동 실행 전 규약 준수 여부를 최종 판정합니다. 
         """
-        self.logger.log(f" 하네스 작동 중: {circuit_name} ({action_type})", 0)
+        self.logger.log(f" 센티널 작동 중: {circuit_name} ({action_type})", 0)
         
         report = []
         file_path = data.get("file_path", "unknown") if isinstance(data, dict) else "unknown"
@@ -46,10 +46,10 @@ class ActionHarness:
                     history_logger.log_audit(circuit_name, "protocols.json", "FAIL", msg)
 
         if report:
-            self.logger.log(f" 하네스 차단 작동: {len(report)}건의 위반 발견", 2)
+            self.logger.log(f" 센티널 차단 작동: {len(report)}건의 위반 발견", 2)
             return {
                 "approved": False,
-                "reason": "규약(Protocols) 또는 보안(Security) 위반으로 인해 하네스가 작동하여 실행을 차단했습니다. ",
+                "reason": "규약(Protocols) 또는 보안(Security) 위반으로 인해 센티널이 작동하여 실행을 차단했습니다. ",
                 "violations": report
             }
 

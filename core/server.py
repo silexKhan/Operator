@@ -16,6 +16,7 @@ from circuits.manager import CircuitManager
 from core.actions import CoreActions
 from core.protocols import GlobalProtocols
 from core.logger import OperatorLogger
+from core.sentinel import Sentinel
 
 class OperatorServer:
     """
@@ -25,6 +26,7 @@ class OperatorServer:
     def __init__(self):
         """서버 구성 요소 초기화 및 지휘 지침 생성"""
         self.logger = OperatorLogger("MasterOperator")
+        self.sentinel = Sentinel()
         self.circuit_manager = CircuitManager()
         self.core_actions = CoreActions(self.circuit_manager, self.logger)
         self.server = Server("operator-hub")

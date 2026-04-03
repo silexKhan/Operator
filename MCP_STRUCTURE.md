@@ -26,7 +26,7 @@ MCP는 AI 에이전트의 행동을 규제하고, 도메인별 미션(GDR, Resea
 | `actions.py` | `CoreActions` | 시스템 전역 핵심 액션 컨트롤러 | 모든 도메인에서 공통으로 사용되는 기본 기능 정의 |
 | `scanner.py` | `CodeScanner` | 정적/동적 코드 분석 엔진 | `ast` 모듈을 이용한 문법 검사 및 위험 요소 탐색 |
 | `protocols.py` | `ProtocolLoader` | 전사/회선별 규약 로더 | AI 시스템 프롬프트에 동적 규칙 주입 |
-| `harness.py` | `ActionHarness` | AI 행동 규제 및 런타임 가드 | 실행 전 액션의 안전성을 물리적으로 검증/차단 |
+| `sentinel.py` | `ActionSentinel` | AI 행동 규제 및 런타임 가드 | 실행 전 액션의 안전성을 물리적으로 검증/차단 |
 | `interfaces.py` | `IMCPComponent` | 시스템 표준 인터페이스 정의 | 추상 베이스 클래스(ABC)를 통한 구조적 강제 |
 | `logger.py` | `MCPLogger` | 정밀 추적 로깅 시스템 | 컨텍스트 기반 구조화된 로그 생성 |
 
@@ -58,7 +58,7 @@ MCP는 AI 에이전트의 행동을 규제하고, 도메인별 미션(GDR, Resea
 ## 3. 핵심 매커니즘 (Key Mechanisms)
 
 ### 1) AI 행동 규제 (Safety Guard)
-AI가 생성한 코드는 실행 전 반드시 **`scanner.py`**와 **`harness.py`**를 거친다.
+AI가 생성한 코드는 실행 전 반드시 **`scanner.py`**와 **`sentinel.py`**를 거친다.
 - **정적 분석:** `ast` 파싱을 통해 위험한 함수(`eval`, `os.system` 등) 사용 여부 확인
 - **런타임 가드:** 설정된 규약(`protocols.py`)에 반하는 행동을 실시간으로 차단
 
