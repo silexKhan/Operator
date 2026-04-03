@@ -1,117 +1,96 @@
-#  Operator (교환): Universal Protocol & Circuit Engine 
+# 🛰️ Operator (교환): Universal Protocol & Circuit Engine 
 
-**Operator (교환)**는 조직 전체의 산출물이 일관된 표준(**Protocols**)을 준수하도록 중앙에서 회선을 연결하고 통제하는 **하네스 엔지니어링(Harness Engineering)** 기반의 지능형 규약 엔진입니다. AI 모델의 업무 수행 궤도를 정밀하게 관리하고 품질을 보증하는 디지털 지휘소 역할을 수행합니다.
-
----
-
-##  Quick Start: Genesis Launch 🚀
-
-어떤 환경에서도 단 한 번의 명령으로 지휘소를 가동할 수 있습니다. 윈도우와 맥을 모두 지원합니다.
-
-### 1. 지휘소 가동 (One-Command)
-`web` 폴더로 이동하여 자신의 OS에 맞는 실행 파일을 가동하세요.
-- **Mac/Linux:** `cd web && ./start.sh`
-- **Windows:** `web/start.bat` (더블 클릭)
-
-### 2. 자동화 프로세스 (Hyper-Autonomous)
-위 명령어를 실행하면 시스템이 아래 작업들을 자동으로 수행하며 최적의 작전 환경을 구축합니다:
-- **환경 점검**: Node.js 및 Python 설치 여부와 버전 정합성 자동 확인.
-- **패키지 빌드**: `npm install`을 통한 웹 관제소(Next.js) 의존성 구축.
-- **가상환경 격리**: `.venv` 생성 및 `requirements.txt` 기반의 파이썬 라이브러리 동기화.
-- **엔진 기동**: Next.js 서버와 백엔드 MCP 브릿지를 즉시 연결.
+**Operator (교환)**는 AI 에이전트가 조직의 표준 규약(**Protocols**)을 준수하며 정해진 궤도 내에서 임무를 수행하도록 통제하는 **하네스 엔지니어링(Harness Engineering)** 기반의 지능형 지휘소입니다. 
 
 ---
 
-##  1. 핵심 아키텍처 (Core Architecture)
+## 🛠️ Installation & Setup (설치 및 설정)
 
-###  Operator & Circuits (교환 및 회선)
-- **Operator (Master Unit):** 중앙에서 모든 통신 신호를 중계하고 규약을 강제하는 지휘 주체입니다.
-- **Circuit (Domain Unit):** 특정 프로젝트나 도메인을 의미하며, 독립적으로 격리된 작업 환경(Registry)입니다.
+이 시스템은 Python 기반의 백엔드(MCP 서버)와 Next.js 기반의 프론트엔드(관제 UI)로 구성됩니다.
 
-###  Protocols & Harness (규약 및 하네스)
-- **Protocols (Standard Unit):** AI가 해당 회선에서 반드시 준수해야 할 행동 수칙 및 기술 표준입니다.
-- **Harness Engineering:** 규약을 어기는 행위를 엔진 레벨에서 물리적으로 차단(Rejection)하여 AI를 정해진 궤도 내로 구속하는 품질 보증 기술입니다. 모든 지시 사항은 **Sentinel Unit**에 의해 사전 검증됩니다.
+### 1. 사전 요구사항 (Prerequisites)
+- **Python**: 3.10 이상 (3.11 권장)
+- **Node.js**: 18.0 이상 (LTS 권장)
+- **Git**: 소스 관리 및 분석용
 
----
+### 2. 설치 단계 (Manual Installation)
+시스템을 수동으로 구성하려면 다음 명령어를 실행하십시오.
 
-##  2. 지휘 계통 및 운영 (Command & Control) 🛰️
+```bash
+# 1. 가상환경 생성 및 백엔드 의존성 설치
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 
-###  종합 상황실 (Mission Dashboard)
-- **접속 주소**: [http://localhost:3000](http://localhost:3000)
-- **기능**: 실시간 프로젝트 **의존성 지도(Architecture Map)** 조망, 활성화된 회선 및 기술 유닛의 실시간 상태 모니터링.
-
-###  명령 제정실 (Circuit Command)
-- **회선 관리**: 대시보드에서 특정 회선을 클릭하여 진입.
-- **OVERVIEW**: 회선의 물리적 경로, 설명, 의존성 및 배속된 기술 유닛을 정밀 제어.
-- **ACTIVE PROTOCOLS**: AI 행동 수칙을 타일 버튼 형태로 관리하며, 수정 즉시 물리적 소스 코드에 반영.
-
----
-
-##  3. 시스템 구조 (System Architecture)
-
-```text
-.
-├── circuits/           #  회선 등록소 (Circuits Registry)
-│   └── registry/
-│       ├── development/
-│       │   ├── mcp/    # 오퍼레이터 자체 관리 회선
-│       │   └── research/ # 전략적 리서치 및 분석 회선
-│       └── design/     # 디자인 및 에셋 관리 회선
-├── core/               #  교환 엔진 (Operator Heart)
-│   ├── actions.py      # 핵심 명령 처리 유닛 (Action Unit)
-│   ├── harness.py      # 물리적 구속 장치 (Enforcement Unit)
-│   ├── protocols.py    # 최상위 공통 규약 (Constitution)
-│   └── scanner.py      # 실시간 소스 분석기 (AST Scanner)
-├── units/              #  기술 전문 유닛 (Tech Units)
-│   ├── python/         # 파이썬 기술 표준 및 규약
-│   └── markdown/       # 문서화 표준 및 규약
-├── web/                #  웹 관제소 (Control Center UI)
-└── main.py             #  MCP 서버 진입점 (Server Entry)
+# 2. 웹 관제소 의존성 설치
+cd hovercraft
+npm install
+cd ..
 ```
 
----
-
-##  4. 규약 계층 구조 (Protocol Hierarchy)
-
-AI 모델은 업무 수행 시 반드시 아래의 계층적 규약을 상속받아 준수해야 합니다. 
-
-1.  **Level 0: Global Protocols (`core/protocols.py`)**
-    - 전 조직의 절대 원칙 (예: 정보의 완전성, 보안 우선, 선 보고 후 실행).
-2.  **Level 1: Unit Protocols (`units/*/protocols.json`)**
-    - 특정 기술 스택 전용 수칙 (예: Python PEP 8, Async IO 우선).
-3.  **Level 2: Circuit Protocols (`circuits/registry/.../protocols.py`)**
-    - 개별 프로젝트 전용 도메인 수칙 (예: 프로젝트 아키텍처 가이드라인).
+### 3. 간편 가동 (One-Command Launch)
+운영체제에 맞는 실행 스크립트를 사용하여 모든 환경 구축과 서버 기동을 한 번에 처리할 수 있습니다.
+- **Mac/Linux**: `./hovercraft/start.sh`
+- **Windows**: `hovercraft\start.bat` (관리자 권한 권장)
 
 ---
 
-##  5. AI 에이전트 연결 가이드 (MCP Integration)
+## 🤖 AI 에이전트 연동 가이드 (AI Integration)
 
-Claude, Gemini 등 외부 AI가 이 오퍼레이터 지휘소에 연결되려면 아래의 설정을 사용하십시오.
+이 MCP는 단순한 도구 모음이 아니라, AI의 행동을 교정하고 품질을 보증하는 **지휘 체계**입니다. 에이전트(Claude, Gemini 등)는 아래 지침을 따라야 합니다.
+
+### 1. MCP 서버 등록 (Config)
+에이전트 설정 파일에 아래 구성을 추가하여 연결하십시오.
 
 ```json
 {
   "mcpServers": {
     "operator": {
-      "command": "[PROJECT_ROOT]/.venv/bin/python",
-      "args": ["[PROJECT_ROOT]/main.py"],
+      "command": "/usr/local/bin/python3", // 실제 .venv 내 python 경로 권장
+      "args": ["/path/to/MCP/mcp_operator/main.py"],
       "env": {
-        "PYTHONPATH": "[PROJECT_ROOT]",
-        "MCP_ROOT": "[PROJECT_ROOT]"
+        "PYTHONPATH": "/path/to/MCP",
+        "MCP_ROOT": "/path/to/MCP"
       }
     }
   }
 }
 ```
 
+### 2. 표준 작전 절차 (Standard Operating Procedure)
+에이전트는 업무 시작 시 반드시 다음 단계를 거쳐야 합니다.
+1.  **상태 점검**: `get_operator_status`를 호출하여 현재 활성화된 회선과 가용 유닛을 확인합니다.
+2.  **회선 전환**: 수행할 임무(예: GDR 코드 수정, 전략 리서치)에 맞는 회선으로 `set_active_circuit(name="...")`을 통해 전환합니다.
+3.  **규약 로드**: `mcp_operator_get_circuit_protocols`로 해당 도메인의 행동 지침을 숙지합니다.
+4.  **미션 정의**: `sentinel_set_mission`을 통해 달성하고자 하는 목표와 성공 기준을 명시하여 시스템의 감시를 활성화합니다.
+
+### 3. 하네스 엔지니어링 (Harness Engineering)
+모든 도구(Tools) 호출은 백엔드의 **Sentinel Unit**에 의해 실시간으로 감시됩니다. 규약에 어긋나는 코드 생성이나 위험한 시스템 명령은 엔진 레벨에서 즉시 차단(Rejection)되며, AI는 차단 사유를 분석하여 행동을 교정해야 합니다.
+
 ---
 
-##  6. 주요 지휘 도구 (Mission Tools)
+## 🏗️ 시스템 아키텍처 (System Architecture)
 
-- **`get_operator_status`**: 시스템 전체 상태 및 등록된 모든 회선 목록 확인.
-- **`mcp_operator_get_full_json_structure`**: [웹 전용] 전체 프로젝트의 정밀 지도를 JSON으로 추출.
-- **`mcp_operator_browse_directory`**: 서버의 물리적 폴더 탐색 및 정밀 조준.
-- **`mcp_operator_get_circuit_protocols`**: 특정 회선의 전용 규약 정보 로드.
-- **`sentinel_set_mission`**: 작업의 목적(Objective)과 성공 기준(Criteria) 설정.
+```text
+.
+├── mcp_operator/       #  백엔드 핵심 (Operator Engine)
+│   ├── engine/         #  교환 엔진 (Server, Actions, Sentinel)
+│   └── registry/       #  도메인 등록소 (Circuits & Units)
+│       ├── circuits/   #  회선 로직 (Domain Workflows)
+│       └── units/      #  전문 도구 (Tech Auditors)
+├── hovercraft/         #  프론트엔드 (Visual Dashboard)
+├── data/               #  영속성 레이어 (States & Logs)
+└── scripts/            #  운영 자동화 스크립트
+```
+
+---
+
+## 🛰️ 주요 지휘 도구 (Core Mission Tools)
+
+- **`get_operator_status`**: 시스템 가동 상태 및 회선 목록 조망.
+- **`mcp_operator_get_blueprint`**: 도메인별 설계도 및 의존성 맵 로드.
+- **`mcp_operator_mcp_operator_audit_rules`**: 소스 코드가 현재 규약을 준수하는지 정밀 진단.
+- **`sentinel_evaluate`**: 수행된 작업이 설정된 미션 기준을 충족하는지 최종 평가.
 
 ---
 **Status:**  Operator (교환) Online |  Circuits Connected |  Harness: ARMED
