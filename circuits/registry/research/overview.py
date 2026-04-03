@@ -5,4 +5,3 @@ class Overview:
     ROLE = "Explorer & Strategic Analyst"
     UNITS = ["markdown", "sentinel"]
     DEPENDENCIES = []
-    PROJECT_PATH = "circuits/registry/research"

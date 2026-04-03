@@ -1,7 +1,10 @@
 {
-  "OVERVIEW": "SWIFT_MVVM_CONVENTION 전문 기술 유닛을 위한 독자적인 프로토콜입니다. ",
+  "OVERVIEW": "GDR 프로젝트 및 Swift 기반 개발을 위한 Strict MVVM 아키텍처 전문 기술 규약입니다.",
   "RULES": [
-    "Protocol S-1 (Identity): SWIFT_MVVM_CONVENTION 유닛의 전문성을 유지한다.",
-    "Protocol S-2 (Compliance): 해당 기술 스택의 표준 규격을 준수한다."
+    "Protocol S-1 (Dumb View): ViewController/View는 비즈니스 로직을 가질 수 없으며, 모든 판단은 ViewModel이 수행한다.",
+    "Protocol S-2 (I/O transform): 모든 로직은 ViewModel의 Input/Output 구조체와 transform() 메서드를 통해 캡슐화되어야 한다.",
+    "Protocol S-3 (VC Separation): VC 내 bindViewModel 시 Input 생성 로직은 반드시 createInput() 메서드로 분리한다.",
+    "Protocol S-4 (No Forced Unwrapping): 강제 언래핑(!) 사용을 엄격히 금지하며, 안전한 바인딩(guard let, if let)을 수행한다.",
+    "Protocol S-7 (Event Chain): 하위 View는 VM과 직접 통신하지 않으며, 반드시 VC를 중계자로 활용한다."
   ]
 }

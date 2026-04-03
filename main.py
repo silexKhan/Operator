@@ -19,7 +19,7 @@ async def main():
     """
     operator = OperatorServer()
     try:
-        await operator.start()
+        await operator.start_server_handler()
     except Exception as e:
         operator.logger.log(f" 교환 서버 실행 중 치명적 에러 발생: {str(e)}", 0)
         import traceback

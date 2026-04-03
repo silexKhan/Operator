@@ -1,12 +1,10 @@
 {
-    "objective": "시스템 명세서(spec.md) v1.1.0과 실제 업데이트된 에셋 간의 기술적 일관성 검증 및 PASS/FAIL 리포트 제공",
+    "objective": "MCP 프로젝트 전역 파이썬 소스 코드 심층 분석 및 정밀 구조 명세서 작성",
     "criteria": [
-        "명세서(spec.md) 2.4항의 'core/sentinel.py' 경로와 실제 에셋 경로의 일치 여부 확인 (FAIL 예상)",
-        "명세서 4.2항의 'HOT Reload' 규약(JSON 로드)이 'core/protocols.py'에 구현되었는지 확인 (PASS 예상)",
-        "명세서 2.2항의 'Circuits' 구성 요소(actions, protocols, blueprint)가 mcp 회선 내에 존재하는지 확인 (PASS 예상)",
-        "명세서 2.4항의 'sentinel_set_mission' 및 'sentinel_evaluate' 도구가 mcp 회선에 구현되었는지 확인 (PASS 예상)"
+        "모든 핵심 파이썬 파일(20개)이 도메인별로 누락 없이 분석되었는가",
+        "각 파일의 '역할(Role)'과 '핵심 로직(Core Logic)'이 명확히 기술되었는가",
+        "Clean Architecture 관점에서의 특징이 문서에 포함되었는가",
+        "최종 결과물인 'MCP_STRUCTURE.md'가 생략 없이 생성되었는가"
     ],
-    "status": "PASS",
-    "iteration": 1,
-    "max_iteration": 3
+    "status": "PASS"
 }

@@ -134,12 +134,11 @@ export default function CircuitCommandPage() {
         body: JSON.stringify({ 
           circuit_name: circuitName, 
           description, 
-          project_path: projectPath,
           dependencies: finalDeps,
           action: 'OVERVIEW_UPDATE'
         })
       });
-      showToast(updatedDeps ? ' 회선 연결망 업데이트 완료' : ' 개요 및 경로 저장 완료');
+      showToast(updatedDeps ? ' 회선 연결망 업데이트 완료' : ' 개요 저장 완료');
       fetchData();
     } catch (e) {
       showToast(' 업데이트 실패');
@@ -179,7 +178,7 @@ export default function CircuitCommandPage() {
             {mounted ? `CIRCUIT COMMAND: ${circuitName?.toUpperCase()}` : 'CIRCUIT COMMAND'}
           </h2>
           <p style={{ color: 'var(--text-dim)', marginTop: '0.5rem' }}>
-            해당 회선의 정체성, 경로, 의존성, 유닛, 규약을 통합 관리합니다.
+            해당 회선의 정체성, 의존성, 유닛, 규약을 통합 관리합니다.
           </p>
         </div>
         
@@ -277,13 +276,6 @@ export default function CircuitCommandPage() {
                   ))}
                   {dependencies.length === 0 && <span style={{ color: 'var(--text-dim)', fontSize: '0.8rem' }}>연결된 회선이 없습니다.</span>}
                   <button onClick={() => setIsDependencyModalOpen(true)} style={{ marginLeft: '0.5rem', padding: '0.4rem 1rem', background: 'transparent', border: '1px dashed var(--cyber-cyan)', color: 'var(--cyber-cyan)', borderRadius: '20px', fontSize: '0.8rem', cursor: 'pointer' }}>＋ MANAGE CONNECTIONS</button>
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', color: 'var(--cyber-amber)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>PROJECT PATH</label>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <input value={projectPath} onChange={(e) => setProjectPath(e.target.value)} style={{ flex: 1, padding: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', color: 'var(--cyber-amber)', borderRadius: '8px', fontFamily: 'monospace' }} />
-                  <button onClick={() => setIsBrowserOpen(true)} style={{ padding: '0 2rem', background: 'transparent', border: '1px solid var(--cyber-amber)', color: 'var(--cyber-amber)', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>SET PATH</button>
                 </div>
               </div>
             </div>

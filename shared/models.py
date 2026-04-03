@@ -1,34 +1,40 @@
 #
-#  models.py - Shared Data Models
+#  models.py - Shared Data Models (Strict Clean Architecture)
 #
 
+import json
 from enum import Enum
 from pydantic import BaseModel
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Generic, Optional, Any, Union, List, Dict
 
 T = TypeVar('T')
 
 class DataOrigin(str, Enum):
+    """[Specification] 데이터의 출처 정의"""
     CACHE = "cache"
     SERVER = "server"
 
 class FetchResult(BaseModel, Generic[T]):
+    """[Specification] 데이터 엔티티 래퍼"""
     entity: T
     origin: DataOrigin
 
-def TextResponse(text: str) -> list:
-    """
-    mcp.types.TextContent 객체를 단일 리스트에 담아 반환하는 Helper입니다.
-    가장 빈번하게 사용되는 형태인 `[types.TextContent(type="text", text="...")]`를 간소화합니다.
-    """
+# -------------------------------------------------------------------------
+# [Handlers] MCP 응답 처리 엔진 (Protocol P-4)
+# -------------------------------------------------------------------------
+
+def TextResponse(text: str) -> List[Any]:
+    """[Handler] 평문을 MCP TextContent 리스트로 변환"""
     import mcp.types as types
     return [types.TextContent(type="text", text=text)]
 
-def JsonResponse(data: Any, indent: int = 4) -> list:
-    """
-    파이썬 객체(dict, list 등)를 JSON 문자열로 변환하여 mcp.types.TextContent 객체 리스트로 반환합니다.
-    모든 JSON 응답의 인코딩(ensure_ascii=False)과 들여쓰기를 통일합니다.
-    """
+def JsonResponse(data: Any, indent: int = 4) -> List[Any]:
+    """[Handler] 객체를 JSON MCP 리스트로 변환"""
     import mcp.types as types
-    import json
-    return [types.TextContent(type="text", text=json.dumps(data, indent=indent, ensure_ascii=False))]
+    json_str = json.dumps(data, indent=indent, ensure_ascii=False)
+    return [types.TextContent(type="text", text=json_str)]
+
+class ResponseHandler:
+    """[Main Class] 응답 핸들러 클래스"""
+    text = staticmethod(TextResponse)
+    json = staticmethod(JsonResponse)

@@ -19,10 +19,16 @@ class ActionHarness:
         """
         self.logger.log(f" 하네스 작동 중: {circuit_name} ({action_type})", 0)
         
-        if not auditor:
-            return {"approved": True}
-
         report = []
+
+        # 1. Auditor를 통한 소스 코드 정밀 감사 (데이터가 코드인 경우)
+        if auditor and isinstance(data, dict) and "content" in data and "file_path" in data:
+            audit_results = auditor.audit(data["file_path"], data["content"])
+            for result in audit_results:
+                if "FAIL" in result or "CRITICAL" in result:
+                    report.append(result)
+
+        # 2. 기존 PROTOCOL_UPDATE 규격 체크
         if action_type == "PROTOCOL_UPDATE":
             rules = data if isinstance(data, list) else []
             for rule in rules:
@@ -32,9 +38,10 @@ class ActionHarness:
                     report.append(f" 명명 위반: 규칙명에 'Protocol' 키워드가 포함되어야 합니다. ('{rule[:10]}...')")
 
         if report:
+            self.logger.log(f" 하네스 차단 작동: {len(report)}건의 위반 발견", 2)
             return {
                 "approved": False,
-                "reason": "규약(Protocols) 위반으로 인해 하네스가 작동하여 실행을 차단했습니다. ",
+                "reason": "규약(Protocols) 또는 보안(Security) 위반으로 인해 하네스가 작동하여 실행을 차단했습니다. ",
                 "violations": report
             }
 

@@ -6,7 +6,7 @@ import { McpClient } from '@/lib/mcpClient';
  * McpClient를 통해 쓰기 작업과 리로드를 원자적으로 처리합니다.
  */
 export async function POST(request: Request): Promise<Response> {
-  const { circuit_name, rules, description, project_path, units, action } = await request.json();
+  const { circuit_name, rules, description, units, action } = await request.json();
   const client = new McpClient();
 
   try {
@@ -16,7 +16,7 @@ export async function POST(request: Request): Promise<Response> {
     if (action === 'OVERVIEW_UPDATE' || action === 'UNITS_UPDATE') {
       toolsToCall.update = {
         name: "mcp_operator_update_circuit_overview",
-        args: { circuit_name, description, project_path, units }
+        args: { circuit_name, description, units }
       };
     } else {
       toolsToCall.update = {
