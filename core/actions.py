@@ -171,6 +171,18 @@ class CoreActions:
             return TextResponse(f" 유닛 '{name}'이(가) 물리적으로 삭제되었습니다.")
         return TextResponse(f" 유닛 '{name}' 삭제에 실패했습니다.")
 
+    def get_audit_history(self, limit: int = 10) -> list[types.TextContent]:
+        """[Handler] 시스템에 기록된 최근 감사 이력(위반 내역)을 조회합니다."""
+        from shared.history import history_logger
+        try:
+            logs = history_logger.get_recent_audits(limit)
+            if not logs:
+                return TextResponse(" 기록된 감사 이력이 없습니다. 시스템이 안전하게 유지되고 있습니다.")
+            return TextResponse(json.dumps({"audit_logs": logs}, ensure_ascii=False, indent=2))
+        except Exception as e:
+            return TextResponse(json.dumps({"error": f"감사 이력 조회 실패: {str(e)}"}))
+
+
 
     # -------------------------------------------------------------------------
     # [Internal Helpers] 상세 구현 (Swift의 Extension 역할 - Protocol P-4)

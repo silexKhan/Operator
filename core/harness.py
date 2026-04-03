@@ -4,6 +4,7 @@
 
 from typing import Dict, List, Any, Optional
 from core.logger import OperatorLogger
+from shared.history import history_logger
 
 class ActionHarness:
     """
@@ -20,6 +21,7 @@ class ActionHarness:
         self.logger.log(f" 하네스 작동 중: {circuit_name} ({action_type})", 0)
         
         report = []
+        file_path = data.get("file_path", "unknown") if isinstance(data, dict) else "unknown"
 
         # 1. Auditor를 통한 소스 코드 정밀 감사 (데이터가 코드인 경우)
         if auditor and isinstance(data, dict) and "content" in data and "file_path" in data:
@@ -27,15 +29,21 @@ class ActionHarness:
             for result in audit_results:
                 if "FAIL" in result or "CRITICAL" in result:
                     report.append(result)
+                    severity = "CRITICAL" if "CRITICAL" in result else "FAIL"
+                    history_logger.log_audit(circuit_name, file_path, severity, result)
 
         # 2. 기존 PROTOCOL_UPDATE 규격 체크
         if action_type == "PROTOCOL_UPDATE":
             rules = data if isinstance(data, list) else []
             for rule in rules:
                 if not any(rule.startswith(e) for e in ["", "", "", "", "", "", "", ""]):
-                    report.append(f" 규격 위반: 규칙은 지정된 이모지로 시작해야 합니다. ('{rule[:10]}...')")
+                    msg = f" 규격 위반: 규칙은 지정된 이모지로 시작해야 합니다. ('{rule[:10]}...')"
+                    report.append(msg)
+                    history_logger.log_audit(circuit_name, "protocols.json", "FAIL", msg)
                 if "Protocol" not in rule:
-                    report.append(f" 명명 위반: 규칙명에 'Protocol' 키워드가 포함되어야 합니다. ('{rule[:10]}...')")
+                    msg = f" 명명 위반: 규칙명에 'Protocol' 키워드가 포함되어야 합니다. ('{rule[:10]}...')"
+                    report.append(msg)
+                    history_logger.log_audit(circuit_name, "protocols.json", "FAIL", msg)
 
         if report:
             self.logger.log(f" 하네스 차단 작동: {len(report)}건의 위반 발견", 2)
