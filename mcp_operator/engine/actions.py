@@ -173,7 +173,7 @@ class CoreActions:
 
     def get_audit_history(self, limit: int = 10) -> list[types.TextContent]:
         """[Handler] 시스템에 기록된 최근 감사 이력(위반 내역)을 조회합니다."""
-        from shared.history import history_logger
+        from mcp_operator.common.history import history_logger
         try:
             logs = history_logger.get_recent_audits(limit)
             if not logs:
@@ -200,10 +200,11 @@ class CoreActions:
             for rule in GlobalProtocols.get_rules(): card += f"  - {rule}\n"
         
         # 2. Circuit Special Protocols
-        p_cls = circuit.get_protocols()
-        if p_cls and hasattr(p_cls, "get_rules"):
+        # 런타임 객체(protocols.py) 또는 JSON 데이터를 로드합니다.
+        rules = self._get_runtime_protocols(circuit)
+        if rules:
             card += f"\n [Circuit Protocols ({c_name} Special)]\n"
-            for rule in p_cls.get_rules(): card += f"  - {rule}\n"
+            for rule in rules: card += f"  - {rule}\n"
         
         # 3. Active Technology Units
         card += self._build_units_section(circuit)
@@ -226,9 +227,10 @@ class CoreActions:
         return res
 
     def _load_unit_mission_and_rules(self, unit: str) -> str:
-        """[Internal] 개별 유닛의 protocols.py를 동적 리로드하여 최신 규약을 추출합니다."""
+        """[Internal] 개별 유닛의 물리적 설정에서 미션과 규약을 추출합니다."""
         try:
-            module_path = f"units.{unit}.protocols"
+            # 우선순위: 1. Python 모듈(protocols.py) -> 2. JSON(protocols.json)
+            module_path = f"mcp_operator.registry.units.{unit}.protocols"
             unit_module = importlib.reload(sys.modules[module_path]) if module_path in sys.modules else importlib.import_module(module_path)
             p_cls = getattr(unit_module, f"{unit.capitalize()}Protocols", None)
             
@@ -237,6 +239,15 @@ class CoreActions:
                 if hasattr(p_cls, "OVERVIEW"): line += f"    └ Mission: {p_cls.OVERVIEW}\n"
                 if hasattr(p_cls, "get_rules"):
                     for rule in p_cls.get_rules(): line += f"    └ {rule}\n"
+                return line
+            
+            # JSON Fallback
+            root = get_project_root()
+            json_path = os.path.join(root, "mcp_operator", "registry", "units", unit, "protocols.json")
+            data = read_json_safely(json_path)
+            if data:
+                line += f"    └ Mission: {data.get('OVERVIEW', 'N/A')}\n"
+                for rule in data.get("RULES", []): line += f"    └ {rule}\n"
             return line
         except: return ""
 
@@ -256,10 +267,12 @@ class CoreActions:
         return {"name": domain, "path": target_path}
 
     def _resolve_circuit_path(self, root: str, name: str) -> Optional[str]:
-        """[Internal] 평탄화된 경로 및 카테고리화된 경로에서 회선 디렉토리를 탐색합니다."""
+        """[Internal] 평탄화된 경로에서 회선 디렉토리를 탐색합니다."""
+        # 경로 수정: mcp_operator/registry/circuits/registry 하위 탐색
+        base = os.path.join(root, "mcp_operator", "registry", "circuits", "registry")
         candidates = [
-            os.path.join(root, "circuits", "registry", name.lower()),
-            *[os.path.join(root, "circuits", "registry", cat, name.lower()) for cat in ["development", "design", "planning"]]
+            os.path.join(base, name.lower()),
+            *[os.path.join(base, cat, name.lower()) for cat in ["development", "design", "planning"]]
         ]
         for p in candidates:
             if os.path.exists(p): return p
@@ -304,13 +317,9 @@ class CoreActions:
 
     def _find_spec_content(self, root: str, spec_file: str) -> str:
         """[Internal] 전체 프로젝트 트리에서 특정 스펙 파일을 Surgical하게 탐색합니다."""
-        # 1. 루트 specs/ 우선 탐색
-        root_spec = os.path.join(root, "specs", spec_file)
-        if os.path.exists(root_spec):
-            with open(root_spec, "r", encoding="utf-8") as f: return f.read()
-            
-        # 2. 모든 회선 폴더 specs/ 탐색
-        for root_dir, dirs, _ in os.walk(os.path.join(root, "circuits")):
+        # 1. 루트 mcp_operator/registry/ 내의 모든 specs/ 탐색
+        base_search = os.path.join(root, "mcp_operator", "registry")
+        for root_dir, dirs, _ in os.walk(base_search):
             if "specs" in dirs:
                 p = os.path.join(root_dir, "specs", spec_file)
                 if os.path.exists(p):

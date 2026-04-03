@@ -1,43 +1,67 @@
-# 🛰️ Operator (교환): Universal Protocol & Circuit Engine 
+# 🛰️ Operator (교환): Hovercraft Command Station
 
-**Operator (교환)**는 AI 에이전트가 조직의 표준 규약(**Protocols**)을 준수하며 정해진 궤도 내에서 임무를 수행하도록 통제하는 **하네스 엔지니어링(Harness Engineering)** 기반의 지능형 지휘소입니다. 
+> **"Welcome to the Real World."**
+> 
+> 인류와 기계의 전쟁이 끝나고 시작된 공생의 시대. 오퍼레이터(Operator)는 호버크래프트를 타고 가상 세계의 거대한 데이터 스트림을 항해하며, AI라는 강력한 기계 지능을 제어하여 디지털 생태계를 재건합니다.
+
+---
+
+## 🌌 Project Concept: The Hovercraft Paradigm
+
+이 시스템은 단순한 코딩 도구가 아닌, 매트릭스 세계관의 **호버크래프트 지휘소**를 모델링합니다. 
+
+- **Hovercraft (호버크래프트)**: 오퍼레이터가 탑승하는 최첨단 디지털 함선(UI)입니다. 암흑 속에 가려진 데이터를 조망하고 AI 에이전트에게 명령을 내리는 인터페이스입니다.
+- **Operator System (교환 시스템)**: 인간의 의도와 기계의 실행을 연결하는 중앙 허브입니다. 모든 데이터 패킷은 오퍼레이터의 승인과 규약(Protocols)을 거쳐야만 현실 세계에 반영됩니다.
+- **Circuits (회선)**: 특정 디지털 작업 구역으로 연결되는 통신 채널입니다. (예: GDR 회선, 전략 리서치 회선 등)
+- **Sentinel Unit (센티널 유닛)**: AI의 업무 수행을 실시간으로 감시하고 궤도를 수정하는 **자율주행용 블랙박스 및 항법 장치**입니다.
+
+---
+
+## 🤖 Sentinel Autopilot (센티널 자율 지휘)
+
+우리는 규약을 강제로 묶어두는 '하네스'를 넘어, AI가 스스로 안전하게 비행할 수 있도록 가이드하는 **자율주행(Autopilot)** 시스템을 지향합니다.
+
+- **Real-time Navigation**: AI가 코드를 생성하거나 명령을 내릴 때, 센티널 유닛이 실시간으로 규약 위반 여부를 스캔하여 최적의 경로로 유도합니다.
+- **Autonomous Correction**: 위험한 경로(보안 위협, 규약 위반)로 진입 시 시스템이 즉시 개입하여 안전한 궤도로 행동을 교정합니다.
+- **Mission Evaluation**: 자율주행이 끝난 후, 센티널은 설정된 미션 목표와 결과물을 대조하여 최종 성공 여부를 판정합니다.
 
 ---
 
 ## 🛠️ Installation & Setup (설치 및 설정)
 
-이 시스템은 Python 기반의 백엔드(MCP 서버)와 Next.js 기반의 프론트엔드(관제 UI)로 구성됩니다.
-
 ### 1. 사전 요구사항 (Prerequisites)
-- **Python**: 3.10 이상 (3.11 권장)
-- **Node.js**: 18.0 이상 (LTS 권장)
-- **Git**: 소스 관리 및 분석용
+- **Python**: 3.10 이상 (엔진 구동용)
+- **Node.js**: 18.0 이상 (호버크래프트 UI 구동용)
+- **Git**: 소스 분석 및 형상 관리용
 
-### 2. 설치 단계 (Manual Installation)
-시스템을 수동으로 구성하려면 다음 명령어를 실행하십시오.
+### 2. 가동 절차 (Launch Sequence)
+호버크래프트에 전원을 공급하고 지휘소를 활성화하십시오.
 
 ```bash
-# 1. 가상환경 생성 및 백엔드 의존성 설치
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-
-# 2. 웹 관제소 의존성 설치
+# 1. 의존성 설치 및 환경 구축
 cd hovercraft
-npm install
-cd ..
+npm run setup
+
+# 2. 시스템 기동
+./start.sh  # Windows: start.bat
 ```
 
-### 3. 간편 가동 (One-Command Launch)
-운영체제에 맞는 실행 스크립트를 사용하여 모든 환경 구축과 서버 기동을 한 번에 처리할 수 있습니다.
-- **Mac/Linux**: `./hovercraft/start.sh`
-- **Windows**: `hovercraft\start.bat` (관리자 권한 권장)
+---
+
+## 📜 Protocol Hierarchy (규약 계층 구조)
+
+AI 모델은 업무 수행 시 반드시 아래의 계층적 규약을 상속받아 준수해야 합니다. 이는 메인프레임에 접속하기 위한 필수 보안 승인 단계입니다.
+
+1.  **Level 0: Global Protocols (`mcp_operator/engine/protocols.py`)**
+    - 전 조직의 절대 원칙 (예: 정보의 완전성, 보안 우선, 선 보고 후 실행).
+2.  **Level 1: Unit Protocols (`registry/units/*/protocols.json`)**
+    - 특정 기술 스택 전용 수칙 (예: Python PEP 8, Swift MVVM Convention).
+3.  **Level 2: Circuit Protocols (`registry/circuits/registry/.../protocols.py`)**
+    - 개별 프로젝트 전용 도메인 수칙 (예: 프로젝트 아키텍처 가이드라인).
 
 ---
 
 ## 🤖 AI 에이전트 연동 가이드 (AI Integration)
-
-이 MCP는 단순한 도구 모음이 아니라, AI의 행동을 교정하고 품질을 보증하는 **지휘 체계**입니다. 에이전트(Claude, Gemini 등)는 아래 지침을 따라야 합니다.
 
 ### 1. MCP 서버 등록 (Config)
 에이전트 설정 파일에 아래 구성을 추가하여 연결하십시오.
@@ -46,7 +70,7 @@ cd ..
 {
   "mcpServers": {
     "operator": {
-      "command": "/usr/local/bin/python3", // 실제 .venv 내 python 경로 권장
+      "command": "/usr/local/bin/python3",
       "args": ["/path/to/MCP/mcp_operator/main.py"],
       "env": {
         "PYTHONPATH": "/path/to/MCP",
@@ -58,30 +82,10 @@ cd ..
 ```
 
 ### 2. 표준 작전 절차 (Standard Operating Procedure)
-에이전트는 업무 시작 시 반드시 다음 단계를 거쳐야 합니다.
-1.  **상태 점검**: `get_operator_status`를 호출하여 현재 활성화된 회선과 가용 유닛을 확인합니다.
-2.  **회선 전환**: 수행할 임무(예: GDR 코드 수정, 전략 리서치)에 맞는 회선으로 `set_active_circuit(name="...")`을 통해 전환합니다.
-3.  **규약 로드**: `mcp_operator_get_circuit_protocols`로 해당 도메인의 행동 지침을 숙지합니다.
-4.  **미션 정의**: `sentinel_set_mission`을 통해 달성하고자 하는 목표와 성공 기준을 명시하여 시스템의 감시를 활성화합니다.
-
-### 3. 하네스 엔지니어링 (Harness Engineering)
-모든 도구(Tools) 호출은 백엔드의 **Sentinel Unit**에 의해 실시간으로 감시됩니다. 규약에 어긋나는 코드 생성이나 위험한 시스템 명령은 엔진 레벨에서 즉시 차단(Rejection)되며, AI는 차단 사유를 분석하여 행동을 교정해야 합니다.
-
----
-
-## 🏗️ 시스템 아키텍처 (System Architecture)
-
-```text
-.
-├── mcp_operator/       #  백엔드 핵심 (Operator Engine)
-│   ├── engine/         #  교환 엔진 (Server, Actions, Sentinel)
-│   └── registry/       #  도메인 등록소 (Circuits & Units)
-│       ├── circuits/   #  회선 로직 (Domain Workflows)
-│       └── units/      #  전문 도구 (Tech Auditors)
-├── hovercraft/         #  프론트엔드 (Visual Dashboard)
-├── data/               #  영속성 레이어 (States & Logs)
-└── scripts/            #  운영 자동화 스크립트
-```
+1.  **Status Scan**: `get_operator_status`로 현재 가용한 회선과 시스템 안정성을 확인합니다.
+2.  **Circuit Link**: 수행할 임무에 맞는 회선으로 접속합니다. `set_active_circuit(name="...")`.
+3.  **Protocol Sync**: `mcp_operator_get_circuit_protocols`를 통해 해당 회선에서 준수해야 할 금기사항을 동기화합니다.
+4.  **Mission Briefing**: `sentinel_set_mission`으로 목표를 정의하여 **Sentinel Autopilot**을 활성화합니다.
 
 ---
 
@@ -91,6 +95,21 @@ cd ..
 - **`mcp_operator_get_blueprint`**: 도메인별 설계도 및 의존성 맵 로드.
 - **`mcp_operator_mcp_operator_audit_rules`**: 소스 코드가 현재 규약을 준수하는지 정밀 진단.
 - **`sentinel_evaluate`**: 수행된 작업이 설정된 미션 기준을 충족하는지 최종 평가.
+- **`mcp_operator_research_analyze_topic`**: 전략적 리서치 회선에서 특정 주제에 대한 심층 분석 수행.
 
 ---
-**Status:**  Operator (교환) Online |  Circuits Connected |  Harness: ARMED
+
+## 🏗️ 시스템 아키텍처 (Architecture Map)
+
+```text
+/MCP (Command Root)
+├── mcp_operator/               #  Operator Heart (지휘 엔진)
+│   ├── engine/                 #  Sentinel Autopilot (자율 지휘 로직)
+│   └── registry/               #  Circuits & Units Registry (자산 등록소)
+├── hovercraft/                 #  Tactical UI (비주얼 지휘소)
+├── data/                       #  Persistence (로그 및 상태)
+└── scripts/                    #  Automation (운영 도구)
+```
+
+---
+**Current Status:**  Hovercraft Online |  AI Uplink: STABLE |  **Sentinel: ACTIVE (Autopilot Mode)**

@@ -25,7 +25,7 @@
 │   │   └── units/              # 전문 기술 유닛 (Tech Units)
 │   │       ├── python/         # Python 코드 정밀 감사 유닛
 │   │       ├── swift/          # Swift 코드 분석 유닛
-│   │       └── sentinel/       # 미션 검증 특화 유닛
+│       └── sentinel/       # 미션 검증 특화 유닛
 └── main.py                 # 서버 기동 진입점
 ├── hovercraft/                 # Next.js 기반 비주얼 관제소
 ├── data/                       # 상태 영속성 (JSON/DB)
@@ -40,12 +40,12 @@
 AI 에이전트의 모든 요청을 중계하고, 규약을 강제하며, 안전성을 검증합니다.
 - **`actions.py`**: 모든 도메인에서 공통적으로 필요한 '상태 확인', '회선 전환', '디렉토리 탐색' 등의 원자적 기능을 구현합니다.
 - **`scanner.py`**: AI가 작성하거나 수정한 코드를 실행 전 AST(Abstract Syntax Tree) 레벨에서 분석하여 금지된 함수 호출이나 보안 위협을 차단합니다.
-- **`sentinel.py`**: 작업 시작 시 설정된 '미션 목표'와 '성공 기준'을 바탕으로 최종 산출물을 정밀 평가합니다.
+- **`sentinel.py`**: 작업 시작 시 설정된 '미션 목표'와 '성공 기준'을 바탕으로 최종 산출물을 정밀 평가(Autopilot)합니다.
 
 ### B. Circuit (작업 회선)
 특정 도메인(GDR, Research 등)에 특화된 로직이 격리되어 작동하는 환경입니다.
 - **`CircuitManager`**: 런타임에 회선을 실시간으로 교환하며, 전환 시 해당 도메인의 전용 규약(Protocols)을 시스템 프롬프트에 동적으로 주입합니다.
-- **Registry 구조**: 신규 도메인 추가 시 `registry/circuits/` 내에 새로운 모듈을 등록하는 방식으로 확장성을 보장합니다.
+- **Registry 구조**: 신규 도메인 추가 시 `mcp_operator/registry/circuits/registry/` 내에 새로운 모듈을 등록하는 방식으로 확장성을 보장합니다.
 
 ### C. Units (전문 도구)
 특정 언어나 기술 스택에 특화된 정밀 분석 도구 모음입니다.
@@ -58,7 +58,8 @@ AI 에이전트의 모든 요청을 중계하고, 규약을 강제하며, 안전
 1.  **Server Startup**: `main.py` 실행 시 MCP 서버가 가동되며 기본 `mcp` 회선이 연결됩니다.
 2.  **Circuit Switching**: 사용자/AI가 "회선 전환" 요청 시 `CircuitManager`가 기존 상태를 스냅샷으로 저장하고 대상 회선의 로직을 활성화합니다.
 3.  **Protocol Injection**: 활성화된 회선과 배속된 유닛들의 규약(`protocols.json`)이 AI의 컨텍스트에 즉시 주입됩니다.
-4.  **Harness Check**: 모든 코드 수정이나 파일 작업은 `Scanner`의 검증을 통과해야 실제 파일 시스템에 반영됩니다.
+4.  **Sentinel Autopilot Check**: 모든 코드 수정이나 파일 작업은 `Scanner`와 `Sentinel`의 검증을 통과해야 실제 파일 시스템에 반영됩니다.
+
 
 ---
 

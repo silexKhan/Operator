@@ -23,7 +23,7 @@ export class McpClient {
     this.pythonPath = isWindows 
       ? path.join(this.projectRoot, '.venv', 'Scripts', 'python.exe')
       : path.join(this.projectRoot, '.venv', 'bin', 'python');
-    this.scriptPath = path.join(this.projectRoot, 'main.py');
+    this.scriptPath = path.join(this.projectRoot, 'mcp_operator', 'main.py');
   }
 
   private async initialize(): Promise<void> {

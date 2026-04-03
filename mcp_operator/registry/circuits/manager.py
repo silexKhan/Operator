@@ -192,8 +192,12 @@ class CircuitManager:
 
     def _load_circuit_module(self, base_dir: str, dirpath: str):
         """발견된 디렉토리로부터 회선 모듈을 임포트하고 인스턴스화합니다."""
+        # [사용자] registry 하위 경로를 안전하게 추출합니다.
         rel_path = os.path.relpath(dirpath, base_dir)
-        module_name = f"mcp_operator.registry.circuits.{rel_path.replace(os.sep, '.')}.actions"
+        path_parts = rel_path.replace(os.sep, '.').strip('.')
+        
+        # [사용자] 정규화된 풀 패키지 경로를 사용하여 구식 'circuits' 임포트를 원천 차단합니다.
+        module_name = f"mcp_operator.registry.circuits.{path_parts}.actions"
         
         try:
             module = importlib.reload(sys.modules[module_name]) if module_name in sys.modules else importlib.import_module(module_name)
@@ -214,7 +218,7 @@ class CircuitManager:
     def _build_global_protocols_section(self, circuit: BaseCircuit) -> str:
         """전사 공통 규약 섹션을 빌드합니다."""
         if not getattr(circuit, 'inherit_global', True): return ""
-        from core.protocols import GlobalProtocols
+        from mcp_operator.engine.protocols import GlobalProtocols
         res = "\n [Inherited Global Protocols]\n"
         for rule in GlobalProtocols.get_rules(): res += f"  - {rule}\n"
         return res
@@ -222,6 +226,7 @@ class CircuitManager:
     def _build_circuit_special_protocols_section(self, circuit: BaseCircuit, name: str) -> str:
         """회선 전용 규약 섹션을 빌드합니다."""
         circuit_dir = os.path.dirname(inspect.getfile(circuit.__class__))
+        # protocols.json 또는 protocols.py 등을 유연하게 탐색 (여기선 json 우선)
         json_path = os.path.join(circuit_dir, "protocols.json")
         rules = read_json_safely(json_path).get("RULES", [])
         
@@ -245,7 +250,8 @@ class CircuitManager:
 
     def _load_unit_spec_text(self, root: str, unit: str) -> str:
         """개별 유닛의 물리적 JSON에서 미션과 규약을 텍스트로 추출합니다."""
-        json_path = os.path.join(root, "operator", "registry", "units", unit, "protocols.json")
+        # 경로 수정: operator/registry/units -> mcp_operator/registry/units
+        json_path = os.path.join(root, "mcp_operator", "registry", "units", unit, "protocols.json")
         data = read_json_safely(json_path)
         if not data: return ""
         

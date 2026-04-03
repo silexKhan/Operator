@@ -2,10 +2,10 @@ import sys
 import os
 
 # MCP 경로 추가
-sys.path.append(os.path.join(os.getcwd(), "workspace/private/MCP"))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from units.python.auditor import PythonAuditor
-from core.sentinel import Sentinel
+from mcp_operator.registry.units.python.auditor import PythonAuditor
+from mcp_operator.engine.sentinel import Sentinel
 
 def test_ast_auditor_security():
     print("\n--- [TEST 1] AST Auditor Security Guard Test ---")

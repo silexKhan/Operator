@@ -9,10 +9,10 @@ import json
 import asyncio
 
 # 프로젝트 루트를 sys.path 에 추가 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from circuits.manager import CircuitManager
-from core.logger import OperatorLogger
+from mcp_operator.registry.circuits.manager import CircuitManager
+from mcp_operator.engine.logger import OperatorLogger
 
 def main():
     # [사용자] 가용한 회선 목록을 실시간으로 추출하여 도움말에 동적으로 주입합니다. 

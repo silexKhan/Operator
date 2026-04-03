@@ -23,7 +23,7 @@ class SwiftAuditor(BaseAuditor):
                 return active.get_protocols()
         
         # fallback: 기본 공통 Swift 프로토콜을 사용합니다.
-        from units.swift.protocols import SwiftProtocols
+        from mcp_operator.registry.units.swift.protocols import SwiftProtocols
         return SwiftProtocols
 
     def audit(self, file_path: str, content: str) -> list[str]:

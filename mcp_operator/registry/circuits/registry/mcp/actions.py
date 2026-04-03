@@ -99,9 +99,16 @@ class McpCircuit(BaseCircuit):
     # [Internal Handlers] 상세 로직 (P-4)
     # -------------------------------------------------------------------------
 
-    async def _audit_rules_handler(self, file_path: str) -> list[types.TextContent]:
-        from core.harness import Auditor
-        return Auditor.audit(file_path)
+    async def _audit_rules_handler(self, file_path: str) -> list[types.TextResponse]:
+        from mcp_operator.engine.scanner import CodeScanner
+        root = get_project_root()
+        scanner = CodeScanner(root)
+        if not os.path.exists(file_path):
+            return TextResponse(f" 존재하지 않는 파일입니다: {file_path}")
+        
+        # AST 기반 정밀 분석 결과 반환
+        result = scanner._parse_source_code(file_path)
+        return TextResponse(json.dumps(result, ensure_ascii=False, indent=2))
 
     async def _update_overview_handler(self, args: dict) -> list[types.TextContent]:
         target_name = args.get("circuit_name", "").lower()
@@ -133,7 +140,8 @@ class McpCircuit(BaseCircuit):
     async def _create_circuit_handler(self, args: dict) -> list[types.TextContent]:
         name = args.get("name", "").lower()
         root = get_project_root()
-        path = os.path.join(root, "circuits", "registry", name)
+        # 경로 수정: mcp_operator/registry/circuits/registry
+        path = os.path.join(root, "mcp_operator", "registry", "circuits", "registry", name)
         if os.path.exists(path): return TextResponse("Already exists")
         try:
             os.makedirs(os.path.join(path, "specs", "done"), exist_ok=True)
@@ -144,7 +152,8 @@ class McpCircuit(BaseCircuit):
     async def _create_unit_handler(self, args: dict) -> list[types.TextContent]:
         name = args.get("name", "").lower()
         root = get_project_root()
-        path = os.path.join(root, "units", name)
+        # 경로 수정: mcp_operator/registry/units
+        path = os.path.join(root, "mcp_operator", "registry", "units", name)
         if os.path.exists(path): return TextResponse("Already exists")
         try:
             os.makedirs(os.path.join(path, "specs", "done"), exist_ok=True)

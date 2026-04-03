@@ -21,7 +21,7 @@ class ResearchCircuit(BaseCircuit):
     def get_protocols(self): return Protocols
     def get_auditor(self):
         # [사용자] 리서치 회선에 적합한 오디터를 설정합니다. (기본은 MarkdownAuditor 추천)
-        from units.markdown.auditor import MarkdownAuditor
+        from mcp_operator.registry.units.markdown.auditor import MarkdownAuditor
         return MarkdownAuditor(self.logger)
 
     def get_tools(self) -> list[types.Tool]:

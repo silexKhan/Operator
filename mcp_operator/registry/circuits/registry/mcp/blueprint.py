@@ -50,11 +50,17 @@ class BluePrint:
     def get_domain_spec(cls, domain: str) -> dict:
         """[사용자] 특정 도메인을 실시간으로 분석하여 상세 설계도를 생성합니다. """
         scanner = CodeScanner(cls.PROJECT_ROOT)
-        # 용어 정규화: Circuits 체계 준수 
-        target_domain = "circuits" if domain.lower() in ["tenants", "circuits"] else domain.lower()
         
-        if target_domain in ["core", "circuits", "language"]:
-            metadata = scanner.scan_directory(target_domain)
+        # 용어 및 경로 정규화
+        mapping = {
+            "core": "mcp_operator/engine",
+            "circuits": "mcp_operator/registry/circuits",
+            "units": "mcp_operator/registry/units"
+        }
+        
+        target_path = mapping.get(domain.lower())
+        if target_path:
+            metadata = scanner.scan_directory_handler(target_path)
             
             res = {
                 "name": metadata.get("name", "Unknown Domain"),

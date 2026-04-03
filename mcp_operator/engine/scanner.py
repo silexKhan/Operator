@@ -57,9 +57,9 @@ class CodeScanner:
 
         # 2. 전체 구조 조립
         structure = {
-            "core": scanner.scan_directory_handler("core"),
-            "circuits": scanner.scan_directory_handler("circuits"),
-            "units": scanner.scan_directory_handler("units"),
+            "core": scanner.scan_directory_handler("mcp_operator/engine"),
+            "circuits": scanner.scan_directory_handler("mcp_operator/registry/circuits"),
+            "units": scanner.scan_directory_handler("mcp_operator/registry/units"),
             "active_units": active_units,
             "specs": scanner.scan_specs_handler(project_root),
             "registered_circuits": registered_circuits or [],
@@ -168,7 +168,7 @@ class CodeScanner:
 
     def _discover_active_units(self) -> List[str]:
         """물리적 디렉토리 구조를 기반으로 활성 유닛 목록을 반환합니다."""
-        units_path = os.path.join(self.root_path, "units")
+        units_path = os.path.join(self.root_path, "mcp_operator", "registry", "units")
         if not os.path.exists(units_path): return []
         return [d for d in os.listdir(units_path) if os.path.isdir(os.path.join(units_path, d)) and not d.startswith("__")]
 
