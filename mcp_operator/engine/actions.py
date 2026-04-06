@@ -41,6 +41,55 @@ class CoreActions:
         )
         return TextResponse(res)
 
+    def get_active_circuit_details(self) -> Optional[Dict[str, Any]]:
+        """[Handler] 현재 활성화된 회선의 상세 정보를 구조화된 데이터로 반환합니다."""
+        active = self.manager.get_active_circuit()
+        if not active:
+            return None
+            
+        from mcp_operator.engine.protocols import GlobalProtocols
+        name = active.get_name()
+        
+        # 1. Protocols
+        protocols = []
+        if getattr(active, 'inherit_global', True):
+            protocols.extend(GlobalProtocols.get_rules())
+        
+        runtime_rules = self._get_runtime_protocols(active)
+        if runtime_rules:
+            protocols.extend(runtime_rules)
+            
+        # 2. Units
+        units_data = []
+        units = getattr(active, "units", [])
+        if not units and hasattr(active, "get_units"):
+            units = active.get_units()
+            
+        for unit_name in list(dict.fromkeys(units or [])):
+            unit_info = {"name": unit_name, "mission": "N/A", "rules": []}
+            # 유닛 상세 정보 로드
+            try:
+                root = get_project_root()
+                json_path = os.path.join(root, "mcp_operator", "registry", "units", unit_name, "protocols.json")
+                data = read_json_safely(json_path)
+                if data:
+                    unit_info["mission"] = data.get("OVERVIEW", "N/A")
+                    unit_info["rules"] = data.get("RULES", [])
+            except: pass
+            units_data.append(unit_info)
+            
+        # 3. Actions
+        actions = []
+        for tool in active.get_tools():
+            actions.append({"name": tool.name, "description": tool.description})
+            
+        return {
+            "name": name,
+            "protocols": protocols,
+            "units": units_data,
+            "actions": actions
+        }
+
     def set_active_circuit(self, name: str) -> list[types.TextContent]:
         """
         [Dumb Controller] 특정 회선에 정식으로 연결을 시도하고 지휘소 카드를 생성합니다.

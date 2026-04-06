@@ -8,6 +8,7 @@ import sys
 import inspect
 import json
 import websockets
+from datetime import datetime
 from mcp_operator.common.models import ResponseHandler, TextResponse
 import mcp.types as types
 from mcp.server.models import InitializationOptions
@@ -19,6 +20,14 @@ from mcp_operator.engine.actions import CoreActions
 from mcp_operator.engine.protocols import GlobalProtocols
 from mcp_operator.engine.logger import OperatorLogger
 from mcp_operator.engine.sentinel import Sentinel
+from enum import Enum
+
+class McpRawAction(str, Enum):
+    """[Specification] 웹소켓 다이렉트 명령어 (P-6)"""
+    GET_STATUS = "get_operator_status"
+    SET_CIRCUIT = "set_active_circuit"
+    SYNC_PATH = "sync_operator_path"
+    RELOAD = "reload_operator"
 
 class OperatorServer:
     """
@@ -50,15 +59,15 @@ class OperatorServer:
     async def broadcast_message(self, message: dict):
         """[Handler] 연결된 모든 호버크래프트 UI에 신호를 전송합니다."""
         if not self.ws_clients: return
-        
-        # 메시지에 공통 타임스탬프 추가
+
+        # [Sync] 타임스탬프 형식을 ISO 문자열로 통일 (UI 파싱 오류 방지)
         if "timestamp" not in message:
-            message["timestamp"] = asyncio.get_event_loop().time()
-            
+            message["timestamp"] = datetime.now().isoformat()
+
         data = json.dumps(message, ensure_ascii=False)
-        
-        # [Socket Log] 송신 로그 강화
-        self.logger.log(f" 📤 [Socket] Outgoing (to {len(self.ws_clients)} clients): {data[:100]}...", 1)
+        # [Socket Log] 무한 루프 방지를 위해 직접 stderr 출력 (logger.log 사용 금지)
+        now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        print(f" [{now}] [OPERATOR] [MasterOperator]    ├─ 📤 [Socket] Outgoing (to {len(self.ws_clients)} clients): {data[:100]}...", file=sys.stderr)
         
         disconnected = set()
         for ws in self.ws_clients:
@@ -71,12 +80,15 @@ class OperatorServer:
     async def broadcast_operator_status(self):
         """[Internal] 현재 오퍼레이터의 활성 상태를 모든 UI에 동기화합니다."""
         active = self.circuit_manager.get_active_circuit()
+        active_details = await asyncio.to_thread(self.core_actions.get_active_circuit_details)
+        
         status_packet = {
             "type": "STATUS_UPDATE",
             "active_circuit": active.get_name() if active else "None",
             "registered_circuits": list(self.circuit_manager.circuits.keys()),
             "active_units": getattr(self.circuit_manager, "active_units", []),
-            "path": getattr(self.circuit_manager, "current_path", "Unknown")
+            "path": getattr(self.circuit_manager, "current_path", "Unknown"),
+            "active_circuit_details": active_details
         }
         await self.broadcast_message(status_packet)
 
@@ -89,81 +101,84 @@ class OperatorServer:
         try:
             # [INIT] 접속 즉시 현재 시스템 가용 정보 전송
             active = self.circuit_manager.get_active_circuit()
+            active_details = await asyncio.to_thread(self.core_actions.get_active_circuit_details)
+            
             await websocket.send(json.dumps({
                 "type": "INIT",
-                "timestamp": asyncio.get_event_loop().time(),
+                "timestamp": datetime.now().isoformat(),
                 "data": {
                     "active_circuit": active.get_name() if active else "None",
                     "circuits": list(self.circuit_manager.circuits.keys()),
-                    "path": getattr(self.circuit_manager, "current_path", "Unknown")
+                    "path": getattr(self.circuit_manager, "current_path", "Unknown"),
+                    "active_circuit_details": active_details
                 }
             }, ensure_ascii=False))
 
             async for message in websocket:
                 try:
-                    # [Socket Log] 무한 루프 방지를 위해 직접 stderr 출력
-                    now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-                    print(f" [{now}] [OPERATOR] [Socket] 📥 Incoming: {message[:100]}...", file=sys.stderr)
-                    
                     data = json.loads(message)
-                    if data.get("type") == "COMMAND":
-                        action = data.get("action")
-                        
-                        # [Terminal Output] Gemini CLI 터미널에 즉각적인 시각적 피드백 제공
-                        self.logger.log(f" 📡 [Uplink] 웹 UI로부터 '{action}' 명령 수신", 0)
+                    if data.get("type") != "COMMAND": continue
+                    
+                    action_raw = data.get("action")
+                    print(f" [{datetime.now().strftime('%H:%M:%S')}] [UPLINK] 📥 Incoming: {action_raw}", file=sys.stderr)
+                    
+                    # [ACK] 명령 수신 즉시 응답 전송 (처리 유무 관계없이)
+                    await websocket.send(json.dumps({
+                        "type": "RESPONSE",
+                        "action": action_raw,
+                        "status": "RECEIVED",
+                        "timestamp": datetime.now().isoformat()
+                    }, ensure_ascii=False))
 
-                        # [Web UI Feedback] 명령을 수신했음을 웹 UI에 먼저 알림 (level: plain으로 CSS 우회)
-                        await self.broadcast_message({
-                            "type": "LOG",
-                            "level": "plain",
-                            "category": "UPLINK",
-                            "message": f"▶ 명령 처리 중: {action}..."
-                        })
+                    match action_raw:
+                        case McpRawAction.GET_STATUS:
+                            await self._handle_direct_status_request()
+                        case McpRawAction.SET_CIRCUIT:
+                            await self._handle_direct_circuit_switch(data.get("name"))
+                        case _:
+                            print(f" ⚠️ Unknown Command: {action_raw}", file=sys.stderr)
 
-                        # [MCP Notification] Gemini CLI(Host)에게 알림 전송
-                        if self._session:
-                            try:
-                                asyncio.create_task(self._session.send_log_message(
-                                    level="warning",
-                                    data=f"🚀 [Uplink] 웹 UI 요청: {action}"
-                                ))
-                            except: pass
-
-                        if action == "get_operator_status":
-                            # 실제 상태 조회 실행
-                            status_res = self.core_actions.get_operator_status()
-                            res_text = status_res[0].text if isinstance(status_res, list) else str(status_res)
-                            
-                            # 결과를 웹 UI로 브로드캐스트 (level: plain으로 CSS 우회)
-                            await self.broadcast_message({
-                                "type": "LOG",
-                                "level": "plain",
-                                "category": "OPERATOR",
-                                "message": f"✔ 결과 수신: {res_text}"
-                            })
-                            # 상태 정보도 함께 갱신
-                            await self.broadcast_operator_status()
-
-                        elif action == "set_active_circuit":
-                            # 웹에서 직접 회선 전환 요청 시
-                            circuit_name = data.get("name")
-                            if circuit_name:
-                                res = self.core_actions.set_active_circuit(circuit_name)
-                                await self.broadcast_operator_status()
-                                await self.broadcast_message({
-                                    "type": "LOG",
-                                    "level": "plain",
-                                    "category": "OPERATOR",
-                                    "message": f"Circuit switched to: {circuit_name}"
-                                })
-
-                except json.JSONDecodeError:
-                    pass
+                except json.JSONDecodeError: pass
                 except Exception as e:
                     self.logger.log(f" ❌ [Socket] 업링크 명령 처리 중 에러: {str(e)}", 0)
         finally:
             self.ws_clients.remove(websocket)
             self.logger.log(f" 🔌 [Socket] 호버크래프트 업링크 해제 (Active: {len(self.ws_clients)})", 0)
+
+    async def _handle_direct_status_request(self):
+        """[Internal] UI로부터의 직접 상태 요청 처리"""
+        try:
+            res = await asyncio.to_thread(self.core_actions.get_operator_status)
+            status_text = res[0].text if res and len(res) > 0 else "상태 정보를 가져올 수 없습니다."
+            
+            await self.broadcast_message({
+                "type": "LOG", "level": "plain", "category": "OPERATOR",
+                "message": f"✔ 시스템 상태 동기화 완료\n{status_text}"
+            })
+            await self.broadcast_operator_status()
+        except Exception as e:
+            await self._broadcast_error(f"상태 조회 실패: {str(e)}")
+
+    async def _handle_direct_circuit_switch(self, circuit_name: str):
+        """[Internal] UI로부터의 직접 회선 전환 처리"""
+        if not circuit_name: return
+        try:
+            res = await asyncio.to_thread(self.core_actions.set_active_circuit, circuit_name)
+            context_card = res[0].text if res and len(res) > 0 else f"회선 '{circuit_name}'으로 전환되었습니다."
+            
+            await self.broadcast_message({
+                "type": "LOG", "level": "plain", "category": "OPERATOR",
+                "message": f"▶ {context_card}"
+            })
+            await self.broadcast_operator_status()
+        except Exception as e:
+            await self._broadcast_error(f"회선 전환 실패: {str(e)}")
+
+    async def _broadcast_error(self, message: str):
+        """[Internal] 에러 발생 시 UI로 즉시 브로드캐스트"""
+        await self.broadcast_message({
+            "type": "LOG", "level": "error", "category": "ERROR", "message": f"❌ {message}"
+        })
 
     async def start_ws_server(self):
         """[Handler] 웹소켓 서버 가동 (Port: 3001)"""
