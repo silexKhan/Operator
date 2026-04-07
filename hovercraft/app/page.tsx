@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { CoreAccess } from "@/components/windows/CoreAccess/CoreAccess";
-import { RadarUplink } from "@/components/windows/RadarUplink/RadarUplink";
+import { MissionSpecs } from "@/components/windows/MissionSpecs/MissionSpecs";
 import { SystemLogs } from "@/components/windows/SystemLogs/SystemLogs";
-import { SentinelTracking } from "@/components/windows/SentinelTracking/SentinelTracking";
-import { ZionComms } from "@/components/windows/ZionComms/ZionComms";
-import { ShipStatus } from "@/components/windows/ShipStatus/ShipStatus";
+import { AuditSecurity } from "@/components/windows/AuditSecurity/AuditSecurity";
+import { UnitProtocols } from "@/components/windows/UnitProtocols/UnitProtocols";
+import { ResourceMonitor } from "@/components/windows/ResourceMonitor/ResourceMonitor";
 import { ShipInitialization } from "@/components/Initialization/ShipInitialization";
 
 interface LogEntry {
@@ -169,11 +169,11 @@ export default function Home() {
           requestSwitchCircuit={requestSwitchCircuit}
           systemStatus={systemStatus} 
         />
-        <RadarUplink />
+        <MissionSpecs systemStatus={systemStatus} />
         <SystemLogs logs={logs} status={status} logEndRef={logEndRef} />
-        <SentinelTracking />
-        <ZionComms />
-        <ShipStatus />
+        <AuditSecurity logs={logs} />
+        <UnitProtocols systemStatus={systemStatus} />
+        <ResourceMonitor systemStatus={systemStatus} />
       </main>
 
       {/* Bottom Status Bar */}
