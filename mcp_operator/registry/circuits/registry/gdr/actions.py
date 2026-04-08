@@ -30,7 +30,7 @@ class GdrCircuit(BaseCircuit):
         
         if func_name == "get_overview":
             from .overview import Overview
-            res = f" [GDR MISSION CENTER]\n- NAME: {Overview.NAME}\n- ROLE: {Overview.ROLE}\n- STATUS: ACTIVE"
+            res = f" [GDR MISSION CENTER]\n- NAME: {Overview.NAME}\n- STATUS: ACTIVE"
             return TextResponse(res)
             
         elif func_name == "audit_code":

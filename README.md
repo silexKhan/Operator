@@ -92,7 +92,6 @@ AI 모델은 업무 수행 시 반드시 아래의 계층적 규약을 상속받
 ## 🛰️ 주요 지휘 도구 (Core Mission Tools)
 
 - **`get_operator_status`**: 시스템 가동 상태 및 회선 목록 조망.
-- **`mcp_operator_get_blueprint`**: 도메인별 설계도 및 의존성 맵 로드.
 - **`mcp_operator_mcp_operator_audit_rules`**: 소스 코드가 현재 규약을 준수하는지 정밀 진단.
 - **`sentinel_evaluate`**: 수행된 작업이 설정된 미션 기준을 충족하는지 최종 평가.
 - **`mcp_operator_research_analyze_topic`**: 전략적 리서치 회선에서 특정 주제에 대한 심층 분석 수행.

@@ -24,8 +24,16 @@ from enum import Enum
 
 class McpRawAction(str, Enum):
     """[Specification] 웹소켓 다이렉트 명령어 (P-6)"""
-    GET_STATUS = "get_operator_status"
-    SET_CIRCUIT = "set_active_circuit"
+    # [LEGACY] 기존 호환성 유지
+    GET_STATUS_LEGACY = "get_operator_status"
+    SET_CIRCUIT_LEGACY = "set_active_circuit"
+    
+    # [UNIFIED] 신규 통합 지휘 API
+    GET = "mcp_operator_get"
+    UPDATE = "mcp_operator_mcp_operator_update"
+    CREATE = "mcp_operator_mcp_operator_create"
+    EXECUTE = "mcp_operator_mcp_operator_execute"
+    
     SYNC_PATH = "sync_operator_path"
     RELOAD = "reload_operator"
 
@@ -40,6 +48,12 @@ class OperatorServer:
         self.sentinel = Sentinel()
         self.circuit_manager = CircuitManager()
         self.core_actions = CoreActions(self.circuit_manager, self.logger)
+        # [Sync] 통합 지휘 API 위임을 위해 매니저에 코어 액션 참조 연결
+        self.circuit_manager.core_actions = self.core_actions
+        
+        # [I18N] 다국어 지원 프로토콜 인스턴스화
+        self.global_protocols = GlobalProtocols()
+        
         self.server = Server("operator-hub")
         self._session = None # [사용자] MCP 세션 참조 보관용
         
@@ -131,10 +145,22 @@ class OperatorServer:
                     }, ensure_ascii=False))
 
                     match action_raw:
-                        case McpRawAction.GET_STATUS:
+                        case McpRawAction.GET_STATUS_LEGACY:
                             await self._handle_direct_status_request()
-                        case McpRawAction.SET_CIRCUIT:
+                        case McpRawAction.GET:
+                            # [UNIFIED] GET target="status" 일 경우 UI 상태 동기화
+                            if data.get("target") == "status":
+                                await self._handle_direct_status_request()
+                            else:
+                                print(f" ⚠️ Unsupported GET target via Uplink: {data.get('target')}", file=sys.stderr)
+                        case McpRawAction.SET_CIRCUIT_LEGACY:
                             await self._handle_direct_circuit_switch(data.get("name"))
+                        case McpRawAction.EXECUTE:
+                            # [UNIFIED] EXECUTE action="reload" 대응
+                            if data.get("action_name") == "reload" or data.get("params", {}).get("action") == "reload":
+                                await self.reload_operator_handler()
+                            else:
+                                print(f" ⚠️ Unsupported EXECUTE action via Uplink: {data.get('action')}", file=sys.stderr)
                         case _:
                             print(f" ⚠️ Unknown Command: {action_raw}", file=sys.stderr)
 
@@ -210,33 +236,74 @@ class OperatorServer:
         async def handle_call_tool(name: str, arguments: dict | None) -> list[types.TextContent]:
             return await self._dispatch_tool_handler(name, arguments or {})
 
+    def get_supported_languages_handler(self) -> list[types.TextContent]:
+        """[Tool] 지원되는 언어 목록을 반환합니다."""
+        supported = self.global_protocols.get_supported_languages()
+        current = self.global_protocols.get_current_language()
+        
+        info = {
+            "supported": supported,
+            "current": current
+        }
+        return [types.TextContent(type="text", text=json.dumps(info, ensure_ascii=False, indent=2))]
+
+    async def set_language_handler(self, lang_code: str) -> list[types.TextContent]:
+        """[Tool] 시스템 언어를 변경합니다."""
+        success = self.global_protocols.set_language(lang_code)
+        if success:
+            # [I18N] 언어 변경 시 지휘 지침 즉시 갱신
+            self.instructions = self._assemble_instructions_handler()
+            
+            # [Sync] UI에 언어 변경 알림 전송
+            msg = self.global_protocols.get_message("INIT_SUCCESS")
+            await self.broadcast_message({
+                "type": "LOG",
+                "level": "INFO",
+                "message": f"Language changed to: {lang_code}. {msg}",
+                "category": "SYSTEM"
+            })
+            
+            return [types.TextContent(type="text", text=f"Language switched to '{lang_code}' successfully.")]
+        else:
+            return [types.TextContent(type="text", text=f"Failed to switch language. '{lang_code}' is not supported.")]
+
     async def reload_operator_handler(self) -> list[types.TextContent]:
-        """[Handler] 엔진 리로드"""
+        """[Handler] 엔진 리로드 (mcp_operator 패키지 포함)"""
         try:
             import importlib
             import sys
 
-            # [사용자] 구식 최상위 모듈 캐시만 제거하여 새로운 패키지 구조와의 충돌을 방지합니다.
-            legacy_targets = ('circuits', 'core', 'shared', 'units')
-            keys_to_del = [k for k in sys.modules.keys() if k.startswith(legacy_targets)]
+            # [사용자] 현재 패키지 구조(mcp_operator)를 포함하여 캐시된 모듈을 정밀 타격하여 제거합니다.
+            targets = ('mcp_operator', 'circuits', 'core', 'shared', 'units')
+            keys_to_del = [k for k in sys.modules.keys() if any(k.startswith(t) for t in targets)]
             for k in keys_to_del:
                 del sys.modules[k]
 
-            # 매니저 모듈 강제 리로드 (회선 재탐색용)
+            # 핵심 매니저 및 액션 모듈 리로드
             import mcp_operator.registry.circuits.manager
+            import mcp_operator.engine.actions
             importlib.reload(mcp_operator.registry.circuits.manager)
+            importlib.reload(mcp_operator.engine.actions)
+            
             from mcp_operator.registry.circuits.manager import CircuitManager
+            from mcp_operator.engine.actions import CoreActions
 
-            # 런타임 회선 재탐색
+            # 런타임 인스턴스 재생성
             self.circuit_manager = CircuitManager()
-
             await asyncio.to_thread(self.circuit_manager.discover_circuits_handler)
             
-            # 액션 엔진 재인스턴스화
             self.core_actions = CoreActions(self.circuit_manager, self.logger)
+            # [Sync] 리로드 후에도 통합 지휘 API 위임을 위해 매니저에 코어 액션 참조 연결
+            self.circuit_manager.core_actions = self.core_actions
+            
+            # [Debug] manager 상태 및 ID 확인
+            m_id = id(self.circuit_manager)
+            print(f" [DEBUG] reload_operator_handler: manager_id={m_id}, core_actions assigned", file=sys.stderr)
+            
             self.last_circuit_keys = set(self.circuit_manager.circuits.keys())
             self._refresh_tool_cache_handler()
-            return TextResponse(" 지휘소 상태 동기화 완료! ")
+            
+            return TextResponse(" 지휘소 상태 동기화 완료! (mcp_operator 패키지 리로드됨) ")
         except Exception as e:
             import traceback
             err_msg = traceback.format_exc()
@@ -265,7 +332,7 @@ class OperatorServer:
     def _assemble_instructions_handler(self) -> str:
         """[Internal] 지휘 지침 조립"""
         base = "당신은 오퍼레이터(Operator) 시스템의 메인 지휘 AI입니다. 아래 전사 규약을 최우선 준수하십시오:\n\n"
-        rules = "\n".join(GlobalProtocols.get_rules())
+        rules = "\n".join(self.global_protocols.get_rules())
         return base + rules
 
     def _refresh_tool_cache_handler(self):
@@ -278,11 +345,13 @@ class OperatorServer:
             "reload_operator": lambda args: self.reload_operator_handler(),
             # mcp_operator_ 접두어 도구 브릿지
             "mcp_operator_browse_directory": lambda args: asyncio.to_thread(self.core_actions.browse_directory, args.get("path", ".")),
-            "mcp_operator_get_blueprint": lambda args: asyncio.to_thread(self.core_actions.get_blueprint, args.get("domain", "")),
             "mcp_operator_get_spec_content": lambda args: asyncio.to_thread(self.core_actions.get_spec_content, args.get("spec_file", "")),
             "mcp_operator_get_circuit_protocols": lambda args: asyncio.to_thread(self.core_actions.get_circuit_protocols, args.get("circuit_name", "")),
             "mcp_operator_get_global_protocols": lambda args: asyncio.to_thread(self.core_actions.get_global_protocols),
-            "mcp_operator_get_full_json_structure": lambda args: asyncio.to_thread(self.core_actions.get_full_json_structure)
+            "mcp_operator_get_full_json_structure": lambda args: asyncio.to_thread(self.core_actions.get_full_json_structure),
+            # [I18N] 다국어 지원 도구
+            "get_supported_languages": lambda args: self.get_supported_languages_handler(),
+            "set_language": lambda args: self.set_language_handler(args.get("lang_code", ""))
         }
         # 회선별 전용 도구 동적 매핑
         for circuit in self.circuit_manager.circuits.values():

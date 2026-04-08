@@ -17,19 +17,15 @@ from mcp import types
 @unique
 class OperatorTool(Enum):
     """[Specification] 오퍼레이터 가용 도구 (P-6)"""
+    # Unified Command Interface (MCP 2.0)
+    GET = "get"
+    UPDATE = "update"
+    CREATE = "create"
+    EXECUTE = "execute"
+    
+    # Legacy & Specific Tools (Maintaining compatibility for essential actions)
     AUDIT_RULES = "audit_rules"
-    GET_OVERVIEW = "get_overview"
-    GET_GLOBAL_PROTOCOLS = "get_global_protocols"
     BROWSE_DIRECTORY = "browse_directory"
-    GET_BLUEPRINT = "get_blueprint"
-    GET_SPEC_CONTENT = "get_spec_content"
-    UPDATE_CIRCUIT_PROTOCOLS = "update_circuit_protocols"
-    UPDATE_CIRCUIT_OVERVIEW = "update_circuit_overview"
-    GET_CIRCUIT_PROTOCOLS = "get_circuit_protocols"
-    GET_FULL_JSON_STRUCTURE = "get_full_json_structure"
-    CREATE_NEW_CIRCUIT = "create_new_circuit"
-    CREATE_NEW_UNIT = "create_new_unit"
-    DELETE_CIRCUIT = "delete_circuit"
     SENTINEL_SET_MISSION = "sentinel_set_mission"
     SENTINEL_GET_MISSION = "sentinel_get_mission"
     SENTINEL_EVALUATE = "sentinel_evaluate"
@@ -50,22 +46,65 @@ class McpCircuit(BaseCircuit):
         return "mcp"
 
     def get_tools(self) -> list[types.Tool]:
-        """[Specification] 도구 명세서 - 모든 객체에 properties 필수 명시 (P-2)"""
+        """[Specification] 도구 명세서 - 통합 지휘 API로 개편 (P-2)"""
         return [
-            types.Tool(name="mcp_operator_audit_rules", description="코드 감사", inputSchema={"type": "object", "properties": {"file_path": {"type": "string"}}, "required": ["file_path"]}),
-            types.Tool(name="mcp_operator_get_overview", description="회선 개요", inputSchema={"type": "object", "properties": {}}),
-            types.Tool(name="mcp_operator_get_global_protocols", description="전사 규약", inputSchema={"type": "object", "properties": {}}),
-            types.Tool(name="mcp_operator_browse_directory", description="탐색", inputSchema={"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}),
-            types.Tool(name="mcp_operator_get_blueprint", description="설계도", inputSchema={"type": "object", "properties": {"domain": {"type": "string"}}}),
-            types.Tool(name="mcp_operator_get_spec_content", description="스펙 로드", inputSchema={"type": "object", "properties": {"spec_file": {"type": "string"}}, "required": ["spec_file"]}),
-            types.Tool(name="mcp_operator_update_circuit_protocols", description="규약 수정", inputSchema={"type": "object", "properties": {"circuit_name": {"type": "string"}, "rules": {"type": "array", "items": {"type": "string"}}}, "required": ["circuit_name", "rules"]}),
-            types.Tool(name="mcp_operator_get_circuit_protocols", description="회선 규약 로드", inputSchema={"type": "object", "properties": {"circuit_name": {"type": "string"}}, "required": ["circuit_name"]}),
-            types.Tool(name="mcp_operator_get_full_json_structure", description="전체 구조", inputSchema={"type": "object", "properties": {}}),
-            types.Tool(name="mcp_operator_create_new_circuit", description="회선 생성", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
-            types.Tool(name="mcp_operator_create_new_unit", description="유닛 생성", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
-            types.Tool(name="sentinel_set_mission", description="미션 설정", inputSchema={"type": "object", "properties": {"objective": {"type": "string"}, "criteria": {"type": "array", "items": {"type": "string"}}}, "required": ["objective", "criteria"]}),
-            types.Tool(name="sentinel_evaluate", description="미션 평가", inputSchema={"type": "object", "properties": {"evidence": {"type": "string"}}, "required": ["evidence"]}),
-            types.Tool(name="sentinel_get_mission", description="미션 조회", inputSchema={"type": "object", "properties": {}})
+            types.Tool(
+                name="mcp_operator_get", 
+                description="통합 정보 조회 (protocol, overview, blueprint, spec, mission, status)", 
+                inputSchema={
+                    "type": "object", 
+                    "properties": {
+                        "target": {"type": "string", "description": "대상 객체 (status, protocol, blueprint, spec, mission)"},
+                        "name": {"type": "string", "description": "회선명, 유닛명, 파일명 등"},
+                        "context": {"type": "object", "description": "추가 조회 조건"}
+                    }, 
+                    "required": ["target"]
+                }
+            ),
+            types.Tool(
+                name="mcp_operator_update", 
+                description="통합 정보 업데이트 (protocol, overview, mission)", 
+                inputSchema={
+                    "type": "object", 
+                    "properties": {
+                        "target": {"type": "string", "description": "대상 객체 (protocol, overview, mission)"},
+                        "name": {"type": "string", "description": "대상 이름"},
+                        "data": {"type": "object", "description": "수정할 데이터 객체"}
+                    }, 
+                    "required": ["target", "data"]
+                }
+            ),
+            types.Tool(
+                name="mcp_operator_create", 
+                description="통합 구성 요소 생성 (circuit, unit, spec)", 
+                inputSchema={
+                    "type": "object", 
+                    "properties": {
+                        "target": {"type": "string", "description": "대상 객체 (circuit, unit, spec)"},
+                        "name": {"type": "string", "description": "생성할 이름"},
+                        "data": {"type": "object", "description": "초기 설정 데이터"}
+                    }, 
+                    "required": ["target", "name"]
+                }
+            ),
+            types.Tool(
+                name="mcp_operator_execute", 
+                description="통합 액션 실행 (audit, reload)", 
+                inputSchema={
+                    "type": "object", 
+                    "properties": {
+                        "action": {"type": "string", "description": "실행할 액션 명"},
+                        "params": {"type": "object", "description": "액션 파라미터"}
+                    }, 
+                    "required": ["action"]
+                }
+            ),
+            # Legacy Actions (To be phased out or kept as shortcuts)
+            types.Tool(name="mcp_operator_audit_rules", description="코드 감사 (Legacy)", inputSchema={"type": "object", "properties": {"file_path": {"type": "string"}}, "required": ["file_path"]}),
+            types.Tool(name="mcp_operator_browse_directory", description="탐색 (Legacy)", inputSchema={"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}),
+            types.Tool(name="sentinel_set_mission", description="미션 설정 (Legacy)", inputSchema={"type": "object", "properties": {"objective": {"type": "string"}, "criteria": {"type": "array", "items": {"type": "string"}}}, "required": ["objective", "criteria"]}),
+            types.Tool(name="sentinel_evaluate", description="미션 평가 (Legacy)", inputSchema={"type": "object", "properties": {"evidence": {"type": "string"}}, "required": ["evidence"]}),
+            types.Tool(name="sentinel_get_mission", description="미션 조회 (Legacy)", inputSchema={"type": "object", "properties": {}})
         ]
 
     async def call_tool(self, name: str, arguments: dict) -> list[types.TextContent]:
@@ -73,25 +112,28 @@ class McpCircuit(BaseCircuit):
         tool = OperatorTool.from_str(name)
         if not tool: return TextResponse(f" Unknown Tool: {name}")
         
-        # 1. McpCircuit 직접 처리 도구
+        # [Debug] manager 상태 확인
+        m_id = id(self.manager)
+        has_core = hasattr(self.manager, "core_actions")
+        print(f" [DEBUG] McpCircuit call_tool: {name}, manager_id={m_id}, has_core_actions={has_core}", file=sys.stderr)
+        
+        if not has_core:
+            return TextResponse(f" Internal Error: CircuitManager (id={m_id}) has no core_actions attribute.")
+
+        core = self.manager.core_actions
         match tool:
+            # 1. Unified Command Interface (CoreActions delegation)
+            case OperatorTool.GET: return core.get_handler(arguments.get("target"), arguments.get("name"), arguments.get("context"))
+            case OperatorTool.UPDATE: return core.update_handler(arguments.get("target"), arguments.get("name"), arguments.get("data"))
+            case OperatorTool.CREATE: return core.create_handler(arguments.get("target"), arguments.get("name"), arguments.get("data"))
+            case OperatorTool.EXECUTE: return core.execute_handler(arguments.get("action"), arguments.get("params"))
+            
+            # 2. Legacy Actions (Direct Handlers)
             case OperatorTool.AUDIT_RULES: return await self._audit_rules_handler(arguments.get("file_path"))
-            case OperatorTool.GET_OVERVIEW: return TextResponse("MCP Operator System Active.")
-            case OperatorTool.UPDATE_CIRCUIT_OVERVIEW: return await self._update_overview_handler(arguments)
-            case OperatorTool.UPDATE_CIRCUIT_PROTOCOLS: return await self._update_protocols_handler(arguments)
-            case OperatorTool.CREATE_NEW_CIRCUIT: return await self._create_circuit_handler(arguments)
-            case OperatorTool.CREATE_NEW_UNIT: return await self._create_unit_handler(arguments)
+            case OperatorTool.BROWSE_DIRECTORY: return core.browse_directory(arguments.get("path", "."))
             case OperatorTool.SENTINEL_SET_MISSION: return await self._sentinel_set_mission_handler(arguments)
             case OperatorTool.SENTINEL_EVALUATE: return await self._sentinel_evaluate_handler()
             case OperatorTool.SENTINEL_GET_MISSION: return await self._sentinel_get_mission_handler()
-            
-            # 2. CoreActions 브릿지 처리 도구 (무결성 복구)
-            case OperatorTool.GET_GLOBAL_PROTOCOLS: return self.manager.core_actions.get_global_protocols()
-            case OperatorTool.BROWSE_DIRECTORY: return self.manager.core_actions.browse_directory(arguments.get("path", "."))
-            case OperatorTool.GET_BLUEPRINT: return self.manager.core_actions.get_blueprint(arguments.get("domain", ""))
-            case OperatorTool.GET_SPEC_CONTENT: return self.manager.core_actions.get_spec_content(arguments.get("spec_file", ""))
-            case OperatorTool.GET_CIRCUIT_PROTOCOLS: return self.manager.core_actions.get_circuit_protocols(arguments.get("circuit_name", ""))
-            case OperatorTool.GET_FULL_JSON_STRUCTURE: return self.manager.core_actions.get_full_json_structure()
             
             case _: return TextResponse(f" Unimplemented Tool: {name}")
 

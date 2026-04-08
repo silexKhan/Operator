@@ -51,6 +51,17 @@ AI 에이전트의 모든 요청을 중계하고, 규약을 강제하며, 안전
 특정 언어나 기술 스택에 특화된 정밀 분석 도구 모음입니다.
 - **`Audit Rules`**: 각 유닛은 고유의 감사 규칙을 가지며, 소스 코드의 스타일, 성능, 보안 결함을 진단합니다.
 
+### 🛰️ MCP Operator 2.0 통합 지휘 체계 (Unified API)
+
+시스템 복잡도를 낮추기 위해 파편화된 도구들을 4개의 핵심 인터페이스로 통합하였습니다.
+
+| 통합 함수 (Tool) | 설명 | 주요 Target (Enum) |
+| :--- | :--- | :--- |
+| **`mcp_operator_get`** | 시스템 정보 및 상태 조회 | `PROTOCOL`, `OVERVIEW`, `BLUEPRINT`, `SPEC`, `MISSION`, `STATUS` |
+| **`mcp_operator_update`** | 규약 및 메타데이터 수정 | `PROTOCOL`, `OVERVIEW`, `MISSION` |
+| **`mcp_operator_create`** | 신규 구성 요소 생성 | `CIRCUIT`, `UNIT`, `SPEC` |
+| **`mcp_operator_execute`** | 고부하 액션 실행 | `AUDIT`, `RELOAD` |
+
 ---
 
 ## 3. 런타임 흐름 (Operational Flow)

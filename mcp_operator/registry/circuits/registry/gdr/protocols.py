@@ -1,6 +1,6 @@
-#  protocols.py - GDR 프로젝트 핵심 규약 (Project Alpha)
+#  protocols.py - GDR 프로젝트 핵심 규약
 class Protocols:
-    PROJECT_NAME = "GDR (프로젝트 알파)"
+    PROJECT_NAME = "GDR Legacy"
     # [사용자] 골프존 GDR 개발 시 AI가 준수해야 할 4대 핵심 규약(Protocols)입니다.
     RULES = [
         "Protocol S-1 (Strict MVVM): ViewController는 비즈니스 로직을 가질 수 없으며, 반드시 ViewModel을 통해 데이터와 통신한다. (Dumb View 원칙)",

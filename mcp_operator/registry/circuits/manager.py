@@ -185,7 +185,11 @@ class CircuitManager:
 
     def _scan_circuits_recursive(self, base_dir: str):
         """디렉토리를 순회하며 actions.py를 포함한 회선 패키지를 탐색합니다."""
-        for dirpath, _, filenames in os.walk(base_dir):
+        for dirpath, dirnames, filenames in os.walk(base_dir):
+            # [사용자] 대규모 디렉토리는 탐색에서 즉시 제외하여 CPU 점유율을 방어합니다. (G-0)
+            skip_dirs = ['node_modules', '.next', '.venv', '.git', '__pycache__']
+            dirnames[:] = [d for d in dirnames if d not in skip_dirs]
+            
             if dirpath == base_dir: continue
             if "actions.py" in filenames:
                 self._load_circuit_module(base_dir, dirpath)

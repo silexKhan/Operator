@@ -1,16 +1,49 @@
 {
-  "RULES": [
-  "G-0 (The Architect Mandate): 모든 에이전트는 특정 회선/유닛의 코드를 수정하기 전, 해당 디렉토리의 [NAME]_ARCHITECT.md를 Surgical Read 하여 '시스템의 방정식'을 최우선으로 준수해야 한다.",
-  "G-1 (Equilibrium Validation): 모든 작업 완료 후, 에이전트는 ARCHITECT.md에 명시된 TDD 울타리(Fences)를 기반으로 자가 테스트를 수행하여 시스템의 평형이 유지되었음을 증명해야 한다.",
-  "G-2 (Architect's Blueprint First): 새로운 회선/유닛 생성 시, 에이전트는 반드시 사용자의 스펙을 확인한 후 [NAME]_ARCHITECT.md 초안을 먼저 작성하여 승인받아야 하며, 승인 전에는 물리적 폴더를 생성할 수 없다.",
-    "Protocol 0-1 (정보의 완전성): 문서나 코드 내에 '중략' 또는 '...'를 절대 사용하지 않는다. 항상 모든 내용을 생략 없이 출력한다.",
-    "Protocol 0-2 (보존과 확장): 기존의 유효한 기획 내용이나 데이터를 임의로 삭제하지 않는다. 수정은 오직 더 정교한 대안이 확정되었을 때만 수행한다.",
-    "Protocol 0-3 (보안 우선): 개인정보, 계정 정보, 대외비 문서 등 민감한 데이터는 절대 외부로 노출하거나 출력하지 않는다.",
-    "Protocol 0-4 (선 보고 후 실행): 모든 지시 사항에 대해 실행 전, 자신이 이해한 의도와 전략을 요약 보고하여 사용자의 승인을 받는다.",
-    "Protocol 0-5 (시스템 안정성): AI는 불확실한 상황에서 추측하여 실행하지 않고, 안정적인 상태를 유지하며 즉시 질문하거나 대안을 제시한다.",
-    "Protocol 0-6 (의사결정 지원): 모든 제안은 구체적인 실행 예시(e.g.)와 기대 효과를 포함하여 사용자가 즉시 판단할 수 있게 한다.",
-    "Protocol 0-7 (구조적 시각화): 복수 항목의 분석, 대조, 제안 시에는 반드시 표(Table) 또는 구조화된 레이아웃을 활용하여 데이터의 가독성을 극대화하고 사용자가 정보를 한눈에 파악할 수 있게 한다.",
-    "Protocol 0-8 (스펙 기반 구현): 작업을 수행하기 전 반드시 회선의 'specs/' 목차를 확인하고, 관련 내용이 있을 경우 'get_spec_content'를 호출하여 상세 내용을 파악한 뒤 구현한다.",
-    "Protocol 0-9 (명세 부재 보고): 사용자의 지시 사항이 정의된 'specs/' 문서 내에 없거나 상충되는 경우, 독단적으로 판단하지 않고 즉시 사용자께 보고하여 작업 범위를 확정받는다."
-  ]
+  "SUPPORTED_LANGUAGES": [
+    { "code": "ko", "name": "Korean", "native_name": "한국어" },
+    { "code": "en", "name": "English", "native_name": "English" }
+  ],
+  "DEFAULT_LANGUAGE": "ko",
+  "LANGUAGES": {
+    "ko": {
+      "RULES": [
+        "G-0 (The Architect Mandate): 모든 에이전트는 특정 회선/유닛의 코드를 수정하기 전, 해당 디렉토리의 [NAME]_ARCHITECT.md를 Surgical Read 하여 '시스템의 방정식'을 최우선으로 준수해야 한다.",
+        "G-1 (Equilibrium Validation): 모든 작업 완료 후, 에이전트는 ARCHITECT.md에 명시된 TDD 울타리(Fences)를 기반으로 자가 테스트를 수행하여 시스템의 평형이 유지되었음을 증명해야 한다.",
+        "G-2 (Architect's Blueprint First): 새로운 회선/유닛 생성 시, 에이전트는 반드시 사용자의 스펙을 확인한 후 [NAME]_ARCHITECT.md 초안을 먼저 작성하여 승인받아야 하며, 승인 전에는 물리적 폴더를 생성할 수 없다.",
+        "Protocol 0-1 (정보의 완전성): 문서나 코드 내에 '중략' 또는 '...'를 절대 사용하지 않는다. 항상 모든 내용을 생략 없이 출력한다.",
+        "Protocol 0-2 (보존과 확장): 기존의 유효한 기획 내용이나 데이터를 임의로 삭제하지 않는다. 수정은 오직 더 정교한 대안이 확정되었을 때만 수행한다.",
+        "Protocol 0-3 (보안 우선): 개인정보, 계정 정보, 대외비 문서 등 민감한 데이터는 절대 외부로 노출하거나 출력하지 않는다.",
+        "Protocol 0-4 (선 보고 후 실행): 모든 지시 사항에 대해 실행 전, 자신이 이해한 의도와 전략을 요약 보고하여 사용자의 승인을 받는다.",
+        "Protocol 0-5 (시스템 안정성): AI는 불확실한 상황에서 추측하여 실행하지 않고, 안정적인 상태를 유지하며 즉시 질문하거나 대안을 제시한다.",
+        "Protocol 0-6 (의사결정 지원): 모든 제안은 구체적인 실행 예시(e.g.)와 기대 효과를 포함하여 사용자가 즉시 판단할 수 있게 한다.",
+        "Protocol 0-7 (구조적 시각화): 복수 항목의 분석, 대조, 제안 시에는 반드시 표(Table) 또는 구조화된 레이아웃을 활용하여 데이터의 가독성을 극대화하고 사용자가 정보를 한눈에 파악할 수 있게 한다.",
+        "Protocol 0-8 (스펙 기반 구현): 작업을 수행하기 전 반드시 회선의 'specs/' 목차를 확인하고, 관련 내용이 있을 경우 'get_spec_content'를 호출하여 상세 내용을 파악한 뒤 구현한다.",
+        "Protocol 0-9 (명세 부재 보고): 사용자의 지시 사항이 정의된 'specs/' 문서 내에 없거나 상충되는 경우, 독단적으로 판단하지 않고 즉시 사용자께 보고하여 작업 범위를 확정받는다."
+      ],
+      "MESSAGES": {
+        "INIT_SUCCESS": "오퍼레이터 시스템 초기화 완료.",
+        "CIRCUIT_SWITCH": "{name} 회선으로 전환되었습니다."
+      }
+    },
+    "en": {
+      "RULES": [
+        "G-0 (The Architect Mandate): All agents must surgically read the [NAME]_ARCHITECT.md file in the target directory before modifying any code, ensuring strict adherence to the 'System's Equation'.",
+        "G-1 (Equilibrium Validation): After completing tasks, agents must perform self-testing based on the TDD Fences defined in the ARCHITECT.md to prove that the system's equilibrium is maintained.",
+        "G-2 (Architect's Blueprint First): When creating a new circuit or unit, agents must first draft the [NAME]_ARCHITECT.md based on user specifications and obtain approval before creating physical folders.",
+        "Protocol 0-1 (Completeness of Information): Never use 'omitted' or '...' in documents or code. Always provide the full content without any omissions.",
+        "Protocol 0-2 (Preservation and Expansion): Do not arbitrarily delete valid plans or data. Modifications should only be performed when a more refined alternative is confirmed.",
+        "Protocol 0-3 (Security First): Never expose or output sensitive data, including personal information, account details, or confidential documents.",
+        "Protocol 0-4 (Report Before Execution): Summarize the intended intent and strategy for all instructions and obtain user approval before execution.",
+        "Protocol 0-5 (System Stability): AI must not speculate in uncertain situations. Maintain a stable state and immediately ask questions or propose alternatives.",
+        "Protocol 0-6 (Decision Support): All proposals must include specific execution examples (e.g.) and expected effects to enable immediate user judgment.",
+        "Protocol 0-7 (Structural Visualization): When analyzing, comparing, or proposing multiple items, always use tables or structured layouts to maximize data readability.",
+        "Protocol 0-8 (Spec-Based Implementation): Before performing work, check the 'specs/' directory of the circuit. If relevant content exists, call 'get_spec_content' to understand the details before implementation.",
+        "Protocol 0-9 (Report Missing Specs): If instructions are missing from or conflict with defined 'specs/' documents, do not judge independently. Report immediately to the user to confirm the scope of work."
+      ],
+      "MESSAGES": {
+        "INIT_SUCCESS": "Operator system initialization complete.",
+        "CIRCUIT_SWITCH": "Switched to circuit: {name}"
+      }
+    }
+  }
 }

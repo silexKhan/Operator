@@ -8,7 +8,7 @@ import re
 import json
 import importlib
 from typing import List, Optional, Any, Dict, Tuple
-from mcp_operator.common.models import TextResponse, JsonResponse
+from mcp_operator.common.models import TextResponse, JsonResponse, CommandTarget, UnifiedRequest
 from mcp_operator.common.utils import get_project_root, read_json_safely
 import mcp.types as types
 from mcp_operator.registry.circuits.manager import CircuitManager
@@ -23,17 +23,100 @@ class CoreActions:
         self.manager = manager
         self.logger = logger
 
+    # -------------------------------------------------------------------------
+    # [Unified Command API] MCP 2.0 통합 지휘 인터페이스 (Protocol P-7)
+    # -------------------------------------------------------------------------
+
+    def get_handler(self, target: str, name: Optional[str] = None, context: Optional[dict] = None) -> list[types.TextContent]:
+        """[Handler] 모든 메타데이터 및 상태 정보를 통합 조회합니다."""
+        try:
+            t_enum = CommandTarget(target)
+            match t_enum:
+                case CommandTarget.STATUS:
+                    return self.get_operator_status()
+                case CommandTarget.PROTOCOL:
+                    if name: return self.get_circuit_protocols(name)
+                    return self.get_global_protocols()
+                case CommandTarget.BLUEPRINT:
+                    return self.get_blueprint(name or "")
+                case CommandTarget.SPEC:
+                    return self.get_spec_content(name or "")
+                case CommandTarget.MISSION:
+                    from mcp_operator.registry.circuits.registry.mcp.actions import McpCircuit
+                    # McpCircuit의 핸들러 재활용 또는 직접 로직 구현
+                    path = os.path.join(get_project_root(), "mission.json")
+                    return JsonResponse(read_json_safely(path))
+                case _:
+                    return TextResponse(f" Unsupported GET Target: {target}")
+        except Exception as e:
+            return TextResponse(f" GET Error: {str(e)}")
+
+    def update_handler(self, target: str, name: Optional[str] = None, data: Optional[dict] = None) -> list[types.TextContent]:
+        """[Handler] 모든 시스템 설정 및 상태를 통합 업데이트합니다."""
+        if not data: return TextResponse(" Error: 'data' is required for update.")
+        try:
+            t_enum = CommandTarget(target)
+            match t_enum:
+                case CommandTarget.PROTOCOL:
+                    return self._update_protocols_logic(name, data.get("rules", []))
+                case CommandTarget.OVERVIEW:
+                    return self._update_overview_logic(name, data)
+                case CommandTarget.MISSION:
+                    # 미션 업데이트 로직 (Sentinel 역할)
+                    path = os.path.join(get_project_root(), "mission.json")
+                    mission = read_json_safely(path) or {}
+                    mission.update(data)
+                    with open(path, "w", encoding="utf-8") as f:
+                        json.dump(mission, f, indent=4, ensure_ascii=False)
+                    return TextResponse(f" Mission Updated: {mission.get('objective')}")
+                case _:
+                    return TextResponse(f" Unsupported UPDATE Target: {target}")
+        except Exception as e:
+            return TextResponse(f" UPDATE Error: {str(e)}")
+
+    def create_handler(self, target: str, name: str, data: Optional[dict] = None) -> list[types.TextContent]:
+        """[Handler] 회선, 유닛, 명세 등 신규 구성 요소를 통합 생성합니다."""
+        try:
+            t_enum = CommandTarget(target)
+            match t_enum:
+                case CommandTarget.CIRCUIT:
+                    return self.create_new_circuit(name)
+                case CommandTarget.UNIT:
+                    return self.create_new_unit(name)
+                case CommandTarget.SPEC:
+                    # 명세 생성 로직 추가 가능
+                    return TextResponse(f" Spec creation for '{name}' is not yet implemented.")
+                case _:
+                    return TextResponse(f" Unsupported CREATE Target: {target}")
+        except Exception as e:
+            return TextResponse(f" CREATE Error: {str(e)}")
+
+    def execute_handler(self, action: str, params: Optional[dict] = None) -> list[types.TextContent]:
+        """[Handler] 감사, 분석, 리로드 등 고부하/외부 연동 액션을 통합 실행합니다."""
+        params = params or {}
+        match action.lower():
+            case "audit":
+                # 기존 audit 로직 브릿지 (McpCircuit에서 CoreActions로 로직 이동 권장)
+                return TextResponse(" Please use 'mcp_operator_audit_rules' for now.")
+            case "reload":
+                # 리로드 시그널 반환 (상위 서버에서 처리)
+                return TextResponse(" ENGINE_RELOAD_SIGNAL_PENDING")
+            case _:
+                return TextResponse(f" Unknown Action: {action}")
+
+    # -------------------------------------------------------------------------
+    # [Legacy Support] 기존 호환성 유지 핸들러
+    # -------------------------------------------------------------------------
+
     def get_operator_status(self) -> list[types.TextContent]:
         """[Handler] 시스템 전체 상태와 등록된 회선 목록을 빠르게 보고합니다."""
         active = self.manager.get_active_circuit()
         active_name = active.get_name() if active else "None"
         
-        current_path = getattr(self.manager, "current_path", "Unknown")
         registered = list(self.manager.circuits.keys())
         
         res = (
             f" Operator Status: Online\n"
-            f" Path: {current_path}\n"
             f" Active Circuit: {active_name}\n"
             f" Total Registered: {registered}\n\n"
             f" [SYSTEM MESSAGE 1]: 'get_operator_status()'를 호출하여 시스템 목록을 확인하십시오.\n"
@@ -49,6 +132,11 @@ class CoreActions:
             
         from mcp_operator.engine.protocols import GlobalProtocols
         name = active.get_name()
+        
+        # 0. Mission (Current project-wide mission)
+        root = get_project_root()
+        mission_path = os.path.join(root, "mission.json")
+        mission_data = read_json_safely(mission_path) or {}
         
         # 1. Protocols
         protocols = []
@@ -67,15 +155,32 @@ class CoreActions:
             
         for unit_name in list(dict.fromkeys(units or [])):
             unit_info = {"name": unit_name, "mission": "N/A", "rules": []}
-            # 유닛 상세 정보 로드
             try:
-                root = get_project_root()
+                # 1. JSON 데이터 우선 로드 (가장 안정적)
                 json_path = os.path.join(root, "mcp_operator", "registry", "units", unit_name, "protocols.json")
                 data = read_json_safely(json_path)
                 if data:
                     unit_info["mission"] = data.get("OVERVIEW", "N/A")
                     unit_info["rules"] = data.get("RULES", [])
-            except: pass
+                
+                # 2. Python 모듈이 있다면 데이터 보강 (오버라이드)
+                try:
+                    module_path = f"mcp_operator.registry.units.{unit_name}.protocols"
+                    if module_path in sys.modules:
+                        importlib.reload(sys.modules[module_path])
+                    unit_module = importlib.import_module(module_path)
+                    p_cls = getattr(unit_module, f"{unit_name.capitalize()}Protocols", None)
+                    if p_cls:
+                        # 모듈에 데이터가 있다면 JSON보다 우선함 (Hot Sync 용도)
+                        p_mission = getattr(p_cls, "OVERVIEW", None)
+                        if p_mission: unit_info["mission"] = p_mission
+                        p_rules = p_cls.get_rules() if hasattr(p_cls, "get_rules") else getattr(p_cls, "RULES", None)
+                        if p_rules: unit_info["rules"] = p_rules
+                except Exception as e:
+                    # 임포트 에러는 조용히 넘김 (JSON 데이터가 있으므로)
+                    pass
+            except Exception as e:
+                print(f" [DEBUG] Error loading unit '{unit_name}': {str(e)}", file=sys.stderr)
             units_data.append(unit_info)
             
         # 3. Actions
@@ -83,11 +188,20 @@ class CoreActions:
         for tool in active.get_tools():
             actions.append({"name": tool.name, "description": tool.description})
             
+        # 4. Audit History (Recent Security/Compliance Logs)
+        from mcp_operator.common.history import history_logger
+        audit_logs = []
+        try:
+            audit_logs = history_logger.get_recent_audits(10)
+        except: pass
+
         return {
             "name": name,
+            "mission": mission_data,
             "protocols": protocols,
             "units": units_data,
-            "actions": actions
+            "actions": actions,
+            "audit_logs": audit_logs
         }
 
     def set_active_circuit(self, name: str) -> list[types.TextContent]:
@@ -138,7 +252,11 @@ class CoreActions:
 
     def get_global_protocols(self) -> list[types.TextContent]:
         """[Handler] 전사 공통 지배 규약 정보를 반환합니다."""
-        from mcp_operator.engine.protocols import GlobalProtocols
+        import importlib
+        from mcp_operator.engine import protocols
+        importlib.reload(protocols)
+        GlobalProtocols = protocols.GlobalProtocols
+        
         try:
             rules = GlobalProtocols.get_rules()
             return TextResponse(json.dumps(rules, ensure_ascii=False))
@@ -233,9 +351,46 @@ class CoreActions:
 
 
 
+    def get_spec_content(self, spec_file: str) -> list[types.TextContent]:
+        """[Handler] 특정 명세 파일의 내용을 조회합니다."""
+        root = get_project_root()
+        content = self._find_spec_content(root, spec_file)
+        if content:
+            return TextResponse(content)
+        return TextResponse(f" Spec not found: {spec_file}")
+
     # -------------------------------------------------------------------------
     # [Internal Helpers] 상세 구현 (Swift의 Extension 역할 - Protocol P-4)
     # -------------------------------------------------------------------------
+
+    def _update_protocols_logic(self, name: str, rules: List[str]) -> list[types.TextContent]:
+        """[Internal] 회선 규약을 물리적으로 업데이트합니다."""
+        root = get_project_root()
+        target_path = self._resolve_circuit_path(root, name)
+        if not target_path: return TextResponse(f" Circuit '{name}' Not Found.")
+        
+        try:
+            json_path = os.path.join(target_path, "protocols.json")
+            data = {"RULES": rules}
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            return TextResponse(f" '{name}' Protocols Updated.")
+        except Exception as e: return TextResponse(f" Update Fail: {str(e)}")
+
+    def _update_overview_logic(self, name: str, data: dict) -> list[types.TextContent]:
+        """[Internal] 회선 개요를 물리적으로 업데이트합니다."""
+        root = get_project_root()
+        target_path = self._resolve_circuit_path(root, name)
+        if not target_path: return TextResponse(f" Circuit '{name}' Not Found.")
+        
+        try:
+            json_path = os.path.join(target_path, "overview.json")
+            existing = read_json_safely(json_path) or {}
+            existing.update(data)
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(existing, f, indent=2, ensure_ascii=False)
+            return TextResponse(f" '{name}' Overview Updated.")
+        except Exception as e: return TextResponse(f" Update Fail: {str(e)}")
 
     def _build_circuit_context_card(self, circuit: Any) -> str:
         """[Internal] 활성화된 회선의 규약, 유닛, 가용 행동을 조합하여 컨텍스트 카드를 생성합니다."""
