@@ -15,24 +15,19 @@ export async function GET(request: Request): Promise<Response> {
     // [사용자] 필요한 도구들을 한 번에 정의하여 호출합니다.
     const results = await client.callTools({
       circuitProtocols: { 
-        name: "mcp_operator_get_circuit_protocols", 
-        args: { circuit_name: circuitName } 
+        name: "mcp_operator_mcp_operator_get", 
+        args: { target: "protocol", name: circuitName } 
       },
       globalProtocols: { 
-        name: "mcp_operator_get_global_protocols", 
-        args: {} 
-      },
-      briefing: { 
-        name: "mcp_operator_get_blueprint", 
-        args: { domain: circuitName } 
+        name: "mcp_operator_mcp_operator_get", 
+        args: { target: "protocol" } 
       }
     });
 
     // 결과 정제 및 반환
     return NextResponse.json({
       rules: results.circuitProtocols?.protocols || [],
-      globalRules: results.globalProtocols || [],
-      briefing: results.briefing || {}
+      globalRules: results.globalProtocols || []
     });
 
   } catch (error) {
@@ -40,8 +35,7 @@ export async function GET(request: Request): Promise<Response> {
     return NextResponse.json({ 
       error: error instanceof Error ? error.message : 'Unknown error',
       rules: [], 
-      globalRules: [], 
-      briefing: {} 
+      globalRules: [] 
     }, { status: 500 });
   }
 }

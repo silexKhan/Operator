@@ -55,7 +55,7 @@
 }
 
 :root {
-  --background: #050505;
+  --background: #080808; /* 약간 더 깊은 블랙으로 대비 향상 */
   --foreground: #e5e2e1;
 }
 
@@ -63,33 +63,38 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   overflow: hidden;
-  font-family: 'Space Grotesk', monospace;
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* 스캔라인 최적화: 가독성을 위해 불투명도를 낮추고 배경에만 밀착 */
 .scanlines {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
-              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  background-size: 100% 3px, 2px 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+  background-size: 100% 4px;
   pointer-events: none;
   z-index: 100;
+  opacity: 0.4;
 }
 
+/* CRT 효과 절제: 번짐 최소화 */
 .crt-glow {
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  text-shadow: 0 0 2px rgba(0, 255, 65, 0.3);
 }
 
 .matrix-bg {
-  background: linear-gradient(180deg, rgba(0, 255, 65, 0.05) 0%, rgba(0, 255, 65, 0) 100%);
+  background: linear-gradient(180deg, rgba(0, 255, 65, 0.02) 0%, rgba(0, 255, 65, 0) 100%);
 }
 
 .telemetry-scroll {
-  mask-image: linear-gradient(transparent, black 10%, black 90%, transparent);
+  /* 스크롤 마스크는 가독성을 해칠 수 있으므로 제거하거나 약화 */
+  mask-image: linear-gradient(transparent, black 5%, black 95%, transparent);
 }
 
 .cursor-blink {
-  animation: blink 1s step-end infinite;
+  animation: blink 1.2s step-end infinite;
 }
 
 @keyframes blink {
@@ -98,26 +103,43 @@ body {
 }
 
 .terminal-window {
-  border: 1px solid rgba(0, 255, 65, 0.2);
-  background: rgba(10, 10, 10, 0.9);
-  box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.05);
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  background: rgba(12, 12, 12, 0.98); /* 배경을 더 불투명하게 하여 가독성 확보 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease;
+}
+
+.terminal-window:hover {
+  border-color: rgba(0, 255, 65, 0.3);
 }
 
 .terminal-header {
-  background: rgba(0, 255, 65, 0.05);
-  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+  background: rgba(0, 255, 65, 0.03);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.15);
+  backdrop-filter: blur(4px);
 }
 
-/* Scrollbar styling for terminal feel */
+/* Scrollbar styling - thin and functional */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 65, 0.2);
+  background: rgba(0, 255, 65, 0.15);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 65, 0.4);
+  background: rgba(0, 255, 65, 0.3);
+}
+
+/* Utilities for better readability */
+.text-sharp {
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+.scanline-mini {
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+  background-size: 100% 2px;
 }

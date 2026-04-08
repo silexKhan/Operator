@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NEBUCHADNEZZAR_OS_V2.5 // HOVERCRAFT_STATION",
-  description: "Advanced Operator Mission Control Dashboard",
+  title: "OPERATOR | COMMAND CENTER",
+  description: "Tactical Operation & Security Dashboard",
 };
 
 export default function RootLayout({

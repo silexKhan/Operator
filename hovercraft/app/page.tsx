@@ -1,12 +1,16 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { CoreAccess } from "@/components/windows/CoreAccess/CoreAccess";
-import { MissionSpecs } from "@/components/windows/MissionSpecs/MissionSpecs";
-import { SystemLogs } from "@/components/windows/SystemLogs/SystemLogs";
-import { AuditSecurity } from "@/components/windows/AuditSecurity/AuditSecurity";
-import { UnitProtocols } from "@/components/windows/UnitProtocols/UnitProtocols";
-import { ResourceMonitor } from "@/components/windows/ResourceMonitor/ResourceMonitor";
+import dynamic from "next/dynamic";
+
+// [Fix] 하이드레이션 오류 방지를 위해 SSR 제외 임포트
+const CoreAccess = dynamic(() => import("@/components/windows/CoreAccess/CoreAccess").then(mod => mod.CoreAccess), { ssr: false });
+const MissionSpecs = dynamic(() => import("@/components/windows/MissionSpecs/MissionSpecs").then(mod => mod.MissionSpecs), { ssr: false });
+const AuditSecurity = dynamic(() => import("@/components/windows/AuditSecurity/AuditSecurity").then(mod => mod.AuditSecurity), { ssr: false });
+const UnitProtocols = dynamic(() => import("@/components/windows/UnitProtocols/UnitProtocols").then(mod => mod.UnitProtocols), { ssr: false });
+const ResourceMonitor = dynamic(() => import("@/components/windows/ResourceMonitor/ResourceMonitor").then(mod => mod.ResourceMonitor), { ssr: false });
+const SystemLogs = dynamic(() => import("@/components/windows/SystemLogs/SystemLogs").then(mod => mod.SystemLogs), { ssr: false });
+
 import { ShipInitialization } from "@/components/Initialization/ShipInitialization";
 
 interface LogEntry {
@@ -94,7 +98,12 @@ export default function Home() {
 
   const requestMcpStatus = () => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      const command = { type: "COMMAND", action: "get_operator_status", timestamp: new Date().toISOString() };
+      const command = { 
+        type: "COMMAND", 
+        action: "mcp_operator_get", 
+        target: "status",
+        timestamp: new Date().toISOString() 
+      };
       socketRef.current.send(JSON.stringify(command));
       setLogs((prev) => [...prev, {
         timestamp: new Date().toLocaleTimeString(),
@@ -171,7 +180,7 @@ export default function Home() {
         />
         <MissionSpecs systemStatus={systemStatus} />
         <SystemLogs logs={logs} status={status} logEndRef={logEndRef} />
-        <AuditSecurity logs={logs} />
+        <AuditSecurity logs={logs} systemStatus={systemStatus} />
         <UnitProtocols systemStatus={systemStatus} />
         <ResourceMonitor systemStatus={systemStatus} />
       </main>

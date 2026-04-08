@@ -15,20 +15,20 @@ export async function POST(request: Request): Promise<Response> {
     // 1. 정보 업데이트 도구 정의
     if (action === 'OVERVIEW_UPDATE' || action === 'UNITS_UPDATE') {
       toolsToCall.update = {
-        name: "mcp_operator_update_circuit_overview",
-        args: { circuit_name, description, units }
+        name: "mcp_operator_mcp_operator_update",
+        args: { target: "overview", name: circuit_name, data: { description, units } }
       };
     } else {
       toolsToCall.update = {
-        name: "mcp_operator_update_circuit_protocols",
-        args: { circuit_name, rules }
+        name: "mcp_operator_mcp_operator_update",
+        args: { target: "protocol", name: circuit_name, data: { rules } }
       };
     }
 
     // 2. 엔진 리로드 도구 추가 (업데이트 직후 즉시 실행)
     toolsToCall.reload = {
-      name: "mcp_operator_reload_operator",
-      args: {}
+      name: "mcp_operator_mcp_operator_execute",
+      args: { action: "reload" }
     };
 
     // [사용자] 모든 작업을 일괄 요청하고 응답을 대기합니다.

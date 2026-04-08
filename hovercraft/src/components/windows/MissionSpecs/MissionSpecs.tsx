@@ -29,6 +29,27 @@ export const MissionSpecs: React.FC<MissionSpecsProps> = ({ systemStatus }) => {
             
             {details ? (
               <div className="space-y-3">
+                {/* [Mission Summary] 미션 목표 및 완료 기준 시각화 */}
+                {details.mission && (
+                  <div className="border-l border-green-500/30 pl-2 py-1 bg-green-500/5 mb-4">
+                    <p className="text-[8px] text-green-400 uppercase font-black mb-2 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[10px]">target</span>
+                      CURRENT MISSION: {details.mission.objective}
+                    </p>
+                    <div className="space-y-1">
+                      {details.mission.criteria?.map((item: string, idx: number) => {
+                        const isDone = item.includes("완료") || item.includes("확인") || item.includes("배치 완료") || item.includes("제거 완료");
+                        return (
+                          <div key={idx} className={`flex items-start gap-2 text-[9px] ${isDone ? 'text-green-400' : 'text-green-800'}`}>
+                            <span className="font-bold">{isDone ? "[DONE]" : "[TODO]"}</span>
+                            <span className={isDone ? "" : "opacity-60"}>{item}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 <div className="border-l border-green-900 pl-2 py-1">
                   <p className="text-[8px] text-green-800 uppercase mb-1">Architect's Summary</p>
                   <p className="text-[9px] text-green-500 leading-relaxed italic">

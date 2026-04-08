@@ -12,8 +12,8 @@ export async function GET(): Promise<Response> {
     // [사용자] 전체 프로젝트 구조를 분석하는 도구를 호출합니다.
     const results = await client.callTools({
       structure: { 
-        name: "mcp_operator_get_full_json_structure", 
-        args: {} 
+        name: "mcp_operator_mcp_operator_get", 
+        args: { target: "blueprint" } 
       }
     });
 

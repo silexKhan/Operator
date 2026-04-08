@@ -12,16 +12,15 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const results = await client.callTools({
       create: {
-        name: "mcp_operator_create_new_circuit",
+        name: "mcp_operator_mcp_operator_create",
         args: { 
-          name, 
-          role: role || "development", 
-          inherit_global: inherit_global !== false 
+          target: "circuit",
+          name
         }
       },
       reload: {
-        name: "mcp_operator_reload_operator",
-        args: {}
+        name: "mcp_operator_mcp_operator_execute",
+        args: { action: "reload" }
       }
     });
 

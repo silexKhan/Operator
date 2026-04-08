@@ -32,7 +32,7 @@ export async function POST(request: Request): Promise<Response> {
     // 2. 오퍼레이터 리로드 호출
     const reloadMessage = JSON.stringify({
       jsonrpc: "2.0", id: 3, method: "tools/call",
-      params: { name: "mcp_operator_reload_operator", arguments: {} }
+      params: { name: "mcp_operator_mcp_operator_execute", arguments: { action: "reload" } }
     }) + '\n';
 
     setTimeout(() => {
