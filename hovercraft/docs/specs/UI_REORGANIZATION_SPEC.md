@@ -26,3 +26,16 @@
 2. **[Phase 2]:** 불필요한 컴포넌트(`RadarUplink`, `ZionComms`) 제거 및 `page.tsx` 그리드 재배치
 3. **[Phase 3]:** 대체 컴포넌트(`MissionSpecs`, `ResourceMonitor`) 신규 개발 및 데이터 바인딩
 4. **[Phase 4]:** 실시간 감사 데이터 연동 및 경고 시스템(Sentinel Alert) 고도화
+
+---
+
+## 🛠️ Technical Implementation Notes (Troubleshooting)
+
+### A. 빌드 및 환경 설정 (Next.js 16 + Tailwind CSS v4)
+- **이슈:** `tailwindcss`와 `@tailwindcss/postcss` 플러그인 중복 호출 시 `globals.css` 평가 에러 발생.
+- **해결:** `postcss.config.mjs`에서 `'tailwindcss': {}`를 제거하고 `@tailwindcss/postcss`만 사용하도록 고정한다.
+
+### B. 데이터 연동 (IPC State)
+- **상태 파일:** 오퍼레이터 엔진이 생성하는 실제 상태 파일은 `../data/state.json`이다. (`mcp_state.json` 아님)
+- **API 엔드포인트:** `/api/mcp/state`는 상기 파일을 Surgical Read 하여 UI에 'ONLINE' 상태와 현재 회선 정보를 제공해야 한다.
+

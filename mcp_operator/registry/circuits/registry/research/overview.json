@@ -1,0 +1,26 @@
+{
+  "name": "research",
+  "description": {
+    "ko": "불확실한 주제의 탐구 및 심층적 분석을 위한 전략적 리서치 회선. 탐구 대상의 본질을 파악하고 실행 가능한 통찰력을 도출하는 데 집중한다.",
+    "en": "A strategic research circuit for investigating uncertain topics and providing in-depth analysis. Focuses on capturing the essence of the target and deriving actionable insights."
+  },
+  "role": "Explorer & Strategic Analyst",
+  "units": ["markdown", "sentinel"],
+  "dependencies": [],
+  "mission": {
+    "objective": {
+      "ko": "불확실한 도메인 지식의 체계화 및 의사결정 지원 리포트 생성",
+      "en": "Systematization of uncertain domain knowledge and generation of decision-support reports"
+    },
+    "criteria": [
+      {
+        "ko": "심층 분석을 통한 리스크 요인 및 기회 요인 도출",
+        "en": "Identification of risk factors and opportunities through in-depth analysis"
+      },
+      {
+        "ko": "현업 적용 가능한 구체적 Action Item 3가지 이상 제시",
+        "en": "Presentation of at least 3 concrete actionable items applicable to real-world tasks"
+      }
+    ]
+  }
+}

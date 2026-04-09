@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface AuditSecurityProps {
   logs: any[];
@@ -8,7 +8,11 @@ interface AuditSecurityProps {
 }
 
 export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus }) => {
-  // 1. 실시간 세션 로그 기반 보안 로그 필터링
+  const [isEditing, setIsEditing] = useState(false);
+  const [globalRules, setGlobalRules] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  // 실시간 세션 로그 기반 보안 로그 필터링
   const sessionSecurityLogs = logs.filter(log => 
     log.level === "ERROR" || 
     log.level === "WARNING" || 
@@ -16,95 +20,181 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
     log.message.includes("VIOLATION")
   ).slice(-5).reverse();
 
-  // 2. 백엔드로부터 받은 정식 감사 이력 (History)
+  // 백엔드로부터 받은 정식 감사 이력 (History)
   const auditHistory = systemStatus?.details?.audit_logs || [];
-  
-  // 3. 보안 무결성 점수 계산 (가상의 점수 또는 로그 기반 계산)
   const violationCount = auditHistory.filter((a: any) => a.status === 'VIOLATION').length;
   const integrityScore = Math.max(0, 100 - (violationCount * 15));
 
+  const fetchGlobalProtocols = async () => {
+    try {
+      const res = await fetch("/api/mcp/protocols?type=global");
+      if (res.ok) {
+        const data = await res.json();
+        setGlobalRules(data.content || "");
+      }
+    } catch (e) {
+      console.error("Failed to fetch global protocols:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing) fetchGlobalProtocols();
+  }, [isEditing]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/mcp/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: "global_protocols",
+          data: globalRules
+        })
+      });
+      if (res.ok) setIsEditing(false);
+    } catch (e) {
+      alert("Failed to save global protocols.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <section className="col-span-4 row-span-3 flex flex-col terminal-window overflow-hidden border-red-900/40">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col shadow-sm">
       {/* Header */}
-      <div className={`terminal-header px-2 py-1 flex justify-between items-center ${violationCount > 0 ? "bg-red-500/20 animate-pulse" : "bg-red-500/10"}`}>
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[10px] text-red-500">security</span>
-          <span className="text-[10px] font-mono text-red-500 crt-glow">AUDIT_SECURITY.bin</span>
-        </div>
+      <div className={`px-6 py-4 border-b border-neutral-800 flex justify-between items-center ${violationCount > 0 ? "bg-rose-500/5" : "bg-neutral-900/50"}`}>
         <div className="flex items-center gap-3">
-          <span className="text-[7px] font-mono text-red-900 uppercase">Integrity: {integrityScore}%</span>
-          <span className="text-[9px] font-mono text-red-500 uppercase">ALERTS: {violationCount}</span>
-        </div>
-      </div>
-
-      <div className="flex-1 p-3 font-mono text-[9px] text-red-500/80 overflow-hidden flex flex-col space-y-3">
-        
-        {/* Integrity Gauge Section */}
-        <div className="space-y-1">
-          <div className="flex justify-between text-[7px] text-red-900 uppercase font-black">
-            <span>System Compliance Integrity</span>
-            <span>{integrityScore}%</span>
+          <div className={`p-2 rounded-lg ${violationCount > 0 ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-500"}`}>
+            <span className="material-symbols-outlined text-xl">security</span>
           </div>
-          <div className="h-1.5 w-full bg-red-950/30 border border-red-900/20 relative overflow-hidden">
-            <div 
-              className={`h-full transition-all duration-1000 ${integrityScore < 70 ? 'bg-red-500 animate-pulse' : 'bg-red-800'}`}
-              style={{ width: `${integrityScore}%` }}
-            ></div>
-            <div className="absolute inset-0 scanline-mini opacity-30"></div>
+          <div>
+            <h3 className="text-white font-medium">Security & Audit</h3>
+            <p className="text-[11px] text-neutral-500 font-mono uppercase tracking-wider">Sentinel_Watchdog_Engine</p>
           </div>
         </div>
-
-        {/* Audit History (Official) */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <p className="text-red-900 text-[7px] uppercase tracking-widest border-b border-red-900/30 pb-0.5 mb-2 font-bold">Official Audit History</p>
-          <div className="flex-1 overflow-y-auto pr-1 space-y-1.5 telemetry-scroll">
-            {auditHistory.length > 0 ? (
-              auditHistory.map((audit: any, i: number) => (
-                <div key={i} className={`border-l-2 pl-2 py-1 bg-red-500/5 ${audit.status === 'VIOLATION' ? 'border-red-500' : 'border-red-900/30'}`}>
-                  <div className="flex justify-between items-center text-[7px] mb-0.5">
-                    <span className="text-red-900 uppercase tracking-tighter">{audit.timestamp}</span>
-                    <span className={`font-black px-1 ${audit.status === 'VIOLATION' ? 'bg-red-500 text-black' : 'text-red-700'}`}>
-                      [{audit.status}]
-                    </span>
-                  </div>
-                  <p className={`text-[8px] leading-tight ${audit.status === 'VIOLATION' ? 'text-red-400 font-bold' : 'text-red-600/70'}`}>
-                    {audit.message || audit.rule_id}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center py-6 opacity-20">
-                <span className="material-symbols-outlined text-[24px] mb-1">verified_user</span>
-                <p className="text-[7px]">NO REGISTERED AUDIT DATA</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Real-time Session Alerts */}
-        {sessionSecurityLogs.length > 0 && (
-          <div className="h-16 flex flex-col opacity-60">
-            <p className="text-red-900 text-[7px] uppercase mb-1 font-bold">Session Alerts</p>
-            <div className="flex-1 overflow-hidden space-y-1">
-              {sessionSecurityLogs.slice(0, 2).map((log, i) => (
-                <div key={i} className="text-[7px] flex gap-2 text-red-800 leading-none">
-                  <span className="whitespace-nowrap font-black">!</span>
-                  <span className="truncate">{log.message}</span>
-                </div>
-              ))}
+        <div className="flex items-center gap-2">
+          {!isEditing ? (
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs rounded-md transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">gavel</span>
+              Global Protocols
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs rounded-md transition-colors font-medium"
+              >
+                <span className="material-symbols-outlined text-sm">save</span>
+                {isSaving ? "Syncing..." : "Apply Global Rules"}
+              </button>
+              <button 
+                onClick={() => setIsEditing(false)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 text-xs rounded-md transition-colors"
+              >
+                Cancel
+              </button>
             </div>
-          </div>
-        )}
-
-        {/* Footer Info */}
-        <div className="pt-1 border-t border-red-900/20 flex justify-between items-center text-[7px] text-red-900 uppercase">
-          <div className="flex gap-2">
-            <span>SENTINEL_ACTIVE: 1</span>
-            <span>ENCRYPT: AES-256</span>
-          </div>
-          <span className="animate-pulse">● MONITORING</span>
+          )}
         </div>
       </div>
-    </section>
+
+      <div className="p-6 space-y-6 flex-1 flex flex-col overflow-hidden">
+        {isEditing ? (
+          <div className="flex-1 flex flex-col space-y-3 min-h-[400px]">
+            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">System Protocol Source Code</label>
+            <textarea 
+              value={globalRules}
+              onChange={(e) => setGlobalRules(e.target.value)}
+              className="flex-1 w-full bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-sm font-mono text-neutral-300 outline-none focus:border-rose-500/30 transition-colors resize-none leading-relaxed shadow-inner"
+              placeholder="# Operator Global Protocols (Source)..."
+            />
+            <p className="text-[10px] text-neutral-600 italic">
+              * Critical: Modification of global protocols affects all underlying circuit operations.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Integrity Score Section */}
+            <section>
+              <div className="flex justify-between items-end mb-2">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Compliance Integrity</label>
+                <span className={`text-lg font-bold font-mono ${integrityScore < 70 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                  {integrityScore}%
+                </span>
+              </div>
+              <div className="h-2 w-full bg-neutral-800 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-1000 ${integrityScore < 70 ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' : 'bg-emerald-500'}`}
+                  style={{ width: `${integrityScore}%` }}
+                ></div>
+              </div>
+            </section>
+
+            {/* Audit History Section */}
+            <section className="flex-1 flex flex-col overflow-hidden">
+              <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-4 block">Official Audit History</label>
+              <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                {auditHistory.length > 0 ? (
+                  auditHistory.map((audit: any, i: number) => (
+                    <div 
+                      key={i} 
+                      className={`p-3 rounded-lg border flex items-start gap-4 transition-all hover:bg-neutral-800/50 ${
+                        audit.status === 'VIOLATION' 
+                        ? 'border-rose-500/30 bg-rose-500/5' 
+                        : 'border-neutral-800 bg-neutral-950/30'
+                      }`}
+                    >
+                      <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${audit.status === 'VIOLATION' ? 'bg-rose-500 animate-pulse' : 'bg-neutral-700'}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[10px] text-neutral-500 font-mono">{audit.timestamp}</span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tighter ${
+                            audit.status === 'VIOLATION' ? 'bg-rose-500 text-white' : 'bg-neutral-800 text-neutral-400'
+                          }`}>
+                            {audit.status}
+                          </span>
+                        </div>
+                        <p className={`text-sm leading-snug ${audit.status === 'VIOLATION' ? 'text-rose-200 font-medium' : 'text-neutral-400'}`}>
+                          {audit.message || audit.rule_id}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-neutral-600 opacity-50">
+                    <span className="material-symbols-outlined text-4xl mb-2">verified_user</span>
+                    <p className="text-sm">No registered audit violations</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          </>
+        )}
+      </div>
+
+      {/* Footer / Meta */}
+      {!isEditing && (
+        <div className="px-6 py-4 bg-neutral-950/50 border-t border-neutral-800 flex justify-between items-center">
+          <div className="flex items-center gap-4 text-[10px] text-neutral-600 font-mono uppercase tracking-widest">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Sentinel_Active
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[12px]">lock</span>
+              AES-256
+            </span>
+          </div>
+          <div className="text-[10px] text-rose-500/50 font-bold animate-pulse">
+            ● LIVE_MONITORING
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

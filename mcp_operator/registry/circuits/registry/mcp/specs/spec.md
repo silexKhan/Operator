@@ -42,6 +42,11 @@
   - Lazy Load: 초기 연결 시 목차만 로드하여 토큰 절약.
   - Surgical Fetch: 필요 시 `get_spec_content`를 통해 상세 내용 주입.
 
+### 2.6 I18N Standard Parser (다국어 표준 파서)
+- **Standard**: 모든 텍스트 필드는 `{ "ko": "한국어", "en": "English" }` 구조를 지향함.
+- **Utility**: `mcp_operator.common.utils.get_i18n_text`를 통해 현재 언어 설정에 맞는 텍스트를 자동 추출.
+- **Fallback**: 요청 언어가 없을 경우 `en` -> 첫 번째 필드 순으로 폴백(Fallback) 수행.
+
 ## 3. 작업 실행 프로토콜 (Operational Workflow)
 
 1. **지시 분석 (Analysis)**: 사용자 지시 사항의 의도와 대상 도메인 식별.
@@ -69,6 +74,7 @@
 | 관리 대상 | 반영 상태 | 기술적 메커니즘 |
 | :--- | :--- | :--- |
 | **Web 대시보드 데이터** | **HOT (실시간)** | 물리적 JSON 및 MD 파일을 직접 읽어 파싱하므로 즉시 반영됨. |
+| **I18N 텍스트 (ko/en)** | **HOT (실시간)** | `get_i18n_text`를 통해 요청 시점에 JSON에서 파싱하여 반환함. |
 | **Action 로직** | **HOT (실시간)** | CircuitManager가 `importlib.reload`를 수행하여 수정된 새 로직이 즉각 실행됨. |
 | **AI 컨텍스트 카드** | **HOT (실시간)** | 규약(Protocols)을 메모리가 아닌 JSON 파일에서 직접 로드하여 즉시 반영됨. |
 | **회선 목록 (Circuits)** | **WARM (반실시간)** | `sync_path` 명령을 명시적으로 실행해야 물리 폴더를 재스캔(Discover)함. |

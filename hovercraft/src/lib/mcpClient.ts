@@ -1,116 +1,54 @@
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import path from 'path';
-
-export interface McpResponse {
-  [key: string]: any;
-}
-
 /**
- * [사용자] MCP 서버와의 통신을 전담하는 지능형 브릿지 클라이언트입니다.
- * JSON-RPC ID 관리 및 비동기 스트림 데이터 수집을 자동화합니다.
+ * [사용자] MCP 엔진(File-based IPC)과 통신을 전담하는 지능형 브릿지 클라이언트입니다.
+ * 웹소켓을 제거하고 HTTP API를 통해 엔진의 상태 파일을 다이렉트로 읽어옵니다.
  */
 export class McpClient {
-  private process: ChildProcessWithoutNullStreams | null = null;
-  private currentId = 1;
-  private projectRoot: string;
-  private pythonPath: string;
-  private scriptPath: string;
+  private static instance: McpClient;
+  private stateUrl = '/api/mcp/state';
+  private lastState: any = null;
 
-  constructor() {
-    // [사용자] 웹 서버 실행 위치와 관계없이 절대 경로를 계산합니다.
-    this.projectRoot = process.env.MCP_ROOT || path.resolve(process.cwd(), '..');
-    const isWindows = process.platform === 'win32';
-    this.pythonPath = isWindows 
-      ? path.join(this.projectRoot, '.venv', 'Scripts', 'python.exe')
-      : path.join(this.projectRoot, '.venv', 'bin', 'python');
-    this.scriptPath = path.join(this.projectRoot, 'mcp_operator', 'main.py');
-  }
+  constructor() {}
 
-  private async initialize(): Promise<void> {
-    this.process = spawn(this.pythonPath, [this.scriptPath]);
-    
-    return new Promise((resolve, reject) => {
-      if (!this.process) return reject('Process failed to start');
-
-      const initMessage = JSON.stringify({
-        jsonrpc: "2.0", id: this.currentId++, method: "initialize",
-        params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "Web-Mcp-Bridge", version: "1.0.0" } }
-      }) + '\n';
-
-      this.process.stdin.write(initMessage);
-
-      const onData = (data: Buffer) => {
-        const output = data.toString();
-        if (output.includes('"id":1')) {
-          this.process?.stdout.off('data', onData);
-          resolve();
-        }
-      };
-
-      this.process.stdout.on('data', onData);
-      this.process.stderr.on('data', (data) => console.error(`[MCP-ERR] ${data}`));
-      
-      setTimeout(() => reject('Initialization Timeout'), 5000);
-    });
-  }
-
-  public async callTools(tools: { [alias: string]: { name: string, args: any } }): Promise<McpResponse> {
-    if (!this.process) await this.initialize();
-    
-    return new Promise((resolve, reject) => {
-      const results: McpResponse = {};
-      const pendingIds = new Map<number, string>();
-
-      Object.entries(tools).forEach(([alias, tool]) => {
-        const id = this.currentId++;
-        pendingIds.set(id, alias);
-        
-        const message = JSON.stringify({
-          jsonrpc: "2.0", id, method: "tools/call",
-          params: { name: tool.name, arguments: tool.args }
-        }) + '\n';
-        
-        this.process?.stdin.write(message);
-      });
-
-      const onData = (data: Buffer) => {
-        const lines = data.toString().split('\n');
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          try {
-            const json = JSON.parse(line);
-            const alias = pendingIds.get(json.id);
-            if (alias) {
-              const textContent = json.result?.content?.[0]?.text;
-              try {
-                results[alias] = textContent ? JSON.parse(textContent) : json.result;
-              } catch {
-                results[alias] = textContent || json.result;
-              }
-              pendingIds.delete(json.id);
-            }
-          } catch (e) {}
-        }
-
-        if (pendingIds.size === 0) {
-          this.close();
-          resolve(results);
-        }
-      };
-
-      this.process?.stdout.on('data', onData);
-      
-      setTimeout(() => {
-        this.close();
-        resolve(results);
-      }, 8000);
-    });
-  }
-
-  private close() {
-    if (this.process) {
-      this.process.kill();
-      this.process = null;
+  public static getInstance(): McpClient {
+    if (!McpClient.instance) {
+      McpClient.instance = new McpClient();
     }
+    return McpClient.instance;
+  }
+
+  /**
+   * [IPC] 엔진의 최신 상태를 가져옵니다.
+   */
+  public async fetchState(): Promise<any> {
+    try {
+      const response = await fetch(this.stateUrl, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Failed to fetch MCP state');
+      
+      const state = await response.json();
+      this.lastState = state;
+      return state;
+    } catch (error) {
+      console.error(`[MCP-UI] ❌ 엔진 상태 동기화 실패: ${error instanceof Error ? error.message : 'Unknown'}`);
+      return null;
+    }
+  }
+
+  /**
+   * [Legacy compatibility] 엔진 서버에 명령을 전달합니다.
+   * 현재 구조에서는 엔진이 파일을 쓰고 UI가 읽는 방식이므로, 
+   * 쓰기 작업(Tool Call)은 직접적인 엔진 프로세스 제어가 필요할 수 있습니다.
+   */
+  public async callTools(tools: { [alias: string]: { name: string, args: any } }): Promise<any> {
+    console.warn("[MCP-UI] ⚠️ 다이렉트 도구 호출은 현재 엔진의 MCP 서버 인터페이스를 통해야 합니다.");
+    // TODO: 엔진의 HTTP/Stdio 엔드포인트와 연동 필요 시 구현
+    return {};
+  }
+
+  public getStatus(): boolean {
+    return this.lastState !== null && this.lastState.status !== 'OFFLINE';
+  }
+
+  public getLastState(): any {
+    return this.lastState;
   }
 }

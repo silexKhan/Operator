@@ -1,10 +1,28 @@
 {
-  "OVERVIEW": "GDR 프로젝트 및 Swift 기반 개발을 위한 Strict MVVM 아키텍처 전문 기술 규약입니다.",
+  "OVERVIEW": {
+    "ko": "GDR 프로젝트 및 Swift 기반 개발을 위한 Strict MVVM 아키텍처 전문 기술 규약입니다.",
+    "en": "Specialized technical protocols for the Strict MVVM architecture in GDR projects and Swift-based development."
+  },
   "RULES": [
-    "Protocol S-1 (Dumb View): ViewController/View는 비즈니스 로직을 가질 수 없으며, 모든 판단은 ViewModel이 수행한다.",
-    "Protocol S-2 (I/O transform): 모든 로직은 ViewModel의 Input/Output 구조체와 transform() 메서드를 통해 캡슐화되어야 한다.",
-    "Protocol S-3 (VC Separation): VC 내 bindViewModel 시 Input 생성 로직은 반드시 createInput() 메서드로 분리한다.",
-    "Protocol S-4 (No Forced Unwrapping): 강제 언래핑(!) 사용을 엄격히 금지하며, 안전한 바인딩(guard let, if let)을 수행한다.",
-    "Protocol S-7 (Event Chain): 하위 View는 VM과 직접 통신하지 않으며, 반드시 VC를 중계자로 활용한다."
+    {
+      "ko": "Protocol S-1 (Dumb View): ViewController/View는 비즈니스 로직을 가질 수 없으며, 모든 판단은 ViewModel이 수행한다.",
+      "en": "Protocol S-1 (Dumb View): ViewControllers/Views must not contain business logic; all judgments are performed by the ViewModel."
+    },
+    {
+      "ko": "Protocol S-2 (I/O transform): 모든 로직은 ViewModel의 Input/Output 구조체와 transform() 메서드를 통해 캡슐화되어야 한다.",
+      "en": "Protocol S-2 (I/O transform): All logic must be encapsulated within the ViewModel's Input/Output structs and a transform() method."
+    },
+    {
+      "ko": "Protocol S-3 (VC Separation): VC 내 bindViewModel 시 Input 생성 로직은 반드시 createInput() 메서드로 분리한다.",
+      "en": "Protocol S-3 (VC Separation): Input creation logic during bindViewModel in the VC must be separated into a createInput() method."
+    },
+    {
+      "ko": "Protocol S-4 (No Forced Unwrapping): 강제 언래핑(!) 사용을 엄격히 금지하며, 안전한 바인딩(guard let, if let)을 수행한다.",
+      "en": "Protocol S-4 (No Forced Unwrapping): Strictly prohibit forced unwrapping (!); perform safe bindings (guard let, if let)."
+    },
+    {
+      "ko": "Protocol S-7 (Event Chain): 하위 View는 VM과 직접 통신하지 않으며, 반드시 VC를 중계자로 활용한다.",
+      "en": "Protocol S-7 (Event Chain): Subviews do not communicate directly with the VM; they must use the VC as a mediator."
+    }
   ]
 }

@@ -83,5 +83,48 @@ AI 에이전트의 모든 요청을 중계하고, 규약을 강제하며, 안전
 - **프론트엔드**: Next.js 14, TailwindCSS, Lucide-React
 
 ---
-*최종 업데이트: 2026-04-03*
+
+## 5. 런타임 생명주기 및 통신 계통 (Runtime Lifecycle & Communication)
+
+본 시스템은 **Direct File-based IPC**를 통해 엔진과 UI가 데이터 포트 없이 유기적으로 결합된 구조를 가집니다.
+
+### 5.1 계통 및 종속성 (Hierarchy)
+1.  **Gemini CLI (Master):** 사용자와 대화하며 MCP 엔진을 자식 프로세스로 실행.
+2.  **MCP 엔진 (Subordinate):** 기동 시 시스템 상태를 **`data/mcp_state.json`**에 실시간 기록.
+    -   **State Sync:** 회선 전환, 경로 동기화 등 상태 변화 발생 시 즉시 JSON 업데이트.
+    -   **Live Logging:** 시스템 로그를 **`logs/mcp_live.log`**에 JSON Lines 형식으로 Append.
+3.  **Hovercraft UI (Observer):** 독립형 웹 서버(Port 3000)로 기동되어 엔진의 상태 파일을 관측.
+    -   **API Polling:** `/api/mcp/state` 및 `/api/mcp/logs`를 통해 엔진의 상태를 2초 간격으로 동기화.
+
+### 5.2 IPC 데이터 규약 (IPC Data Specification)
+엔진과 UI는 **Atomic JSON File**을 통해 데이터를 교환합니다.
+
+#### A. State File (`data/mcp_state.json`)
+엔진이 작성하고 UI가 읽는 시스템 전체 스냅샷입니다.
+```json
+{
+  "active_circuit": "circuit_name",
+  "registered_circuits": ["research", "mcp", "gdr"],
+  "active_units": ["python", "sentinel"],
+  "path": "/current/workspace/path",
+  "status": "active",
+  "active_circuit_details": { ... },
+  "timestamp": "ISO_STRING"
+}
+```
+
+#### B. Live Log File (`logs/mcp_live.log`)
+실시간 로그 스트림을 저장합니다 (JSON Lines 형식).
+```json
+{ "timestamp": "ISO_STRING", "level": "INFO", "category": "SYSTEM", "message": "Log message text" }
+```
+
+### 5.3 주요 수정 및 조치 내역 (Maintenance History)
+-   **WebSocket 제거 (2026-04-09):** 포트 충돌 및 연결 불안정 해소를 위해 3001/3002 소켓 서버를 폐지하고 파일 기반 IPC로 전환.
+-   **UI 빌드 에러 해결:** Next.js Turbopack 경로 간섭 문제를 `next.config.ts` 및 `postcss.config.mjs` 수정을 통해 해결.
+-   **Polling 시스템 도입:** UI가 엔진의 상태를 주기적으로 감시하는 Reactive Pull 구조로 개편.
+
+---
+
+*최종 업데이트: 2026-04-09 (Protocol Specification & UI Refactoring)*
 *작성 주체: MCP Operator (with Core Engine)*

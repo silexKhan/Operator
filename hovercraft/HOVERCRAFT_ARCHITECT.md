@@ -6,7 +6,7 @@
 - 본 유닛은 매트릭스(백엔드)의 복잡한 데이터 흐름을 시각화하고, 대장님(사용자)의 명령을 그래픽 인터페이스로 변환하여 전달하는 **'시각적 중재자'**이다.
 
 ## 2. The Equation (불변의 방정식)
-- **E-1 (Root Entry):** 실행에 필요한 핵심 진입점(`start.sh`, `start.bat`)은 지연 없이 접근 가능하도록 최상단(Root)에 위치해야 한다.
+- **E-1 (Reactive IPC Pull):** 모든 컴포넌트는 엔진의 실시간 상태 파일(`data/state.json`)을 관측하는 API Polling(/api/mcp/state)을 통해 데이터를 수신해야 한다.
 - **E-2 (Documentation Isolation):** 보조 문서와 가이드는 개발 환경의 노이즈를 줄이기 위해 전용 문서 저장소(`docs/`)로 격리한다.
 - **E-3 (Component Modularity):** 새로운 윈도우 컴포넌트는 `src/components/windows/{ComponentName}/{ComponentName}.tsx` 구조를 따라야 하며, 고유한 시각적 식별자(Material Symbols)를 포함해야 한다.
 

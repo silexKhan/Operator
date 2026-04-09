@@ -1,111 +1,140 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface UnitProtocolsProps {
   systemStatus: any;
 }
 
 export const UnitProtocols: React.FC<UnitProtocolsProps> = ({ systemStatus }) => {
+  const [selectedRuleIndex, setSelectedRuleIndex] = useState<number | null>(null);
+  const [editedRule, setEditedRule] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
   const details = systemStatus?.details;
   const globalProtocols = details?.protocols || [];
-  const units = details?.units || [];
-  const isActive = !!details;
+
+  const handleRuleSelect = (index: number) => {
+    setSelectedRuleIndex(index);
+    setEditedRule(globalProtocols[index] || "");
+  };
+
+  const handleSaveRule = async () => {
+    if (selectedRuleIndex === null) return;
+    setIsSaving(true);
+    
+    const newProtocols = [...globalProtocols];
+    newProtocols[selectedRuleIndex] = editedRule;
+
+    try {
+      const res = await fetch("/api/mcp/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: "circuit_protocols",
+          name: systemStatus.active_circuit,
+          data: { RULES: newProtocols }
+        })
+      });
+      if (res.ok) {
+        // 성공 시 상태 유지 또는 알림
+      }
+    } catch (e) {
+      alert("Failed to save protocol directive.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
-    <section className="col-span-5 row-span-2 flex flex-col terminal-window overflow-hidden border-orange-900/40">
-      <div className="terminal-header px-2 py-1 flex justify-between items-center bg-orange-500/10">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[10px] text-orange-400">rule</span>
-          <span className="text-[10px] font-mono text-orange-500 crt-glow uppercase">UNIT_PROTOCOLS.ext</span>
-        </div>
+    <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col h-[600px] shadow-sm">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/50">
         <div className="flex items-center gap-3">
-          <span className="text-[7px] font-mono text-orange-900 uppercase tracking-widest">
-            {isActive ? "Uplink: Synchronized" : "Uplink: Awaiting Core Signal"}
-          </span>
-          <span className="text-[9px] font-mono text-orange-500 uppercase">UNITS: {units.length}</span>
+          <div className="p-2 bg-amber-500/10 rounded-lg">
+            <span className="material-symbols-outlined text-amber-500 text-xl">rule</span>
+          </div>
+          <div>
+            <h3 className="text-white font-medium">Protocol Directives</h3>
+            <p className="text-[11px] text-neutral-500 font-mono uppercase tracking-wider">{systemStatus.active_circuit}_Governance_Engine</p>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 p-3 font-mono text-[9px] text-orange-500/80 overflow-hidden flex gap-4">
-        
-        {/* Left Column: Global Directives */}
-        <div className="w-1/3 flex flex-col border-r border-orange-900/20 pr-3">
-          <p className="text-orange-900 text-[7px] uppercase tracking-widest border-b border-orange-900/30 pb-0.5 mb-2 font-black flex items-center gap-1">
-            <span className="material-symbols-outlined text-[9px]">gavel</span>
-            GLOBAL_DIRECTIVES
-          </p>
-          <div className="flex-1 overflow-y-auto telemetry-scroll space-y-1.5 pr-1">
-            {globalProtocols.length > 0 ? (
-              globalProtocols.map((rule: string, i: number) => (
-                <div key={i} className="text-[7px] leading-tight text-orange-800 flex gap-1.5 italic">
-                  <span className="text-orange-500 font-bold shrink-0">[{rule.split(':')[0]}]</span>
-                  <span>{rule.split(':').slice(1).join(':').trim() || rule}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-[7px] opacity-20 uppercase">No Global Protocols Loaded</p>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Deployed Units & Their Protocols */}
-        <div className="flex-1 flex flex-col">
-          <p className="text-orange-900 text-[7px] uppercase tracking-widest border-b border-orange-900/30 pb-0.5 mb-2 font-black flex items-center gap-1">
-            <span className="material-symbols-outlined text-[9px]">hub</span>
-            DEPLOYED_TECHNOLOGY_UNITS
-          </p>
-          <div className="flex-1 overflow-y-auto telemetry-scroll pr-1 grid grid-cols-2 gap-3">
-            {units.length > 0 ? (
-              units.map((unit: any, i: number) => (
-                <div key={i} className="border border-orange-900/20 bg-orange-500/5 p-2 rounded-sm relative group hover:border-orange-500/30 transition-all">
-                  <div className="flex justify-between items-start mb-1.5">
-                    <span className="text-[9px] text-orange-400 font-black uppercase tracking-tighter">{unit.name} UNIT</span>
-                    <span className="text-[6px] px-1 bg-orange-900 text-black font-bold">ACT_0{i+1}</span>
-                  </div>
-                  
-                  {unit.mission && unit.mission !== "N/A" && (
-                    <div className="mb-2 opacity-80">
-                      <p className="text-[6px] text-orange-900 uppercase font-bold mb-0.5">Primary Mission</p>
-                      <p className="text-[7.5px] text-orange-400/90 leading-tight border-l border-orange-900/50 pl-1.5 py-0.5">{unit.mission}</p>
-                    </div>
-                  )}
-
-                  <div className="space-y-0.5 opacity-60">
-                    <p className="text-[6px] text-orange-900 uppercase font-bold mb-0.5">Active Ruleset</p>
-                    {unit.rules?.slice(0, 3).map((rule: string, j: number) => (
-                      <p key={j} className="text-[7px] text-orange-600 truncate leading-none">└ {rule}</p>
-                    ))}
-                    {unit.rules?.length > 3 && <p className="text-[6px] text-orange-900 italic">... and {unit.rules.length - 3} more</p>}
-                  </div>
-                  
-                  <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined text-[8px] text-orange-500">info</span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-2 flex flex-col items-center justify-center py-6 opacity-20 border border-dashed border-orange-900/50">
-                <span className="material-symbols-outlined text-[20px] mb-1 animate-pulse">radar</span>
-                <p className="text-[8px]">AWAITING UNIT DEPLOYMENT SIGNALS</p>
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Panel: Navigation */}
+        <div className="w-80 border-r border-neutral-800 flex flex-col bg-neutral-950/20">
+          <div className="p-4 flex-1 overflow-y-auto space-y-6">
+            <section>
+              <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3 block">Global Directives</label>
+              <div className="space-y-2">
+                {globalProtocols.map((rule: string, i: number) => (
+                  <button 
+                    key={i} 
+                    onClick={() => handleRuleSelect(i)}
+                    className={`w-full text-left p-3 rounded-lg border transition-all flex gap-3 group ${
+                      selectedRuleIndex === i 
+                      ? 'bg-amber-500/10 border-amber-500/50' 
+                      : 'bg-neutral-900 border-neutral-800 hover:border-neutral-700'
+                    }`}
+                  >
+                    <span className={`font-mono text-xs ${selectedRuleIndex === i ? 'text-amber-500' : 'text-neutral-600'}`}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className={`text-xs leading-relaxed truncate ${selectedRuleIndex === i ? 'text-neutral-100' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+                      {rule}
+                    </p>
+                  </button>
+                ))}
               </div>
-            )}
+            </section>
           </div>
         </div>
 
-      </div>
+        {/* Right Panel: Editor Area */}
+        <div className="flex-1 bg-neutral-950 flex flex-col p-8 overflow-hidden">
+          {selectedRuleIndex !== null ? (
+            <div className="flex-1 flex flex-col space-y-6 max-w-3xl">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="text-white font-medium mb-1">
+                    Editing Directive #{selectedRuleIndex + 1}
+                  </h4>
+                  <p className="text-xs text-neutral-500">
+                    Modify the specific behavioral protocol for this circuit.
+                  </p>
+                </div>
+                <button 
+                  onClick={handleSaveRule}
+                  disabled={isSaving}
+                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs rounded-lg transition-colors font-medium shadow-lg shadow-amber-900/20"
+                >
+                  <span className="material-symbols-outlined text-sm">publish</span>
+                  {isSaving ? "Syncing..." : "Update Directive"}
+                </button>
+              </div>
 
-      {/* Footer System Status */}
-      <div className="px-2 py-0.5 bg-orange-900/10 border-t border-orange-900/20 flex justify-between items-center text-[6px] text-orange-900 uppercase">
-        <div className="flex gap-4">
-          <span>Unit Runtime: Stable</span>
-          <span>Sync ID: 0xCC_FF_A0</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse"></span>
-          <span>PROTOCOL_UPLINK_SECURE</span>
+              <div className="flex-1 flex flex-col space-y-2 overflow-hidden">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Protocol Content</label>
+                <textarea 
+                  value={editedRule}
+                  onChange={(e) => setEditedRule(e.target.value)}
+                  className="flex-1 w-full bg-neutral-900 border border-neutral-800 rounded-xl p-6 text-sm font-mono text-amber-200/80 outline-none focus:border-amber-500/50 transition-colors resize-none leading-relaxed"
+                  placeholder="Enter rule content..."
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 opacity-50">
+              <span className="material-symbols-outlined text-5xl text-neutral-700 mb-4">account_tree</span>
+              <h4 className="text-white font-medium mb-2">Select a Directive</h4>
+              <p className="text-sm text-neutral-500 max-w-xs">
+                Choose a protocol from the left panel to view or edit its specific operational requirements.
+              </p>
+            </div>
+          )}
         </div>
       </div>
-    </section>
+    </div>
   );
 };

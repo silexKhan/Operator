@@ -12,15 +12,27 @@ class GlobalProtocols(BaseProtocols):
     [사용자] 전사 지배 규약(Global Protocols)입니다.
     I18N을 지원하며, protocols.json 파일에서 실시간으로 로드합니다.
     """
-    PROJECT_ROOT = get_project_root()
 
     def __init__(self, lang: str = None):
-        """초기화 시 언어를 설정합니다. 설정하지 않으면 JSON의 DEFAULT_LANGUAGE를 사용합니다."""
-        self._current_lang = lang
+        """초기화 시 언어를 설정합니다. 
+        1. 명시적 인자(lang)
+        2. data/state.json의 'lang' 설정
+        3. protocols.json의 'DEFAULT_LANGUAGE' (Fallback)
+        """
+        self.PROJECT_ROOT = get_project_root()
         self._data = self._load_full_data()
-        
+        self._current_lang = lang
+
         if self._current_lang is None:
-            self._current_lang = self._data.get("DEFAULT_LANGUAGE", "en")
+            # data/state.json에서 현재 언어 설정 로드 시도
+            state_path = os.path.join(self.PROJECT_ROOT, "data", "state.json")
+            state_data = read_json_safely(state_path)
+            if state_data and "lang" in state_data:
+                self._current_lang = state_data["lang"]
+
+        # 최종 Fallback
+        if self._current_lang is None:
+            self._current_lang = self._data.get("DEFAULT_LANGUAGE", "ko")
             
     def _load_full_data(self) -> Dict[str, Any]:
         """JSON 파일 전체를 로드합니다."""

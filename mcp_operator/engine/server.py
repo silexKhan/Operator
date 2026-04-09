@@ -7,7 +7,6 @@ import os
 import sys
 import inspect
 import json
-import websockets
 from datetime import datetime
 from mcp_operator.common.models import ResponseHandler, TextResponse
 import mcp.types as types
@@ -21,21 +20,6 @@ from mcp_operator.engine.protocols import GlobalProtocols
 from mcp_operator.engine.logger import OperatorLogger
 from mcp_operator.engine.sentinel import Sentinel
 from enum import Enum
-
-class McpRawAction(str, Enum):
-    """[Specification] 웹소켓 다이렉트 명령어 (P-6)"""
-    # [LEGACY] 기존 호환성 유지
-    GET_STATUS_LEGACY = "get_operator_status"
-    SET_CIRCUIT_LEGACY = "set_active_circuit"
-    
-    # [UNIFIED] 신규 통합 지휘 API
-    GET = "mcp_operator_get"
-    UPDATE = "mcp_operator_mcp_operator_update"
-    CREATE = "mcp_operator_mcp_operator_create"
-    EXECUTE = "mcp_operator_mcp_operator_execute"
-    
-    SYNC_PATH = "sync_operator_path"
-    RELOAD = "reload_operator"
 
 class OperatorServer:
     """
@@ -61,157 +45,68 @@ class OperatorServer:
         self.last_circuit_keys = set(self.circuit_manager.circuits.keys())
         self._tool_map = {}
         
-        # [사용자] 웹소켓 클라이언트 관리용 집합
-        self.ws_clients = set()
-        
         self._setup_mcp_handlers()
         self._refresh_tool_cache_handler()
         
-        # [사용자] 로거에 웹소켓 전송 함수 연결
+        # [사용자] 로거에 IPC 전송 함수 연결
         self.logger.set_broadcast_handler(self.broadcast_message)
 
     async def broadcast_message(self, message: dict):
-        """[Handler] 연결된 모든 호버크래프트 UI에 신호를 전송합니다."""
-        if not self.ws_clients: return
-
-        # [Sync] 타임스탬프 형식을 ISO 문자열로 통일 (UI 파싱 오류 방지)
+        """[Handler] 메시지를 파일 시스템 IPC(JSON/Log)로 전송합니다."""
+        # [Sync] 타임스탬프 형식을 ISO 문자열로 통일
         if "timestamp" not in message:
             message["timestamp"] = datetime.now().isoformat()
 
-        data = json.dumps(message, ensure_ascii=False)
-        # [Socket Log] 무한 루프 방지를 위해 직접 stderr 출력 (logger.log 사용 금지)
-        now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        print(f" [{now}] [OPERATOR] [MasterOperator]    ├─ 📤 [Socket] Outgoing (to {len(self.ws_clients)} clients): {data[:100]}...", file=sys.stderr)
-        
-        disconnected = set()
-        for ws in self.ws_clients:
+        # [IPC] 로그 메시지인 경우 실시간 로그 파일에 기록 (JSON Lines 형식)
+        if message.get("type") == "LOG" or "message" in message:
             try:
-                await ws.send(data)
-            except websockets.exceptions.ConnectionClosed:
-                disconnected.add(ws)
-        self.ws_clients -= disconnected
+                os.makedirs("logs", exist_ok=True)
+                log_entry = {
+                    "timestamp": message.get("timestamp", datetime.now().isoformat()),
+                    "level": message.get("level", "INFO"),
+                    "category": message.get("category", "SYSTEM"),
+                    "message": message.get("message", "")
+                }
+                with open("logs/mcp_live.log", "a", encoding="utf-8") as f:
+                    f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+            except Exception as e:
+                print(f" ❌ [IPC Error] 로그 파일 기록 실패: {str(e)}", file=sys.stderr)
 
-    async def broadcast_operator_status(self):
-        """[Internal] 현재 오퍼레이터의 활성 상태를 모든 UI에 동기화합니다."""
-        active = self.circuit_manager.get_active_circuit()
-        active_details = await asyncio.to_thread(self.core_actions.get_active_circuit_details)
+        # [IPC] 상태 파일 업데이트 (모든 브로드캐스트 호출 시 실시간성 보장)
+        await self.write_state_to_file()
         
-        status_packet = {
-            "type": "STATUS_UPDATE",
-            "active_circuit": active.get_name() if active else "None",
-            "registered_circuits": list(self.circuit_manager.circuits.keys()),
-            "active_units": getattr(self.circuit_manager, "active_units", []),
-            "path": getattr(self.circuit_manager, "current_path", "Unknown"),
-            "active_circuit_details": active_details
-        }
-        await self.broadcast_message(status_packet)
+        # [Debug Log] stderr 출력 유지 (Socket 대신 IPC 표기)
+        now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        print(f" [{now}] [OPERATOR] [MasterOperator]    ├─ 💾 [IPC] Outgoing: {str(message)[:100]}...", file=sys.stderr)
 
-    async def ws_handler(self, websocket):
-        """[Handler] 새로운 호버크래프트 UI 접속 처리"""
-        self.ws_clients.add(websocket)
-        remote_addr = websocket.remote_address
-        self.logger.log(f" 🔌 [Socket] 호버크래프트 업링크 연결됨 (IP: {remote_addr}, Active: {len(self.ws_clients)})", 0)
-        
+    async def write_state_to_file(self, custom_status: str = "active"):
+        """[Internal] 현재 시스템 상태를 파일에 동기화합니다. (IPC 전환)"""
         try:
-            # [INIT] 접속 즉시 현재 시스템 가용 정보 전송
             active = self.circuit_manager.get_active_circuit()
+            # [Optimization] 비동기 쓰레드에서 상세 정보 조회
             active_details = await asyncio.to_thread(self.core_actions.get_active_circuit_details)
             
-            await websocket.send(json.dumps({
-                "type": "INIT",
-                "timestamp": datetime.now().isoformat(),
-                "data": {
-                    "active_circuit": active.get_name() if active else "None",
-                    "circuits": list(self.circuit_manager.circuits.keys()),
-                    "path": getattr(self.circuit_manager, "current_path", "Unknown"),
-                    "active_circuit_details": active_details
-                }
-            }, ensure_ascii=False))
-
-            async for message in websocket:
-                try:
-                    data = json.loads(message)
-                    if data.get("type") != "COMMAND": continue
-                    
-                    action_raw = data.get("action")
-                    print(f" [{datetime.now().strftime('%H:%M:%S')}] [UPLINK] 📥 Incoming: {action_raw}", file=sys.stderr)
-                    
-                    # [ACK] 명령 수신 즉시 응답 전송 (처리 유무 관계없이)
-                    await websocket.send(json.dumps({
-                        "type": "RESPONSE",
-                        "action": action_raw,
-                        "status": "RECEIVED",
-                        "timestamp": datetime.now().isoformat()
-                    }, ensure_ascii=False))
-
-                    match action_raw:
-                        case McpRawAction.GET_STATUS_LEGACY:
-                            await self._handle_direct_status_request()
-                        case McpRawAction.GET:
-                            # [UNIFIED] GET target="status" 일 경우 UI 상태 동기화
-                            if data.get("target") == "status":
-                                await self._handle_direct_status_request()
-                            else:
-                                print(f" ⚠️ Unsupported GET target via Uplink: {data.get('target')}", file=sys.stderr)
-                        case McpRawAction.SET_CIRCUIT_LEGACY:
-                            await self._handle_direct_circuit_switch(data.get("name"))
-                        case McpRawAction.EXECUTE:
-                            # [UNIFIED] EXECUTE action="reload" 대응
-                            if data.get("action_name") == "reload" or data.get("params", {}).get("action") == "reload":
-                                await self.reload_operator_handler()
-                            else:
-                                print(f" ⚠️ Unsupported EXECUTE action via Uplink: {data.get('action')}", file=sys.stderr)
-                        case _:
-                            print(f" ⚠️ Unknown Command: {action_raw}", file=sys.stderr)
-
-                except json.JSONDecodeError: pass
-                except Exception as e:
-                    self.logger.log(f" ❌ [Socket] 업링크 명령 처리 중 에러: {str(e)}", 0)
-        finally:
-            self.ws_clients.remove(websocket)
-            self.logger.log(f" 🔌 [Socket] 호버크래프트 업링크 해제 (Active: {len(self.ws_clients)})", 0)
-
-    async def _handle_direct_status_request(self):
-        """[Internal] UI로부터의 직접 상태 요청 처리"""
-        try:
-            res = await asyncio.to_thread(self.core_actions.get_operator_status)
-            status_text = res[0].text if res and len(res) > 0 else "상태 정보를 가져올 수 없습니다."
+            state = {
+                "active_circuit": active.get_name() if active else "None",
+                "registered_circuits": list(self.circuit_manager.circuits.keys()),
+                "active_units": getattr(self.circuit_manager, "active_units", []),
+                "path": getattr(self.circuit_manager, "current_path", "Unknown"),
+                "status": custom_status,
+                "active_circuit_details": active_details,
+                "timestamp": datetime.now().isoformat()
+            }
             
-            await self.broadcast_message({
-                "type": "LOG", "level": "plain", "category": "OPERATOR",
-                "message": f"✔ 시스템 상태 동기화 완료\n{status_text}"
-            })
-            await self.broadcast_operator_status()
+            # [Sync] 파일 쓰기 (디렉토리 자동 생성)
+            os.makedirs("data", exist_ok=True)
+            with open("data/mcp_state.json", "w", encoding="utf-8") as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            await self._broadcast_error(f"상태 조회 실패: {str(e)}")
+            print(f" ❌ [IPC Error] 상태 파일 기록 실패: {str(e)}", file=sys.stderr)
 
-    async def _handle_direct_circuit_switch(self, circuit_name: str):
-        """[Internal] UI로부터의 직접 회선 전환 처리"""
-        if not circuit_name: return
-        try:
-            res = await asyncio.to_thread(self.core_actions.set_active_circuit, circuit_name)
-            context_card = res[0].text if res and len(res) > 0 else f"회선 '{circuit_name}'으로 전환되었습니다."
-            
-            await self.broadcast_message({
-                "type": "LOG", "level": "plain", "category": "OPERATOR",
-                "message": f"▶ {context_card}"
-            })
-            await self.broadcast_operator_status()
-        except Exception as e:
-            await self._broadcast_error(f"회선 전환 실패: {str(e)}")
-
-    async def _broadcast_error(self, message: str):
-        """[Internal] 에러 발생 시 UI로 즉시 브로드캐스트"""
-        await self.broadcast_message({
-            "type": "LOG", "level": "error", "category": "ERROR", "message": f"❌ {message}"
-        })
-
-    async def start_ws_server(self):
-        """[Handler] 웹소켓 서버 가동 (Port: 3001)"""
-        # [사용자] 0.0.0.0 바인딩으로 로컬 루프백(127.0.0.1) 및 호스트 이름(localhost) 모두 지원
-        # reuse_address=True: 서버 재시작 시 포트 점유 에러 방지 (Windows 안정성 향상)
-        async with websockets.serve(self.ws_handler, "0.0.0.0", 3001, reuse_address=True):
-            await asyncio.Future() # 영구 실행
+    async def broadcast_operator_status(self):
+        """[Internal] 현재 오퍼레이터의 활성 상태를 동기화합니다. (IPC)"""
+        # [Sync] broadcast_message를 호출하여 로그 기록(필요시) 및 상태 파일 업데이트 통합 수행
+        await self.broadcast_message({"type": "STATUS_UPDATE"})
 
     # -------------------------------------------------------------------------
     # [Handlers] 서버 운영 및 이벤트 관리 (Protocol P-4)
@@ -312,8 +207,8 @@ class OperatorServer:
 
     async def start_server_handler(self):
         """[Handler] 서버 기동"""
-        # [사용자] 웹소켓 서버를 백그라운드 태스크로 가동
-        asyncio.create_task(self.start_ws_server())
+        # [IPC] 서버 기동 시 초기 상태 파일 생성
+        await self.write_state_to_file(custom_status="starting")
         
         async with stdio_server() as (read_stream, write_stream):
             await self.server.run(
@@ -360,7 +255,7 @@ class OperatorServer:
 
     async def _dispatch_tool_handler(self, name: str, args: dict) -> list[types.TextContent]:
         """[Internal] 도구 호출 배분"""
-        # [사용자] 현재 세션을 캡처하여 웹소켓 업링크(ws_handler)에서 알림을 보낼 수 있게 합니다.
+        # [사용자] 현재 세션을 캡처하여 필요한 경우 알림을 보낼 수 있게 합니다.
         try:
             self._session = self.server.request_context.get().session
         except: pass
@@ -377,7 +272,7 @@ class OperatorServer:
             # 만약 코루틴이면 대기 (asyncio.to_thread 또는 async handler 대응)
             if asyncio.iscoroutine(res): res = await res
         
-        # [Sync] 상태 변경이 발생하는 도구인 경우 웹 UI에 즉시 동기화 패킷 전송
+        # [Sync] 상태 변경이 발생하는 도구인 경우 IPC를 통해 즉시 상태 파일 갱신
         if name in ["set_active_circuit", "sync_operator_path", "reload_operator"]:
             asyncio.create_task(self.broadcast_operator_status())
             

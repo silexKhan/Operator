@@ -9,7 +9,7 @@ import json
 import importlib
 from typing import List, Optional, Any, Dict, Tuple
 from mcp_operator.common.models import TextResponse, JsonResponse, CommandTarget, UnifiedRequest
-from mcp_operator.common.utils import get_project_root, read_json_safely
+from mcp_operator.common.utils import get_project_root, read_json_safely, get_i18n_text
 import mcp.types as types
 from mcp_operator.registry.circuits.manager import CircuitManager
 from mcp_operator.engine.logger import OperatorLogger
@@ -42,10 +42,19 @@ class CoreActions:
                 case CommandTarget.SPEC:
                     return self.get_spec_content(name or "")
                 case CommandTarget.MISSION:
-                    from mcp_operator.registry.circuits.registry.mcp.actions import McpCircuit
-                    # McpCircuit의 핸들러 재활용 또는 직접 로직 구현
+                    from mcp_operator.engine.protocols import GlobalProtocols
+                    gp = GlobalProtocols()
+                    lang = gp.get_current_language()
                     path = os.path.join(get_project_root(), "mission.json")
-                    return JsonResponse(read_json_safely(path))
+                    mission = read_json_safely(path)
+                    if mission:
+                        mission["objective"] = get_i18n_text(mission.get("objective"), lang)
+                        mission["criteria"] = get_i18n_text(mission.get("criteria"), lang)
+                    return JsonResponse(mission)
+                case CommandTarget.STATE:
+                    path = os.path.join(get_project_root(), "data", "state.json")
+                    state = read_json_safely(path) or {}
+                    return JsonResponse(state)
                 case _:
                     return TextResponse(f" Unsupported GET Target: {target}")
         except Exception as e:
@@ -61,6 +70,13 @@ class CoreActions:
                     return self._update_protocols_logic(name, data.get("rules", []))
                 case CommandTarget.OVERVIEW:
                     return self._update_overview_logic(name, data)
+                case CommandTarget.STATE:
+                    path = os.path.join(get_project_root(), "data", "state.json")
+                    state = read_json_safely(path) or {}
+                    state.update(data)
+                    with open(path, "w", encoding="utf-8") as f:
+                        json.dump(state, f, indent=4, ensure_ascii=False)
+                    return TextResponse(f" System State Updated: {json.dumps(state, ensure_ascii=False)}")
                 case CommandTarget.MISSION:
                     # 미션 업데이트 로직 (Sentinel 역할)
                     path = os.path.join(get_project_root(), "mission.json")
@@ -134,9 +150,17 @@ class CoreActions:
         name = active.get_name()
         
         # 0. Mission (Current project-wide mission)
+        from mcp_operator.engine.protocols import GlobalProtocols
+        gp = GlobalProtocols()
+        lang = gp.get_current_language()
         root = get_project_root()
         mission_path = os.path.join(root, "mission.json")
         mission_data = read_json_safely(mission_path) or {}
+        
+        # Apply I18N filtering
+        if mission_data:
+            mission_data["objective"] = get_i18n_text(mission_data.get("objective"), lang)
+            mission_data["criteria"] = get_i18n_text(mission_data.get("criteria"), lang)
         
         # 1. Protocols
         protocols = []
@@ -256,13 +280,14 @@ class CoreActions:
         from mcp_operator.engine import protocols
         importlib.reload(protocols)
         GlobalProtocols = protocols.GlobalProtocols
-        
+
         try:
-            rules = GlobalProtocols.get_rules()
+            # 인스턴스를 생성하여 현재 언어 설정(state.json)을 반영
+            gp = GlobalProtocols()
+            rules = gp.get_rules()
             return TextResponse(json.dumps(rules, ensure_ascii=False))
         except Exception as e:
             return TextResponse(json.dumps({"error": str(e)}))
-
     def browse_directory(self, path: str) -> list[types.TextContent]:
         """[Handler] 특정 경로의 파일 및 폴더 목록을 필터링하여 조회합니다."""
         try:

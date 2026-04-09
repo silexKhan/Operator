@@ -20,6 +20,7 @@ class CommandTarget(str, Enum):
     CIRCUIT = "circuit"
     UNIT = "unit"
     STATUS = "status"
+    STATE = "state"
 
 class UnifiedRequest(BaseModel):
     """[Specification] 통합 요청 스키마 (P-2)"""

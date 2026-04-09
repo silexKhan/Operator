@@ -1,6 +1,25 @@
 {
   "name": "mcp",
-  "description": "MCP Operator System Orchestrator",
+  "description": {
+    "ko": "전사 시스템의 지휘 및 통제를 담당하는 MCP 오퍼레이터 시스템의 핵심 중추입니다. 모든 회선의 연결과 규약 준수 여부를 감독합니다.",
+    "en": "The core backbone of the MCP Operator system, responsible for command and control of the entire organizational system. Oversees all circuit connections and protocol compliance."
+  },
   "dependencies": [],
-  "units": ["python", "markdown", "sentinel"]
+  "units": ["python", "markdown", "sentinel"],
+  "mission": {
+    "objective": {
+      "ko": "I18N 표준 파서 통합 및 호버크래프트 UI 데이터 정합성 전방위 점검",
+      "en": "Integration of I18N standard parser and comprehensive audit of Hovercraft UI data integrity"
+    },
+    "criteria": [
+      {
+        "ko": "모든 JSON 데이터의 ko/en 필드 누락 여부 전수 조사 및 수정",
+        "en": "Full audit and correction of missing ko/en fields in all JSON data"
+      },
+      {
+        "ko": "호버크래프트 UI에서의 실시간 언어 전환 무결성 확보",
+        "en": "Ensuring the integrity of real-time language switching in the Hovercraft UI"
+      }
+    ]
+  }
 }

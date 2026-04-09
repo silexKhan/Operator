@@ -17,35 +17,59 @@ interface SystemLogsProps {
 
 export const SystemLogs: React.FC<SystemLogsProps> = ({ logs, status, logEndRef }) => {
   return (
-    <section className="col-span-3 row-span-3 flex flex-col terminal-window overflow-hidden">
-      <div className="terminal-header px-2 py-1 flex justify-between items-center">
-        <span className="text-[10px] font-mono text-green-500 crt-glow">SYSTEM_LOGS.raw</span>
-        <span className={`text-[9px] ${status === 'CONNECTED' ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'text-red-600'} font-bold animate-pulse`}>
-          ● {status === 'CONNECTED' ? 'OPERATOR ONLINE' : 'OPERATOR OFFLINE'}
-        </span>
+    <div className="flex flex-col h-full bg-neutral-950/80 font-mono text-[11px]">
+      {/* Log Header */}
+      <div className="px-6 py-2 border-b border-neutral-800/50 flex justify-between items-center bg-neutral-900/30">
+        <div className="flex items-center gap-4">
+          <span className="text-neutral-500 font-bold uppercase tracking-widest text-[10px]">System Telemetry</span>
+          <div className="flex items-center gap-2">
+            <span className={`w-1.5 h-1.5 rounded-full ${status === 'CONNECTED' ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
+            <span className="text-neutral-600 text-[9px]">{status === 'CONNECTED' ? 'UPLINK_STABLE' : 'UPLINK_TERMINATED'}</span>
+          </div>
+        </div>
+        <div className="text-neutral-700 text-[9px]">
+          SESSION_LOG_BUFFER: {logs.length}/50
+        </div>
       </div>
-      <div className="flex-1 p-3 font-mono text-[9px] text-green-500/70 overflow-y-auto custom-scrollbar flex flex-col">
-        <div className="space-y-1">
+
+      {/* Log Content */}
+      <div className="flex-1 overflow-y-auto px-6 py-3 custom-scrollbar">
+        <div className="space-y-0.5">
           {logs.length === 0 ? (
-            <p className="opacity-50 italic">Awaiting telemetry downlink...</p>
+            <p className="text-neutral-700 italic py-2">Awaiting telemetry downlink...</p>
           ) : (
             logs.map((log, i) => (
-              <p key={i} className="leading-tight">
-                <span className="text-green-900">[{log.timestamp}]</span>{' '}
-                <span className={log.level === 'END' ? 'text-blue-400' : 'text-green-400'}>
-                  {log.category}: {log.message}
+              <div key={i} className="flex gap-4 group hover:bg-white/5 transition-colors py-0.5 px-1 rounded">
+                <span className="text-neutral-600 shrink-0 select-none">[{log.timestamp}]</span>
+                <span className={`shrink-0 font-bold w-12 text-center select-none ${
+                  log.level === 'ERROR' ? 'text-rose-500' : 
+                  log.level === 'WARNING' ? 'text-amber-500' : 
+                  'text-blue-500/70'
+                }`}>
+                  {log.level}
                 </span>
-              </p>
+                <span className="text-neutral-500 shrink-0 font-bold">[{log.category}]</span>
+                <span className="text-neutral-300 break-all leading-tight">
+                  {log.message}
+                </span>
+              </div>
             ))
           )}
           <div ref={logEndRef} />
         </div>
       </div>
-      <div className="bg-black/50 border-t border-green-900/30 p-2 flex items-center gap-2">
-        <span className="text-green-600 font-mono text-[10px]">logs@neb:~#</span>
-        <input className="bg-transparent border-none text-[10px] font-mono text-green-400 focus:ring-0 p-0 flex-1 outline-none" placeholder="tail -f /var/log/sys" type="text" />
-        <span className="w-1.5 h-3 bg-green-500 cursor-blink"></span>
+
+      {/* Log Footer / Quick Info */}
+      <div className="px-6 py-1.5 border-t border-neutral-800/30 bg-neutral-900/20 flex items-center justify-between text-[10px] text-neutral-600">
+        <div className="flex gap-4">
+          <span>OPERATOR_ID: CYPHER_01</span>
+          <span>NODE: NEBUCHADNEZZAR</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-[12px]">filter_list</span>
+          <span>ALL_TRAFFIC</span>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };

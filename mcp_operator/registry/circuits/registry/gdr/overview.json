@@ -1,6 +1,25 @@
 {
   "name": "Golfzon GDR Legacy",
-  "description": "기존 골프존 GDR(Golfzon Driving Range) 레거시 프로젝트의 도메인 로직 및 스윙 분석 데이터 흐름을 분석하고 관리한다.",
+  "description": {
+    "ko": "기존 골프존 GDR(Golfzon Driving Range) 레거시 프로젝트의 도메인 로직 및 스윙 분석 데이터 흐름을 분석하고 관리한다.",
+    "en": "Analyze and manage the domain logic and swing analysis data flow of the legacy Golfzon GDR (Golfzon Driving Range) project."
+  },
   "units": ["markdown", "sentinel", "swift"],
-  "dependencies": []
+  "dependencies": [],
+  "mission": {
+    "objective": {
+      "ko": "GDR 레거시 시스템의 핵심 데이터 흐름 파악 및 문서화",
+      "en": "Identify and document the core data flow of the GDR legacy system"
+    },
+    "criteria": [
+      {
+        "ko": "스윙 분석 엔진의 입력/출력 인터페이스 분석 완료",
+        "en": "Completion of I/O interface analysis for the swing analysis engine"
+      },
+      {
+        "ko": "레거시 코드 베이스의 기술 부채(Tech Debt) 리포트 생성",
+        "en": "Generation of a Tech Debt report for the legacy codebase"
+      }
+    ]
+  }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "setup": "node scripts/setup.js",
     "predev": "npm run setup",
-    "dev": "next dev",
+    "dev": "echo \"\n\n--- UI RESTART: $(date) ---\" >> ../logs/ui.log && next dev 2>&1 | tee -a ../logs/ui.log",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -17,7 +17,8 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-force-graph": "^1.48.2",
-    "react-force-graph-2d": "^1.29.1"
+    "react-force-graph-2d": "^1.29.1",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",

@@ -4,132 +4,198 @@ import React, { useEffect, useState } from "react";
 
 interface CoreAccessProps {
   requestMcpStatus: () => void;
-  requestSwitchCircuit: (name: string) => void;
-  systemStatus: {
-    active_circuit: string;
-    circuits: string[];
-    details?: {
-      name: string;
-      protocols: string[];
-      units: { name: string; mission: string; rules: string[] }[];
-      actions: { name: string; description: string }[];
-    }
-  };
+  systemStatus: any;
+  language: "ko" | "en";
 }
 
-export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, requestSwitchCircuit, systemStatus }) => {
+export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, systemStatus, language }) => {
   const [mounted, setMounted] = useState(false);
+  const [availableUnits, setAvailableUnits] = useState<string[]>([]);
+  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+  const [selectedUnitData, setSelectedUnitData] = useState<any>(null);
+  const [selectedRuleIndex, setSelectedRuleIndex] = useState<number | null>(null);
+  const [editedRuleText, setEditedRuleText] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    fetchAvailableUnits();
   }, []);
 
-  // 마운트 전에는 서버와 동일한 최소한의 구조만 렌더링 (하이드레이션 방지)
-  if (!mounted) {
-    return (
-      <section className="col-span-4 row-span-3 flex flex-col terminal-window overflow-hidden">
-        <div className="terminal-header px-2 py-1 flex justify-between items-center">
-          <span className="text-[10px] font-mono text-green-500 crt-glow">CORE_ACCESS.sys</span>
-          <div className="flex gap-1">
-            <div className="w-2 h-2 rounded-full bg-green-900"></div>
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-          </div>
-        </div>
-        <div className="flex-1 p-3 font-mono text-[10px] text-green-500/80 overflow-hidden flex flex-col">
-          <p className="text-green-400 opacity-60">Initializing core handshake...</p>
-        </div>
-      </section>
-    );
-  }
+  // 유닛이나 언어가 변경되면 정보를 다시 가져옴
+  useEffect(() => {
+    if (selectedUnit) {
+      fetchUnitDetails(selectedUnit);
+    }
+  }, [selectedUnit, language]);
+
+  const fetchAvailableUnits = async () => {
+    try {
+      const res = await fetch("/api/mcp/protocols?type=units_list");
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableUnits(data.units);
+      }
+    } catch (e) {
+      console.error("Failed to fetch units list:", e);
+    }
+  };
+
+  const fetchUnitDetails = async (unitName: string) => {
+    try {
+      const res = await fetch(`/api/mcp/protocols?type=unit&name=${unitName}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedUnitData(data);
+        setSelectedUnit(unitName);
+        setSelectedRuleIndex(null);
+      } else {
+        console.error("Unit details fetch failed:", await res.text());
+      }
+    } catch (e) {
+      console.error("Failed to fetch unit details:", e);
+    }
+  };
+
+  const handleSaveUnitRule = async () => {
+    if (!selectedUnit || !selectedUnitData || selectedRuleIndex === null) return;
+    setIsSaving(true);
+
+    const newRules = [...(selectedUnitData.RULES || [])];
+    newRules[selectedRuleIndex] = editedRuleText;
+
+    try {
+      const res = await fetch("/api/mcp/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: "unit_protocols",
+          name: selectedUnit,
+          data: { ...selectedUnitData, RULES: newRules }
+        })
+      });
+      if (res.ok) {
+        fetchUnitDetails(selectedUnit);
+      }
+    } catch (e) {
+      alert("Failed to save unit protocol.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveUnitOverview = async (newOverview: string) => {
+    if (!selectedUnit || !selectedUnitData) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/mcp/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: "unit_protocols",
+          name: selectedUnit,
+          data: { ...selectedUnitData, OVERVIEW: newOverview }
+        })
+      });
+      if (res.ok) {
+        fetchUnitDetails(selectedUnit);
+      }
+    } catch (e) {
+      alert("Failed to update unit overview.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (!mounted) return null;
 
   return (
-    <section className="col-span-4 row-span-3 flex flex-col terminal-window overflow-hidden">
-      <div className="terminal-header px-2 py-1 flex justify-between items-center">
-        <span className="text-[10px] font-mono text-green-500 crt-glow">CORE_ACCESS.sys</span>
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] font-mono text-green-900 uppercase tracking-tighter">
-            Nexus: <span className="text-green-500 font-bold">{systemStatus.active_circuit}</span>
-          </span>
-          <div className="flex gap-1 ml-2">
-            <div className="w-2 h-2 rounded-full bg-green-900"></div>
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+    <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col h-[650px] shadow-sm">
+      <div className="px-6 py-4 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/50">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-emerald-500/10 rounded-lg"><span className="material-symbols-outlined text-emerald-500 text-xl">memory</span></div>
+          <div>
+            <h3 className="text-white font-medium">Technology Unit Explorer</h3>
+            <p className="text-[11px] text-neutral-500 font-mono uppercase tracking-wider">Registry_Management_Core</p>
           </div>
         </div>
       </div>
-      <div className="flex-1 p-3 font-mono text-[10px] text-green-500/80 overflow-y-auto telemetry-scroll flex flex-col">
-        <div className="space-y-1">
-          <p className="text-green-400 opacity-60">Handshake established with main_node_0</p>
-          <p className="text-green-400">Welcome, Operator. Awaiting instructions.</p>
-          
-          <div className="mt-4 p-3 border border-green-900/30 bg-green-500/5">
-            <p className="text-green-900 text-[8px] mb-2 uppercase tracking-widest border-b border-green-900/30 pb-1">Circuit Selection</p>
-            <div className="flex flex-wrap gap-2">
-              {systemStatus.circuits.map((name) => (
-                <button
-                  key={name}
-                  onClick={() => requestSwitchCircuit(name)}
-                  className={`px-2 py-0.5 border text-[9px] transition-all cursor-pointer uppercase ${
-                    systemStatus.active_circuit === name 
-                    ? "bg-green-500 text-black border-green-500 font-bold shadow-[0_0_8px_#22c55e]" 
-                    : "border-green-900 text-green-700 hover:border-green-500 hover:text-green-500"
-                  }`}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {systemStatus.details && (
-            <div className="mt-4 space-y-4">
-              {/* Protocols Section */}
-              <div className="p-3 border border-green-900/30 bg-green-500/5">
-                <p className="text-green-900 text-[8px] mb-2 uppercase tracking-widest border-b border-green-900/30 pb-1">Active Protocols</p>
-                <div className="space-y-1 max-h-32 overflow-y-auto pr-1">
-                  {systemStatus.details.protocols.map((protocol, i) => (
-                    <p key={i} className="text-[9px] text-green-500/70 flex gap-2">
-                      <span className="text-green-800">[{i+1}]</span> {protocol}
-                    </p>
-                  ))}
+      <div className="flex-1 flex overflow-hidden">
+        <div className="w-72 border-r border-neutral-800 bg-neutral-950/20 overflow-y-auto">
+          <div className="p-4 space-y-2">
+            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest px-2 mb-2 block">Available Units</label>
+            {availableUnits.map(unit => (
+              <button
+                key={unit}
+                onClick={() => setSelectedUnit(unit)}
+                className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center justify-between group ${
+                  selectedUnit === unit ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400" : "bg-neutral-900/50 border-neutral-800 text-neutral-400 hover:border-neutral-700"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`material-symbols-outlined text-sm ${selectedUnit === unit ? 'text-emerald-500' : 'text-neutral-600'}`}>{selectedUnit === unit ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
+                  <span className="text-xs font-bold uppercase font-mono">{unit}</span>
                 </div>
+                <span className="material-symbols-outlined text-xs opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 bg-neutral-950 flex flex-col overflow-hidden">
+          {selectedUnit && selectedUnitData ? (
+            <div className="flex-1 flex flex-col p-8 overflow-y-auto space-y-8 w-full">
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold text-white uppercase tracking-tight">{selectedUnit}</h2>
+                <p className="text-xs text-neutral-500 font-mono">TYPE: OPERATIONAL_UNIT | STATUS: ACTIVE</p>
               </div>
 
-              {/* Units Section */}
-              <div className="p-3 border border-green-900/30 bg-green-500/5">
-                <p className="text-green-900 text-[8px] mb-2 uppercase tracking-widest border-b border-green-900/30 pb-1">Technology Units</p>
+              <section className="space-y-3">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">Unit Mission Overview</label>
+                <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-1 focus-within:border-emerald-500/50 transition-colors">
+                  <textarea 
+                    value={selectedUnitData.OVERVIEW || ""}
+                    onChange={(e) => setSelectedUnitData({ ...selectedUnitData, OVERVIEW: e.target.value })}
+                    onBlur={(e) => handleSaveUnitOverview(e.target.value)}
+                    className="w-full bg-transparent text-sm text-neutral-300 p-4 outline-none resize-none h-24 leading-relaxed"
+                  />
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Protocol Ruleset</label>
+                  <button onClick={() => setSelectedUnitData({ ...selectedUnitData, RULES: [...(selectedUnitData.RULES || []), "New rule..."] })} className="text-[10px] text-emerald-400 font-bold uppercase hover:text-emerald-300">+ Add Rule</button>
+                </div>
                 <div className="space-y-3">
-                  {systemStatus.details.units.map((unit, i) => (
-                    <div key={i} className="border-l border-green-900 pl-2">
-                      <p className="text-[9px] text-green-400 font-bold uppercase">{unit.name} Unit</p>
-                      <p className="text-[8px] text-green-700 italic mb-1">{unit.mission}</p>
-                      <div className="space-y-0.5">
-                        {unit.rules.map((rule, j) => (
-                          <p key={j} className="text-[8px] text-green-600/80">└ {rule}</p>
-                        ))}
-                      </div>
+                  {(selectedUnitData.RULES || []).map((rule: any, idx: number) => (
+                    <div key={idx} className="group">
+                      {selectedRuleIndex === idx ? (
+                        <div className="p-4 bg-neutral-900 border border-emerald-500/50 rounded-xl space-y-3">
+                          <textarea value={editedRuleText} onChange={(e) => setEditedRuleText(e.target.value)} className="w-full bg-transparent text-xs text-emerald-400 font-mono outline-none resize-none h-20" autoFocus />
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => setSelectedRuleIndex(null)} className="px-3 py-1 text-[10px] text-neutral-500 font-bold uppercase">Cancel</button>
+                            <button onClick={handleSaveUnitRule} disabled={isSaving} className="px-4 py-1 bg-emerald-600 text-black text-[10px] font-bold rounded uppercase">{isSaving ? "..." : "Update"}</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button onClick={() => { setSelectedRuleIndex(idx); setEditedRuleText(String(rule)); }} className="w-full p-5 bg-neutral-900/50 border border-neutral-800 rounded-xl text-left hover:border-emerald-500/30 transition-all flex gap-4">
+                          <span className="text-emerald-500/40 font-mono text-[10px] mt-0.5">{String(idx + 1).padStart(2, '0')}</span>
+                          <p className="flex-1 text-xs text-neutral-300 leading-relaxed">{String(rule)}</p>
+                          <span className="material-symbols-outlined text-sm text-neutral-700 opacity-0 group-hover:opacity-100">edit</span>
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center opacity-40"><span className="material-symbols-outlined text-6xl mb-4">memory</span><h4 className="text-white font-bold uppercase tracking-widest">Select a Unit</h4></div>
           )}
-
-          <div className="flex gap-3 mt-4">
-            <button 
-              onClick={requestMcpStatus}
-              className="flex-1 px-3 py-1.5 border border-green-500 text-[10px] font-mono text-green-500 hover:bg-green-500 hover:text-black transition-all cursor-pointer flex items-center justify-center gap-2 uppercase"
-            >
-              <span className="material-symbols-outlined text-xs">analytics</span>
-              Status Report
-            </button>
-          </div>
         </div>
       </div>
-      <div className="bg-black/50 border-t border-green-900/30 p-2 flex items-center gap-2">
-        <span className="text-green-600 font-mono text-[10px]">root@neb:~#</span>
-        <input autoFocus className="bg-transparent border-none text-[10px] font-mono text-green-400 focus:ring-0 p-0 flex-1 outline-none" placeholder="execute command..." type="text" />
-        <span className="w-1.5 h-3 bg-green-500 cursor-blink"></span>
-      </div>
-    </section>
+    </div>
   );
 };

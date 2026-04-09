@@ -1,49 +1,86 @@
 import { NextResponse } from 'next/server';
-import { McpClient } from '@/lib/mcpClient';
+import fs from 'fs';
+import path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 /**
- * [사용자] 웹에서 수정한 정보를 소스 코드에 반영하고 엔진을 동기화하는 통합 쓰기 API입니다.
- * McpClient를 통해 쓰기 작업과 리로드를 원자적으로 처리합니다.
+ * [POST] 시스템 설정을 원자적으로 업데이트하고 엔진을 리로드하는 통합 API
  */
-export async function POST(request: Request): Promise<Response> {
-  const { circuit_name, rules, description, units, action } = await request.json();
-  const client = new McpClient();
-
+export async function POST(request: Request) {
   try {
-    const toolsToCall: any = {};
+    const { target, name, data } = await request.json();
+    const rootDir = path.resolve(process.cwd(), '../');
+    let filePath = '';
 
-    // 1. 정보 업데이트 도구 정의
-    if (action === 'OVERVIEW_UPDATE' || action === 'UNITS_UPDATE') {
-      toolsToCall.update = {
-        name: "mcp_operator_mcp_operator_update",
-        args: { target: "overview", name: circuit_name, data: { description, units } }
-      };
-    } else {
-      toolsToCall.update = {
-        name: "mcp_operator_mcp_operator_update",
-        args: { target: "protocol", name: circuit_name, data: { rules } }
-      };
+    // 1. 타겟별 파일 경로 매핑
+    switch (target) {
+      case 'state':
+        filePath = path.join(rootDir, 'data/state.json');
+        break;
+      case 'circuit_overview':
+        filePath = path.join(rootDir, `mcp_operator/registry/circuits/registry/${name}/overview.json`);
+        break;
+      case 'circuit_protocols':
+        filePath = path.join(rootDir, `mcp_operator/registry/circuits/registry/${name}/protocols.json`);
+        break;
+      case 'unit_protocols':
+        filePath = path.join(rootDir, `mcp_operator/registry/units/${name}/protocols.json`);
+        break;
+      case 'mission':
+        filePath = path.join(rootDir, 'data/mission.json');
+        break;
+      case 'resource_monitor':
+        filePath = path.join(rootDir, 'data/resource_monitor.json');
+        break;
+      case 'global_protocols':
+        filePath = path.join(rootDir, 'mcp_operator/engine/protocols.py');
+        break;
+      default:
+        return NextResponse.json({ error: 'Invalid update target' }, { status: 400 });
     }
 
-    // 2. 엔진 리로드 도구 추가 (업데이트 직후 즉시 실행)
-    toolsToCall.reload = {
-      name: "mcp_operator_mcp_operator_execute",
-      args: { action: "reload" }
-    };
+    // 2. 백업 생성 (data/history/)
+    const historyDir = path.join(rootDir, 'data/history');
+    if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
+    
+    if (fs.existsSync(filePath)) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const backupPath = path.join(historyDir, `${timestamp}_${path.basename(filePath)}`);
+      fs.copyFileSync(filePath, backupPath);
+    }
 
-    // [사용자] 모든 작업을 일괄 요청하고 응답을 대기합니다.
-    const results = await client.callTools(toolsToCall);
+    // 3. 파일 쓰기 및 병합
+    let finalData = data;
+    if (fs.existsSync(filePath)) {
+      try {
+        const existing = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        if (typeof data === 'object' && !Array.isArray(data)) {
+          finalData = { ...existing, ...data };
+        }
+      } catch (e) {
+        console.warn(`[API] Failed to parse existing file at ${filePath}, overwriting.`);
+      }
+    }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Sync complete",
-      details: results 
-    });
+    const content = typeof finalData === 'string' ? finalData : JSON.stringify(finalData, null, 2);
+    fs.writeFileSync(filePath, content, 'utf-8');
+
+    // 4. 엔진 리로드 (Signal 기반 또는 Command 기반)
+    // [사용자] 현재 시스템은 state.json 변경을 감지하므로, state.json의 타임스탬프를 갱신하여 리로드를 유도합니다.
+    const statePath = path.join(rootDir, 'data/state.json');
+    if (fs.existsSync(statePath)) {
+      const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
+      state.last_update = new Date().toISOString();
+      fs.writeFileSync(statePath, JSON.stringify(state, null, 2), 'utf-8');
+    }
+
+    return NextResponse.json({ success: true, message: `Update successful for ${target}` });
 
   } catch (error) {
-    console.error('Update Bridge Error:', error);
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Update failed' 
-    }, { status: 500 });
+    console.error('Update Error:', error);
+    return NextResponse.json({ error: 'Failed to update resource' }, { status: 500 });
   }
 }

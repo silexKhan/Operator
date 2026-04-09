@@ -50,3 +50,36 @@ def write_json_safely(filepath: str, data: Union[Dict, list], indent: int = 2) -
         # [Critical] stdout 오염 방지: 모든 로그는 stderr로 출력 필수
         print(f"[Critical] Failed to write JSON to {filepath}: {str(e)}", file=sys.stderr)
         return False
+
+# -------------------------------------------------------------------------
+# [I18N Parser] 다국어 텍스트 추출 엔진 (Unified Support)
+# -------------------------------------------------------------------------
+
+def get_i18n_text(field_data: Any, lang: str = "ko") -> str:
+    """
+    [Parser] I18N 데이터(Dict)에서 지정된 언어에 맞는 텍스트를 추출합니다.
+    - 문자열: 그대로 반환
+    - 리스트: 각 항목에 대해 재귀적으로 처리 (결과 리스트 반환)
+    - 딕셔너리: { 'ko': '...', 'en': '...' } 형식에서 lang에 맞는 값을 추출
+    """
+    if field_data is None:
+        return ""
+        
+    if isinstance(field_data, str):
+        return field_data
+        
+    if isinstance(field_data, list):
+        return [get_i18n_text(item, lang) for item in field_data]
+        
+    if isinstance(field_data, dict):
+        # 1. 요청된 언어(lang) 검색
+        if lang in field_data:
+            return field_data[lang]
+        # 2. 기본값(en) 검색
+        if "en" in field_data:
+            return field_data["en"]
+        # 3. 그 외 첫 번째 키의 값 반환
+        if field_data:
+            return next(iter(field_data.values()), "")
+            
+    return str(field_data)
