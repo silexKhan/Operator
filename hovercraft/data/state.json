@@ -1,0 +1,9 @@
+{
+  "active_circuit": "mcp",
+  "circuits": [
+    "research",
+    "mcp",
+    "gdr"
+  ],
+  "lang": "en"
+}

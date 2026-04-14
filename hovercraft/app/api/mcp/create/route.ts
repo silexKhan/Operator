@@ -1,39 +1,25 @@
-import { NextResponse } from 'next/server';
-import { McpClient } from '@/lib/mcpClient';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-/**
- * [사용자] 새로운 Circuit을 물리적으로 생성하고 엔진을 동기화하는 API입니다.
- * McpClient를 통해 생성과 리로드를 통합 관리합니다.
- */
-export async function POST(request: Request): Promise<Response> {
-  const { name, role, inherit_global } = await request.json();
-  const client = new McpClient();
+export async function POST(req: NextRequest) {
+  const { name, data } = await req.json();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { role, inherit_global, ...cleanData } = data;
 
+  const circuitPath = path.join(process.cwd(), "..", "mcp_operator", "registry", "circuits", "registry", name);
+  
   try {
-    const results = await client.callTools({
-      create: {
-        name: "mcp_operator_mcp_operator_create",
-        args: { 
-          target: "circuit",
-          name
-        }
-      },
-      reload: {
-        name: "mcp_operator_mcp_operator_execute",
-        args: { action: "reload" }
-      }
-    });
-
-    return NextResponse.json({ 
-      success: true, 
-      message: "Circuit creation and sync complete",
-      details: results 
-    });
-
+    if (!fs.existsSync(circuitPath)) {
+      fs.mkdirSync(circuitPath, { recursive: true });
+    }
+    
+    fs.writeFileSync(path.join(circuitPath, "overview.json"), JSON.stringify(cleanData, null, 2));
+    fs.writeFileSync(path.join(circuitPath, "protocols.json"), JSON.stringify({ RULES: [] }, null, 2));
+    
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Create Bridge Error:', error);
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Creation failed' 
-    }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: "Failed to create circuit" }, { status: 500 });
   }
 }

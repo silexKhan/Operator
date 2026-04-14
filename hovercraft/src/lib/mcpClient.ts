@@ -1,54 +1,53 @@
-/**
- * [사용자] MCP 엔진(File-based IPC)과 통신을 전담하는 지능형 브릿지 클라이언트입니다.
- * 웹소켓을 제거하고 HTTP API를 통해 엔진의 상태 파일을 다이렉트로 읽어옵니다.
- */
-export class McpClient {
-  private static instance: McpClient;
-  private stateUrl = '/api/mcp/state';
-  private lastState: any = null;
+import { SystemStatus, CircuitDetails } from "@/types/mcp";
 
-  constructor() {}
+class McpClient {
+  private baseUrl: string = "/api/mcp";
 
-  public static getInstance(): McpClient {
-    if (!McpClient.instance) {
-      McpClient.instance = new McpClient();
-    }
-    return McpClient.instance;
+  async getStatus(): Promise<SystemStatus> {
+    const res = await fetch(`${this.baseUrl}/state`);
+    if (!res.ok) throw new Error("Failed to fetch status");
+    return res.json();
   }
 
-  /**
-   * [IPC] 엔진의 최신 상태를 가져옵니다.
-   */
-  public async fetchState(): Promise<any> {
-    try {
-      const response = await fetch(this.stateUrl, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Failed to fetch MCP state');
-      
-      const state = await response.json();
-      this.lastState = state;
-      return state;
-    } catch (error) {
-      console.error(`[MCP-UI] ❌ 엔진 상태 동기화 실패: ${error instanceof Error ? error.message : 'Unknown'}`);
-      return null;
-    }
+  async getCircuits(): Promise<string[]> {
+    const res = await fetch(`${this.baseUrl}/state`);
+    if (!res.ok) throw new Error("Failed to fetch circuits");
+    const data = await res.json();
+    return data.registered_circuits || [];
   }
 
-  /**
-   * [Legacy compatibility] 엔진 서버에 명령을 전달합니다.
-   * 현재 구조에서는 엔진이 파일을 쓰고 UI가 읽는 방식이므로, 
-   * 쓰기 작업(Tool Call)은 직접적인 엔진 프로세스 제어가 필요할 수 있습니다.
-   */
-  public async callTools(tools: { [alias: string]: { name: string, args: any } }): Promise<any> {
-    console.warn("[MCP-UI] ⚠️ 다이렉트 도구 호출은 현재 엔진의 MCP 서버 인터페이스를 통해야 합니다.");
-    // TODO: 엔진의 HTTP/Stdio 엔드포인트와 연동 필요 시 구현
-    return {};
+  async getCircuitDetails(name: string): Promise<CircuitDetails> {
+    const res = await fetch(`${this.baseUrl}/protocols?type=circuit_full&name=${name}`);
+    if (!res.ok) throw new Error("Failed to fetch circuit details");
+    return res.json();
   }
 
-  public getStatus(): boolean {
-    return this.lastState !== null && this.lastState.status !== 'OFFLINE';
+  async updateCircuit(name: string, data: Partial<CircuitDetails>): Promise<boolean> {
+    const res = await fetch(`${this.baseUrl}/update`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        target: "circuit_overview",
+        name,
+        data
+      })
+    });
+    return res.ok;
   }
 
-  public getLastState(): any {
-    return this.lastState;
+  async callTool(circuit: string, tool: string, _arguments: Record<string, unknown>): Promise<unknown> {
+    const res = await fetch(`${this.baseUrl}/execute`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        circuit,
+        action: tool,
+        params: _arguments
+      })
+    });
+    if (!res.ok) throw new Error("Tool execution failed");
+    return res.json();
   }
 }
+
+export const mcpClient = new McpClient();

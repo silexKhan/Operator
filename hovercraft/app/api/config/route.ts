@@ -1,32 +1,26 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-
-const CONFIG_PATH = path.join(process.cwd(), 'ship_config.json');
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 export async function GET() {
+  const configPath = path.join(process.cwd(), "config.json");
   try {
-    const data = await fs.readFile(CONFIG_PATH, 'utf-8');
-    return NextResponse.json(JSON.parse(data));
-  } catch (error) {
-    return NextResponse.json({ error: 'Config not found' }, { status: 404 });
+    if (fs.existsSync(configPath)) {
+      return NextResponse.json(JSON.parse(fs.readFileSync(configPath, "utf-8")));
+    }
+    return NextResponse.json({ shipName: "NEBUCHADNEZZAR", captainName: "Morpheus" });
+  } catch {
+    return NextResponse.json({ error: "Failed to load config" }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
+  const configPath = path.join(process.cwd(), "config.json");
   try {
-    const body = await request.json();
-    const { shipName, captainName } = body;
-    
-    if (!shipName || !captainName) {
-      return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
-    }
-
-    const config = { shipName, captainName, initializedAt: new Date().toISOString() };
-    await fs.writeFile(CONFIG_PATH, JSON.stringify(config, null, 2));
-    
-    return NextResponse.json({ success: true, config });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to save config' }, { status: 500 });
+    const data = await req.json();
+    fs.writeFileSync(configPath, JSON.stringify(data, null, 2));
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to save config" }, { status: 500 });
   }
 }

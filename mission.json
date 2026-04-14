@@ -1,25 +1,10 @@
 {
-    "objective": {
-        "ko": "I18N 표준 파서 통합 및 호버크래프트 UI 데이터 정합성 전방위 점검",
-        "en": "Integration of I18N standard parser and comprehensive audit of Hovercraft UI data integrity"
-    },
+    "objective": "Hovercraft UI 폰트 로딩 시스템 최적화 및 린트 무결성 확보",
     "criteria": [
-        {
-            "ko": "get_i18n_text 유틸리티의 단위 테스트 통과 여부 (ko/en/fallback)",
-            "en": "Pass unit tests for get_i18n_text utility (ko/en/fallback)"
-        },
-        {
-            "ko": "mcp_operator_get(target=\"mission\") 호출 시 언어별 필터링 결과의 정확성",
-            "en": "Accuracy of language-specific filtering when calling mcp_operator_get(target=\"mission\")"
-        },
-        {
-            "ko": "data/state.json 내의 미션 데이터가 I18N 처리된 상태로 저장되는지 확인",
-            "en": "Confirm that mission data in data/state.json is stored in I18N-processed state"
-        },
-        {
-            "ko": "호버크래프트 UI용 API 엔드포인트 응답 데이터의 무결성 검증",
-            "en": "Integrity verification of response data for Hovercraft UI API endpoints"
-        }
+        "Next.js 'next/font/google' 도입 (Inter, JetBrains Mono)",
+        "layout.tsx 내 외부 폰트 link 태그 제거 및 최적화 로드 확인",
+        "ESLint '@next/next/no-page-custom-font' 경고 제로 달성",
+        "Material Symbols Outlined 아이콘 폰트의 안정적 로드 유지"
     ],
     "status": "PASS"
 }

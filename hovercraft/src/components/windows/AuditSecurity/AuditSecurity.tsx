@@ -1,18 +1,23 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { I18N } from "@/constants/i18n";
+import { AuditLog, SystemStatus } from "@/types/mcp";
 
 interface AuditSecurityProps {
-  logs: any[];
-  systemStatus?: any;
+  logs: AuditLog[];
+  systemStatus: SystemStatus;
+  language: "ko" | "en";
 }
 
-export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus }) => {
+export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus, language }) => {
+
   const [isEditing, setIsEditing] = useState(false);
   const [globalRules, setGlobalRules] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   // 실시간 세션 로그 기반 보안 로그 필터링
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sessionSecurityLogs = logs.filter(log => 
     log.level === "ERROR" || 
     log.level === "WARNING" || 
@@ -21,8 +26,8 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
   ).slice(-5).reverse();
 
   // 백엔드로부터 받은 정식 감사 이력 (History)
-  const auditHistory = systemStatus?.details?.audit_logs || [];
-  const violationCount = auditHistory.filter((a: any) => a.status === 'VIOLATION').length;
+  const auditHistory = systemStatus.details?.audit_logs || [];
+  const violationCount = auditHistory.filter((a: AuditLog) => a.status === 'VIOLATION').length;
   const integrityScore = Math.max(0, 100 - (violationCount * 15));
 
   const fetchGlobalProtocols = async () => {
@@ -32,8 +37,8 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
         const data = await res.json();
         setGlobalRules(data.content || "");
       }
-    } catch (e) {
-      console.error("Failed to fetch global protocols:", e);
+    } catch {
+      // ignore
     }
   };
 
@@ -53,7 +58,7 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
         })
       });
       if (res.ok) setIsEditing(false);
-    } catch (e) {
+    } catch {
       alert("Failed to save global protocols.");
     } finally {
       setIsSaving(false);
@@ -61,40 +66,40 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
   };
 
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden flex flex-col shadow-sm">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden flex flex-col h-full shadow-2xl animate-in fade-in slide-in-from-right-4 duration-500">
       {/* Header */}
-      <div className={`px-6 py-4 border-b border-neutral-800 flex justify-between items-center ${violationCount > 0 ? "bg-rose-500/5" : "bg-neutral-900/50"}`}>
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${violationCount > 0 ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-500"}`}>
-            <span className="material-symbols-outlined text-xl">security</span>
+      <div className={`px-8 py-5 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/80 backdrop-blur-md z-10 flex-shrink-0 ${violationCount > 0 ? "shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]" : ""}`}>
+        <div className="flex items-center gap-4">
+          <div className={`p-2.5 rounded-xl border shadow-inner ${violationCount > 0 ? "bg-rose-500/10 text-rose-500 border-rose-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"}`}>
+            <span className="material-symbols-outlined text-2xl font-light">security</span>
           </div>
           <div>
-            <h3 className="text-white font-medium">Security & Audit</h3>
-            <p className="text-[11px] text-neutral-500 font-mono uppercase tracking-wider">Sentinel_Watchdog_Engine</p>
+            <h3 className="text-white font-bold tracking-tight uppercase text-sm">System Audit & Security</h3>
+            <p className="text-[10px] text-neutral-500 font-mono mt-0.5 tracking-wider uppercase">Sentinel_Sentinel_Engine</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {!isEditing ? (
             <button 
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs rounded-md transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] font-black rounded-xl transition-all active:scale-95 border border-neutral-700 uppercase tracking-widest shadow-lg"
             >
               <span className="material-symbols-outlined text-sm">gavel</span>
-              Global Protocols
+              Global Rules
             </button>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-300">
               <button 
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs rounded-md transition-colors font-medium"
+                className="flex items-center gap-2 px-6 py-2 bg-rose-600 hover:bg-rose-500 text-black text-[10px] font-black rounded-xl transition-all active:scale-95 uppercase tracking-widest shadow-lg shadow-rose-900/20"
               >
                 <span className="material-symbols-outlined text-sm">save</span>
-                {isSaving ? "Syncing..." : "Apply Global Rules"}
+                {isSaving ? "Syncing..." : "Apply Global"}
               </button>
               <button 
                 onClick={() => setIsEditing(false)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 text-xs rounded-md transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-500 hover:text-white text-[10px] font-bold rounded-xl transition-all uppercase tracking-widest"
               >
                 Cancel
               </button>
@@ -103,95 +108,112 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
         </div>
       </div>
 
-      <div className="p-6 space-y-6 flex-1 flex flex-col overflow-hidden">
-        {isEditing ? (
-          <div className="flex-1 flex flex-col space-y-3 min-h-[400px]">
-            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">System Protocol Source Code</label>
-            <textarea 
-              value={globalRules}
-              onChange={(e) => setGlobalRules(e.target.value)}
-              className="flex-1 w-full bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-sm font-mono text-neutral-300 outline-none focus:border-rose-500/30 transition-colors resize-none leading-relaxed shadow-inner"
-              placeholder="# Operator Global Protocols (Source)..."
-            />
-            <p className="text-[10px] text-neutral-600 italic">
-              * Critical: Modification of global protocols affects all underlying circuit operations.
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Integrity Score Section */}
-            <section>
-              <div className="flex justify-between items-end mb-2">
-                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Compliance Integrity</label>
-                <span className={`text-lg font-bold font-mono ${integrityScore < 70 ? 'text-rose-500' : 'text-emerald-500'}`}>
-                  {integrityScore}%
-                </span>
+      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-neutral-950/20">
+        <div className="max-w-2xl mx-auto space-y-10 animate-in fade-in zoom-in-98 duration-500">
+          {isEditing ? (
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center gap-2 px-1">
+                <span className="material-symbols-outlined text-rose-500/60 text-lg">code</span>
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">Global Governance Source</label>
               </div>
-              <div className="h-2 w-full bg-neutral-800 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-1000 ${integrityScore < 70 ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' : 'bg-emerald-500'}`}
-                  style={{ width: `${integrityScore}%` }}
-                ></div>
+              <textarea 
+                value={globalRules}
+                onChange={(e) => setGlobalRules(e.target.value)}
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl p-8 text-xs font-mono text-rose-200/80 outline-none focus:border-rose-500/40 focus:ring-1 focus:ring-rose-500/20 transition-all resize-none h-[400px] leading-relaxed shadow-inner custom-scrollbar"
+                placeholder="# Operator Global Protocols (Source)..."
+              />
+              <div className="p-5 bg-rose-500/5 border border-rose-500/20 rounded-2xl flex gap-3 items-start">
+                 <span className="material-symbols-outlined text-rose-500 text-lg mt-0.5">warning</span>
+                 <p className="text-[10px] text-neutral-500 leading-relaxed font-mono uppercase tracking-tighter">
+                   Critical Warning: Modifying the global governance source will immediately propagate new constraints across all active and dormant circuits.
+                 </p>
               </div>
-            </section>
-
-            {/* Audit History Section */}
-            <section className="flex-1 flex flex-col overflow-hidden">
-              <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-4 block">Official Audit History</label>
-              <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                {auditHistory.length > 0 ? (
-                  auditHistory.map((audit: any, i: number) => (
-                    <div 
-                      key={i} 
-                      className={`p-3 rounded-lg border flex items-start gap-4 transition-all hover:bg-neutral-800/50 ${
-                        audit.status === 'VIOLATION' 
-                        ? 'border-rose-500/30 bg-rose-500/5' 
-                        : 'border-neutral-800 bg-neutral-950/30'
-                      }`}
-                    >
-                      <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${audit.status === 'VIOLATION' ? 'bg-rose-500 animate-pulse' : 'bg-neutral-700'}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-[10px] text-neutral-500 font-mono">{audit.timestamp}</span>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tighter ${
-                            audit.status === 'VIOLATION' ? 'bg-rose-500 text-white' : 'bg-neutral-800 text-neutral-400'
-                          }`}>
-                            {audit.status}
-                          </span>
-                        </div>
-                        <p className={`text-sm leading-snug ${audit.status === 'VIOLATION' ? 'text-rose-200 font-medium' : 'text-neutral-400'}`}>
-                          {audit.message || audit.rule_id}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-neutral-600 opacity-50">
-                    <span className="material-symbols-outlined text-4xl mb-2">verified_user</span>
-                    <p className="text-sm">No registered audit violations</p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {/* Integrity Score Section */}
+              <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-3xl p-8 shadow-inner group hover:border-emerald-500/20 transition-all duration-500">
+                <div className="flex justify-between items-end mb-4 px-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`material-symbols-outlined text-lg ${integrityScore < 70 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                      {integrityScore < 70 ? 'security_update_warning' : 'verified_user'}
+                    </span>
+                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Compliance Integrity</label>
                   </div>
-                )}
-              </div>
-            </section>
-          </>
-        )}
+                  <span className={`text-2xl font-black font-mono tracking-tighter ${integrityScore < 70 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                    {integrityScore}%
+                  </span>
+                </div>
+                <div className="h-3 w-full bg-neutral-950 border border-neutral-800 rounded-full overflow-hidden shadow-inner p-0.5">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-1000 ${integrityScore < 70 ? 'bg-gradient-to-r from-rose-600 to-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : 'bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]'}`}
+                    style={{ width: `${integrityScore}%` }}
+                  ></div>
+                </div>
+              </section>
+
+              {/* Audit History Section */}
+              <section className="space-y-6">
+                <div className="flex items-center gap-2 px-2">
+                  <span className="material-symbols-outlined text-neutral-500/60 text-lg">history_edu</span>
+                  <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">Official Audit History</label>
+                </div>
+                <div className="space-y-3">
+                  {auditHistory.length > 0 ? (
+                    auditHistory.map((audit: AuditLog, i: number) => (
+                      <div 
+                        key={i} 
+                        className={`p-5 rounded-2xl border flex items-start gap-5 transition-all duration-300 hover:scale-[1.01] ${
+                          audit.status === 'VIOLATION' 
+                          ? 'border-rose-500/40 bg-rose-500/5 shadow-[0_0_30px_rgba(244,63,94,0.05)]' 
+                          : 'border-neutral-800 bg-neutral-900/40 hover:bg-neutral-900/60'
+                        }`}
+                      >
+                        <div className={`mt-1.5 flex-shrink-0 w-2.5 h-2.5 rounded-full ${audit.status === 'VIOLATION' ? 'bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]' : 'bg-neutral-700'}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-[10px] text-neutral-500 font-mono font-bold">{audit.timestamp}</span>
+                            <div className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter ${
+                              audit.status === 'VIOLATION' ? 'bg-rose-500 text-black' : 'bg-neutral-800 text-neutral-500'
+                            }`}>
+                              {audit.status}
+                            </div>
+                          </div>
+                          <p className={`text-sm leading-relaxed ${audit.status === 'VIOLATION' ? 'text-rose-100 font-bold' : 'text-neutral-400 font-medium'}`}>
+                            {audit.message || audit.rule_id}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-20 bg-neutral-900/20 border-2 border-dashed border-neutral-800 rounded-3xl opacity-30">
+                      <span className="material-symbols-outlined text-5xl mb-3">verified_user</span>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-center">No security violations recorded</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Footer / Meta */}
       {!isEditing && (
-        <div className="px-6 py-4 bg-neutral-950/50 border-t border-neutral-800 flex justify-between items-center">
-          <div className="flex items-center gap-4 text-[10px] text-neutral-600 font-mono uppercase tracking-widest">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Sentinel_Active
+        <div className="px-8 py-5 bg-neutral-900/80 backdrop-blur-sm border-t border-neutral-800 flex justify-between items-center flex-shrink-0">
+          <div className="flex items-center gap-6 text-[10px] text-neutral-600 font-mono uppercase tracking-widest font-bold">
+            <span className="flex items-center gap-2 group">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 group-hover:animate-ping" />
+              Sentinel_Shield: ON
             </span>
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[12px]">lock</span>
-              AES-256
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">enhanced_encryption</span>
+              Neural_AES_256
             </span>
           </div>
-          <div className="text-[10px] text-rose-500/50 font-bold animate-pulse">
-            ● LIVE_MONITORING
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></div>
+            <span className="text-[10px] text-rose-500/70 font-black tracking-widest uppercase">Live_Watchdog</span>
           </div>
         </div>
       )}

@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  /* ... 기존 테마 컬러 유지 (필요 시 추후 정비) ... */
-  --font-headline: "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-label: "Inter", system-ui, sans-serif;
+  /* Tailwind 4.0 Standard Font Overrides */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  
+  /* Custom Semantic Tokens */
+  --font-headline: var(--font-inter);
+  --font-body: var(--font-inter);
+  --font-label: var(--font-inter);
 }
 
 :root {
@@ -16,7 +20,7 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   overflow: hidden;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -1,91 +1,71 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-/**
- * [GET] 회선, 유닛, 글로벌 프로토콜 정보를 조회하는 통합 API
- */
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type');
-  const name = searchParams.get('name');
-  
-  const rootDir = path.resolve(process.cwd(), '../');
-  const statePath = path.join(rootDir, 'data/state.json');
-
-  const getI18nText = (data: any, lang: string) => {
-    if (!data) return "";
-    if (typeof data === "string") return data;
-    if (Array.isArray(data)) return data.map(item => getI18nText(item, lang));
-    if (typeof data === "object") {
-      return data[lang] || data["en"] || Object.values(data)[0] || "";
-    }
-    return String(data);
-  };
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const type = searchParams.get("type");
+  const name = searchParams.get("name");
 
   try {
-    const rawState = fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf-8')) : {};
-    const currentLang = rawState.lang || "ko";
-
-    switch (type) {
-      case 'units_list':
-        const unitsDir = path.join(rootDir, 'mcp_operator/registry/units');
-        if (fs.existsSync(unitsDir)) {
-          const units = fs.readdirSync(unitsDir).filter(f => fs.statSync(path.join(unitsDir, f)).isDirectory() && f !== '__pycache__');
-          return NextResponse.json({ units });
-        }
-        return NextResponse.json({ units: [] });
-
-      case 'unit':
-        const unitPath = path.join(rootDir, `mcp_operator/registry/units/${name}/protocols.json`);
-        if (fs.existsSync(unitPath)) {
-          const unitData = JSON.parse(fs.readFileSync(unitPath, 'utf-8'));
-          return NextResponse.json({
-            OVERVIEW: getI18nText(unitData.OVERVIEW, currentLang),
-            RULES: getI18nText(unitData.RULES, currentLang)
-          });
-        }
-        return NextResponse.json({ error: 'Unit protocol not found', path: unitPath }, { status: 404 });
-
-      case 'circuit_full':
-        const overviewPath = path.join(rootDir, `mcp_operator/registry/circuits/registry/${name}/overview.json`);
-        const protocolsPath = path.join(rootDir, `mcp_operator/registry/circuits/registry/${name}/protocols.json`);
-        
-        const data: any = {};
-        if (fs.existsSync(overviewPath)) {
-          const overview = JSON.parse(fs.readFileSync(overviewPath, 'utf-8'));
-          data.overview = { ...overview, description: getI18nText(overview.description, currentLang) };
-          data.units = (overview.units || []).map((u: any) => {
-            const uName = typeof u === 'string' ? u : u.name;
-            const uProtoPath = path.join(rootDir, 'mcp_operator/registry/units', uName, 'protocols.json');
-            const uProto = fs.existsSync(uProtoPath) ? JSON.parse(fs.readFileSync(uProtoPath, 'utf-8')) : {};
-            return { name: uName, mission: getI18nText(uProto.OVERVIEW, currentLang), rules: getI18nText(uProto.RULES, currentLang) };
-          });
-        }
-        
-        if (fs.existsSync(protocolsPath)) {
-          const circuitProtocols = JSON.parse(fs.readFileSync(protocolsPath, 'utf-8'));
-          data.protocols = getI18nText(circuitProtocols.RULES || circuitProtocols, currentLang);
-        }
-
-        const globalProtocolsPath = path.join(rootDir, 'mcp_operator/engine/protocols.json');
-        if (fs.existsSync(globalProtocolsPath)) {
-          const globalFull = JSON.parse(fs.readFileSync(globalProtocolsPath, 'utf-8'));
-          const langData = globalFull.LANGUAGES?.[currentLang] || globalFull.LANGUAGES?.["en"] || {};
-          data.global_protocols = { title: currentLang === "ko" ? "글로벌 운영 규약" : "Global Operational Protocol", rules: langData.RULES || [] };
-        }
-        
-        const missionPath = path.join(rootDir, 'data/mission.json');
-        if (fs.existsSync(missionPath)) {
-          const missionRaw = JSON.parse(fs.readFileSync(missionPath, 'utf-8'));
-          data.mission = { objective: getI18nText(missionRaw.objective, currentLang), criteria: getI18nText(missionRaw.criteria, currentLang), status: missionRaw.status };
-        }
-        return NextResponse.json(data);
-
-      default:
-        return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
+    if (type === "units_list") {
+      const unitsPath = path.join(process.cwd(), "..", "mcp_operator", "registry", "units");
+      const units = fs.readdirSync(unitsPath).filter(f => fs.statSync(path.join(unitsPath, f)).isDirectory() && f !== "__pycache__");
+      return NextResponse.json({ units });
     }
+
+    if (type === "circuits_list") {
+      const circuitsPath = path.join(process.cwd(), "..", "mcp_operator", "registry", "circuits", "registry");
+      const circuits = fs.readdirSync(circuitsPath).filter(f => fs.statSync(path.join(circuitsPath, f)).isDirectory() && f !== "__pycache__");
+      return NextResponse.json({ circuits });
+    }
+
+    if (type === "unit" && name) {
+      const unitPath = path.join(process.cwd(), "..", "mcp_operator", "registry", "units", name, "protocols.json");
+      if (fs.existsSync(unitPath)) {
+        const data = JSON.parse(fs.readFileSync(unitPath, "utf-8"));
+        return NextResponse.json({ overview: data.OVERVIEW || {}, protocols: data.RULES || data.protocols || [] });
+      }
+      // protocols.json이 없는 경우 기본 응답 반환 (Fallback)
+      return NextResponse.json({ overview: { name, description: "No protocols found." }, protocols: [] });
+    }
+
+    if (type === "circuit_full" && name) {
+      const circuitPath = path.join(process.cwd(), "..", "mcp_operator", "registry", "circuits", "registry", name);
+      const overviewPath = path.join(circuitPath, "overview.json");
+      const protocolsPath = path.join(circuitPath, "protocols.json");
+      const res: { overview: any; protocols: any; units?: any; mission?: any } = { overview: null, protocols: [] };
+      
+      if (fs.existsSync(overviewPath)) {
+        res.overview = JSON.parse(fs.readFileSync(overviewPath, "utf-8"));
+        // UI 호환성을 위해 units 정보를 객체 배열로 변환하여 최상위에 노출
+        if (res.overview.units) {
+          res.units = res.overview.units.map((u: string) => ({ name: u }));
+        }
+      }
+
+      if (fs.existsSync(protocolsPath)) {
+        const pData = JSON.parse(fs.readFileSync(protocolsPath, "utf-8"));
+        res.protocols = pData.RULES || pData.protocols || pData.rules || [];
+      }
+
+      // Mission data (Data Sanctuary)
+      const missionPath = path.join(process.cwd(), "..", "data", "mission.json");
+      if (fs.existsSync(missionPath)) res.mission = JSON.parse(fs.readFileSync(missionPath, "utf-8"));
+
+      return NextResponse.json(res);
+    }
+
+    if (type === "global") {
+      const globalPath = path.join(process.cwd(), "..", "mcp_operator", "engine", "protocols.json");
+      if (fs.existsSync(globalPath)) {
+        return NextResponse.json({ content: fs.readFileSync(globalPath, "utf-8") });
+      }
+    }
+
+    return NextResponse.json({ error: "Invalid type or missing parameters" }, { status: 400 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to read resource' }, { status: 500 });
+    console.error("Protocol Fetch Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

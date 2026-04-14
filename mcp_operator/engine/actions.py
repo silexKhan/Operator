@@ -35,7 +35,7 @@ class CoreActions:
                 case CommandTarget.STATUS:
                     return self.get_operator_status()
                 case CommandTarget.PROTOCOL:
-                    if name: return self.get_circuit_protocols(name)
+                    if name: return self.get_protocols_handler(name)
                     return self.get_global_protocols()
                 case CommandTarget.BLUEPRINT:
                     return self.get_blueprint(name or "")
@@ -129,12 +129,16 @@ class CoreActions:
         active = self.manager.get_active_circuit()
         active_name = active.get_name() if active else "None"
         
+        # [추가] 현재 활성 회선에 배속된 유닛 목록 추출
+        active_units = active.get_units() if active else []
+        
         registered = list(self.manager.circuits.keys())
         
         res = (
             f" Operator Status: Online\n"
             f" Active Circuit: {active_name}\n"
-            f" Total Registered: {registered}\n\n"
+            f" Active Units: {active_units}\n"
+            f" Total Registered Circuits: {registered}\n\n"
             f" [SYSTEM MESSAGE 1]: 'get_operator_status()'를 호출하여 시스템 목록을 확인하십시오.\n"
             f" [SYSTEM MESSAGE 2]: 'set_active_circuit(name=\"회선명\")'으로 통신 스위치를 전환하십시오. "
         )
@@ -173,9 +177,19 @@ class CoreActions:
             
         # 2. Units
         units_data = []
-        units = getattr(active, "units", [])
+        units = list(getattr(active, "units", []))
         if not units and hasattr(active, "get_units"):
-            units = active.get_units()
+            units = list(active.get_units())
+            
+        # [Sync] 물리적 overview.json 파일에서 유닛 목록 보강
+        try:
+            circuit_dir = os.path.dirname(inspect.getfile(active.__class__))
+            overview_path = os.path.join(circuit_dir, "overview.json")
+            if os.path.exists(overview_path):
+                ov_data = read_json_safely(overview_path)
+                if ov_data and "units" in ov_data:
+                    units.extend(ov_data["units"])
+        except: pass
             
         for unit_name in list(dict.fromkeys(units or [])):
             unit_info = {"name": unit_name, "mission": "N/A", "rules": []}
@@ -319,18 +333,43 @@ class CoreActions:
         except Exception as e:
             return TextResponse(json.dumps({"error": str(e)}))
 
-    def get_circuit_protocols(self, name: str) -> list[types.TextContent]:
-        """[Dumb Controller] 특정 회선의 규약(Protocols) 정보를 런타임 또는 파일에서 로드합니다."""
+    def get_protocols_handler(self, name: str) -> list[types.TextContent]:
+        """[Dumb Controller] 특정 회선 또는 유닛의 규약(Protocols) 정보를 통합 조회합니다."""
         try:
             name_lower = name.strip().lower()
             
-            # 1. 런타임 매니저에서 우선 조회
+            # 1. 회선(Circuit) 조회
             if name_lower in self.manager.circuits:
                 rules = self._get_runtime_protocols(self.manager.circuits[name_lower])
                 if rules:
-                    return TextResponse(json.dumps({"name": name, "source": "runtime", "protocols": rules}, ensure_ascii=False, indent=2))
+                    return TextResponse(json.dumps({
+                        "type": "circuit",
+                        "name": name,
+                        "source": "runtime",
+                        "protocols": rules
+                    }, ensure_ascii=False, indent=2))
 
-            # 2. 파일 시스템 기반 조회 (Fallback)
+            # 2. 유닛(Unit) 조회
+            root = get_project_root()
+            unit_path = os.path.join(root, "mcp_operator", "registry", "units", name_lower)
+            if os.path.exists(unit_path):
+                # _load_unit_mission_and_rules 헬퍼 활용 (텍스트 형태)
+                unit_info_text = self._load_unit_mission_and_rules(name_lower)
+                if unit_info_text:
+                    return TextResponse(f" [Unit Protocols: {name.capitalize()}]\n{unit_info_text}")
+                
+                # JSON 직접 파싱 (구조화 데이터 형태)
+                json_path = os.path.join(unit_path, "protocols.json")
+                if os.path.exists(json_path):
+                    data = read_json_safely(json_path)
+                    return TextResponse(json.dumps({
+                        "type": "unit",
+                        "name": name,
+                        "overview": data.get("OVERVIEW", ""),
+                        "protocols": data.get("RULES", [])
+                    }, ensure_ascii=False, indent=2))
+
+            # 3. 파일 시스템 회선 조회 (Fallback)
             return self._get_filesystem_protocols(name_lower)
         except Exception as e:
             return TextResponse(json.dumps({"error": str(e)}))
@@ -465,7 +504,12 @@ class CoreActions:
             
             line = ""
             if p_cls:
-                if hasattr(p_cls, "OVERVIEW"): line += f"    └ Mission: {p_cls.OVERVIEW}\n"
+                # 인스턴스 생성 시도 (프로퍼티 접근을 위해)
+                instance = p_cls()
+                if hasattr(instance, "OVERVIEW"):
+                    overview = getattr(instance, "OVERVIEW")
+                    line += f"    └ Mission: {overview}\n"
+                
                 if hasattr(p_cls, "get_rules"):
                     for rule in p_cls.get_rules(): line += f"    └ {rule}\n"
                 return line

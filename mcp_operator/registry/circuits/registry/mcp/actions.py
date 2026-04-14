@@ -38,13 +38,16 @@ class OperatorTool(Enum):
 
 class McpCircuit(BaseCircuit):
     """[Main Class] MCP 지휘부 컨트롤러 (P-1)"""
-    
+
     def __init__(self, manager=None):
         super().__init__(manager)
 
     def get_name(self) -> str:
         return "mcp"
 
+    def get_units(self) -> list[str]:
+        """해당 회선에 배속된 전문 기술 유닛(Unit) 리스트를 반환합니다."""
+        return ["planning", "design", "dev", "sentinel"]
     def get_tools(self) -> list[types.Tool]:
         """[Specification] 도구 명세서 - 통합 지휘 API로 개편 (P-2)"""
         return [

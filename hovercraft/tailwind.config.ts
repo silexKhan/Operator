@@ -64,9 +64,9 @@ const config: Config = {
         "full": "9999px"
       },
       fontFamily: {
-        "headline": ["Space Grotesk"],
-        "body": ["Space Grotesk"],
-        "label": ["Space Grotesk"]
+        "headline": ["var(--font-inter)", "sans-serif"],
+        "body": ["var(--font-inter)", "sans-serif"],
+        "label": ["var(--font-jetbrains-mono)", "monospace"]
       }
     },
   },

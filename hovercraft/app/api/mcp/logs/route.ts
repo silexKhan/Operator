@@ -1,29 +1,27 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 export async function GET() {
+  const LOG_PATH = path.join(process.cwd(), "..", "logs", "mcp_server.log");
+  
   try {
-    const logPath = path.resolve(process.cwd(), '../logs/mcp_live.log');
-    
-    if (!fs.existsSync(logPath)) {
-      return NextResponse.json([]);
+    if (fs.existsSync(LOG_PATH)) {
+      const content = fs.readFileSync(LOG_PATH, "utf-8");
+      const lines = content.split("\n").filter(l => l.trim()).slice(-100);
+      
+      const parsedLogs = lines.map(line => {
+        if (line.includes(" - ")) {
+          const parts = line.split(" - ");
+          return { timestamp: parts[0], message: parts.slice(1).join(" - "), level: "INFO" };
+        }
+        return { timestamp: new Date().toISOString(), message: line, level: "INFO" };
+      });
+      
+      return NextResponse.json({ logs: parsedLogs });
     }
-
-    const logData = fs.readFileSync(logPath, 'utf-8');
-    const lines = logData.trim().split('\n').filter(line => line.length > 0);
-    
-    // 최근 30개의 로그만 반환
-    const recentLogs = lines.slice(-30).map(line => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return { message: line, level: 'INFO', category: 'RAW' };
-      }
-    });
-
-    return NextResponse.json(recentLogs);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to read logs' }, { status: 500 });
+    return NextResponse.json({ logs: [] });
+  } catch {
+    return NextResponse.json({ error: "Failed to read logs" }, { status: 500 });
   }
 }

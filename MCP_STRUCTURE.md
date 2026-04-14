@@ -99,6 +99,12 @@ AI 에이전트의 모든 요청을 중계하고, 규약을 강제하며, 안전
 ### 5.2 IPC 데이터 규약 (IPC Data Specification)
 엔진과 UI는 **Atomic JSON File**을 통해 데이터를 교환합니다.
 
+### 5.3 다국어(I18N) 표준 규격
+시스템 전체의 명세 텍스트는 글로벌 운영을 위해 아래 규격을 준수합니다.
+- **Atomic Pair**: 모든 명세 필드(`Objective`, `Rules`, `Description`)는 `{ "ko": "...", "en": "..." }` 구조를 가진다.
+- **Dynamic Filtering**: 백엔드 API 및 프론트엔드 SSE 파서는 `data/state.json`의 `lang` 필드를 기준으로 최적의 언어를 실시간 추출한다.
+- **Fallback Hierarchy**: `target_lang` -> `en` (Default) -> `first_available_key` 순으로 텍스트를 복구한다.
+
 #### A. State File (`data/mcp_state.json`)
 엔진이 작성하고 UI가 읽는 시스템 전체 스냅샷입니다.
 ```json

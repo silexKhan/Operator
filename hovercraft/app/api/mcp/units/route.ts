@@ -8,7 +8,9 @@ import path from 'path';
  */
 export async function GET(): Promise<Response> {
   try {
-    const unitsPath = process.env.MCP_ROOT ? path.join(process.env.MCP_ROOT, 'units') : path.join(process.cwd(), '..', 'units');
+    const unitsPath = process.env.MCP_ROOT ? 
+      path.join(process.env.MCP_ROOT, 'mcp_operator', 'registry', 'units') : 
+      path.join(process.cwd(), '..', 'mcp_operator', 'registry', 'units');
     
     if (!fs.existsSync(unitsPath)) {
       return NextResponse.json({ units: [] });

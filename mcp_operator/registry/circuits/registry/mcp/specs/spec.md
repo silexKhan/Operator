@@ -2,11 +2,21 @@
 
 ## 1. 시스템 메타데이터 (Metadata)
 - **ID**: MCP_OPERATOR_CORE
-- **VERSION**: 1.1.0
+- **VERSION**: 1.2.0
 - **AUTHORITY**: 사용자 (User)
-- **OBJECTIVE**: 전 조직의 산출물을 일관된 표준(Protocols)으로 통제하고 회선을 중계함.
+- **OBJECTIVE**: 전 조직의 산출물을 일관된 표준(Protocols)으로 통제하고 다국어 기반의 지휘 체계를 확립함.
 
-## 2. 핵심 구성 요소 정의 (Component Definitions)
+## 2. 핵심 구성 요소 정의 (Component Definition)
+
+### 2.1 다국어(I18N) 표준 규격
+- **데이터 구조**: 모든 텍스트 기반 데이터(Objective, Description, Rules 등)는 `{ "ko": "...", "en": "..." }` 구조를 준수한다.
+- **파싱 엔진**: `get_i18n_text` 유틸리티를 통해 런타임 언어 설정(`data/state.json`)에 맞는 텍스트를 실시간 추출한다.
+- **Fallback 정책**: 요청 언어 데이터가 없을 경우 `en`을 우선하며, 그 외 첫 번째 키값을 반환하여 데이터 유실을 방지한다.
+
+### 2.2 통합 상태 관리 (State Sync)
+- **State Source**: `/data/state.json`이 시스템의 Single Source of Truth 역할을 수행한다.
+- **Language Lock**: `lang` 필드를 통해 UI와 엔진의 언어 상태를 동기화하며, 변경 시 SSE를 통해 실시간 전파한다.
+
 
 ### 2.1 Operator (중앙 관제 유닛)
 - **Role**: 모든 통신의 중계 및 최종 규약 검증.

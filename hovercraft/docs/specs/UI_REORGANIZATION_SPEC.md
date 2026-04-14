@@ -39,3 +39,14 @@
 - **상태 파일:** 오퍼레이터 엔진이 생성하는 실제 상태 파일은 `../data/state.json`이다. (`mcp_state.json` 아님)
 - **API 엔드포인트:** `/api/mcp/state`는 상기 파일을 Surgical Read 하여 UI에 'ONLINE' 상태와 현재 회선 정보를 제공해야 한다.
 
+
+## 4. 실시간 에디터 및 I18N 고도화 (v1.1.0)
+- **Status**: IMPLEMENTED (2026-04-09)
+- **Dynamic Language Switching**: 
+    - 상단 KO/EN 토글을 통해 전 시스템 언어 즉시 전환 (새로고침 불필요).
+    - SSE(Server-Sent Events) 기반의 데이터 실시간 동기화.
+- **Atomic Editor Interface**:
+    - **Protocols/Units**: 규칙 리스트의 개별 항목을 클릭하여 수정하는 인라인 에디터 도입.
+    - **Circuits**: 회선 카드 선택 시 상세 메타데이터 수정을 위한 팝업(Modal) 시스템 구축.
+- **Inheritance Visualization**:
+    - 상속받은 글로벌 규약에 대해 Foldable(접이식) UI를 적용하여 회선 전용 규약의 가독성 극대화.
