@@ -1,4 +1,4 @@
-# 🛰️ Operator (오퍼레이터)
+# 🛰️ Operator
 
 **Harness Engineering Framework optimized for Gemini CLI**
 *Gemini CLI 환경에 최적화된 대규모 시스템 하네스 및 가버넌스 프레임워크*
