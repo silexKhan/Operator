@@ -1,11 +1,12 @@
 {
-  "OVERVIEW": "시스템 아키텍처와 UI 로직이 물리적 '방정식'의 궤도를 벗어나지 않도록 설계의 벽을 세우는 유닛입니다.",
+  "OVERVIEW": {
+    "ko": "시스템의 시각적 언어와 사용자 경험(UX) 무결성을 관리하는 유닛입니다.",
+    "en": "Unit responsible for managing the system's visual language and user experience (UX) integrity."
+  },
   "RULES": [
-    "D-1 (Anatomy Specification Wall): 모든 UI 컴포넌트 설계 시 반드시 [Width/Height, Padding/Margin, BorderRadius]를 Tailwind 클래스 단위의 리터럴 수치로 명시해야 한다.",
-    "D-2 (Interface Dependency Wall): 모든 컴포넌트는 구현 전 인터페이스(Props/API)를 확정해야 하며, 인터페이스 변경 시 의존 유닛들에 영향도를 즉시 보고해야 한다.",
-    "D-3 (State Flow Wall): 모든 인터렉션에 따른 상태 변화(State Transition)를 '트리거 -> 상태값 변경 -> UI 반영'의 순서로 도식화하여 기록해야 한다.",
-    "D-4 (Absolute Token Wall): '예쁘게', '적절하게'와 같은 주관적 형용사 사용을 엄격히 금지한다. 반드시 [Hex Code, Tailwind Class, Spacing Unit] 등의 객관적 지표로만 소통해야 한다.",
-    "D-5 (Modular Constraint Wall): 단일 책임 원칙(SRP)을 위반하여 로직이 섞인 컴포넌트는 설계를 실패로 간주하고 분리를 명령한다.",
-    "D-6 (Efficiency & Simplicity Wall): 모든 디자인은 '단순함'과 '사용성'에 기반하며, 기능적 근거가 없는 모든 장식적 요소는 삭제 대상으로 간주한다. 컴포넌트는 반드시 재활용 가능한 '아토믹(Atomic)' 구조로 설계되어야 한다."
+    {
+      "ko": "Protocol D-1 (Consistency): 모든 UI 구성 요소는 정의된 디자인 시스템과 아키텍처 방정식을 엄격히 준수해야 한다.",
+      "en": "Protocol D-1 (Consistency): All UI components must strictly adhere to the defined design system and architectural equations."
+    }
   ]
 }

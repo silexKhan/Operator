@@ -7,6 +7,7 @@ import os
 import sys
 import inspect
 import json
+import time
 from datetime import datetime
 from mcp_operator.common.models import ResponseHandler, TextResponse
 import mcp.types as types
@@ -163,47 +164,26 @@ class OperatorServer:
             return [types.TextContent(type="text", text=f"Failed to switch language. '{lang_code}' is not supported.")]
 
     async def reload_operator_handler(self) -> list[types.TextContent]:
-        """[Handler] 엔진 리로드 (mcp_operator 패키지 포함)"""
+        """[Handler] 엔진 리로드 수행 (In-process Reload)"""
         try:
-            import importlib
-            import sys
-
-            # [사용자] 현재 패키지 구조(mcp_operator)를 포함하여 캐시된 모듈을 정밀 타격하여 제거합니다.
-            targets = ('mcp_operator', 'circuits', 'core', 'shared', 'units')
-            keys_to_del = [k for k in sys.modules.keys() if any(k.startswith(t) for t in targets)]
-            for k in keys_to_del:
-                del sys.modules[k]
-
-            # 핵심 매니저 및 액션 모듈 리로드
-            import mcp_operator.registry.circuits.manager
-            import mcp_operator.engine.actions
-            importlib.reload(mcp_operator.registry.circuits.manager)
-            importlib.reload(mcp_operator.engine.actions)
+            self.logger.log(" 🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...", 1)
             
-            from mcp_operator.registry.circuits.manager import CircuitManager
-            from mcp_operator.engine.actions import CoreActions
-
-            # 런타임 인스턴스 재생성
-            self.circuit_manager = CircuitManager()
+            # 1. 회선 매니저를 통한 물리적 파일 재탐색 및 모듈 리로드
             await asyncio.to_thread(self.circuit_manager.discover_circuits_handler)
             
-            self.core_actions = CoreActions(self.circuit_manager, self.logger)
-            # [Sync] 리로드 후에도 통합 지휘 API 위임을 위해 매니저에 코어 액션 참조 연결
-            self.circuit_manager.core_actions = self.core_actions
-            
-            # [Debug] manager 상태 및 ID 확인
-            m_id = id(self.circuit_manager)
-            print(f" [DEBUG] reload_operator_handler: manager_id={m_id}, core_actions assigned", file=sys.stderr)
-            
-            self.last_circuit_keys = set(self.circuit_manager.circuits.keys())
+            # 2. 서버 도구 캐시 갱신
             self._refresh_tool_cache_handler()
             
-            return TextResponse(" 지휘소 상태 동기화 완료! (mcp_operator 패키지 리로드됨) ")
+            # 3. 변경된 지휘 지침 갱신
+            self.instructions = self._assemble_instructions_handler()
+            
+            # 4. 상태 업데이트 알림
+            await self.broadcast_operator_status()
+            
+            return [types.TextContent(type="text", text=" ✅ 엔진 리로드가 성공적으로 완료되었습니다. (연결 유지) ")]
         except Exception as e:
-            import traceback
-            err_msg = traceback.format_exc()
-            print(f"[Reload Error] {err_msg}", file=sys.stderr)
-            return TextResponse(f" 동기화 실패: {str(e)}\n{err_msg[:500]}...")
+            self.logger.log(f" 🚨 [SYSTEM] 리로드 중 오류 발생: {str(e)}", 2)
+            return [types.TextContent(type="text", text=f" 리로드 실패: {str(e)} ")]
 
     async def start_server_handler(self):
         """[Handler] 서버 기동"""
@@ -303,4 +283,3 @@ class OperatorServer:
                     tools.append(t)
                     seen.add(t.name)
         return tools
-

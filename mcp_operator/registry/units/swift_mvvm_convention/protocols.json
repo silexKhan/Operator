@@ -1,7 +1,7 @@
 {
   "OVERVIEW": {
-    "ko": "GDR 프로젝트 및 Swift 기반 개발을 위한 Strict MVVM 아키텍처 전문 기술 규약입니다.",
-    "en": "Specialized technical protocols for the Strict MVVM architecture in GDR projects and Swift-based development."
+    "ko": "대규모 Swift 기반 모바일 앱 개발을 위한 Strict MVVM 아키텍처 전문 기술 규약입니다.",
+    "en": "Specialized technical protocols for the Strict MVVM architecture in large-scale Swift-based mobile app development."
   },
   "RULES": [
     {

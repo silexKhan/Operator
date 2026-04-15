@@ -1,9 +1,15 @@
 {
-  "OVERVIEW": "모든 작업은 대장님의 미션 목적(Objective)에 부합해야 하며, 센티널의 최종 승인(PASS) 없이는 작업을 종료할 수 없다.",
+  "OVERVIEW": "모든 작업은 대장님의 미션 목적(Objective)에 부합해야 하며, 센티널의 최종 승인(PASS) 없이는 작업을 종료할 수 없다. (Unified Super-Unit)",
   "RULES": [
     "Protocol S-1 (Objective Alignment): 모든 행동과 결과물은 'sentinel_set_mission'에서 정의된 목적에 완벽히 정렬되어야 한다.",
     "Protocol S-2 (Rigorous Evaluation): 평가는 엄격해야 하며, 단 하나의 누락이나 '부분 성공'도 '실패(FAIL)'로 간주하여 루프를 회귀시킨다.",
-    "Protocol S-3 (Feedback Loop): 평가 실패 시 Sentinel은 실패 원인을 Planner에게 즉시 반향(Echo)하여 다음 반복에서 즉시 보정하게 한다.",
-    "Protocol S-4 (Persistent Iteration): 최종 PASS 판정을 받기 전까지는 세션을 종료하거나 '완료'를 보고할 수 없다."
+    "Protocol S-3 (Feedback Loop): 평가 실패 시 Sentinel은 실패 원인을 즉시 보정 가이드(Correction Guide)로 생성하여 AI에게 전달한다.",
+    "Protocol S-4 (Persistent Iteration): 최종 PASS 판정을 받기 전까지는 세션을 종료하거나 '완료'를 보고할 수 없다.",
+    "Protocol S-5 (Step-Commit Assurance): 모든 Auditor(Linter, AST, Design)의 검증을 통과한 작업물에 대해 센티널은 즉시 물리적 커밋(Git)을 승인한다.",
+    "Protocol S-6 (Contextual Flow): 이전 단계의 작업 요약과 현재 작업의 연결성을 보장하여 설계의 일관성과 맥락의 파편화를 원천 차단한다.",
+    "Protocol S-7 (Planning Wall): 모든 명세는 [목적 -> 흐름 -> 예외 -> 검증] 순서로 PRD에 작성되어야 하며, AI의 '짐작'이나 'TBD'를 금지한다.",
+    "Protocol S-8 (Design Wall): 모든 UI는 [Hex Code, Tailwind Class, Spacing Unit] 등의 객관적 수치로 UI_GUIDE에 명시되어야 하며, 장식적 요소는 배제한다.",
+    "Protocol S-9 (Architecture Wall): 모든 기술적 선택은 ADR에 기록되어야 하며, 테스트 코드(TDD)와 타입 안전성(Type-First)을 최우선으로 준수한다.",
+    "Protocol S-10 (Clean Desk Policy): 모든 미션 시작 전 'docs/active/'는 비어 있어야 하며, 미션 완료 승인 즉시 'docs/archive/'로 모든 문서를 이동시켜 컨텍스트 오염을 원천 차단한다."
   ]
 }

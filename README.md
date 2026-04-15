@@ -1,114 +1,121 @@
-# 🛰️ Operator (교환): Hovercraft Command Station
+# 🛰️ Operator (오퍼레이터)
 
-> **"Welcome to the Real World."**
-> 
-> 인류와 기계의 전쟁이 끝나고 시작된 공생의 시대. 오퍼레이터(Operator)는 호버크래프트를 타고 가상 세계의 거대한 데이터 스트림을 항해하며, AI라는 강력한 기계 지능을 제어하여 디지털 생태계를 재건합니다.
+**Harness Engineering Framework optimized for Gemini CLI**
+*Gemini CLI 환경에 최적화된 대규모 시스템 하네스 및 가버넌스 프레임워크*
 
----
-
-## 🌌 Project Concept: The Hovercraft Paradigm
-
-이 시스템은 단순한 코딩 도구가 아닌, 매트릭스 세계관의 **호버크래프트 지휘소**를 모델링합니다. 
-
-- **Hovercraft (호버크래프트)**: 오퍼레이터가 탑승하는 최첨단 디지털 함선(UI)입니다. 암흑 속에 가려진 데이터를 조망하고 AI 에이전트에게 명령을 내리는 인터페이스입니다.
-- **Operator System (교환 시스템)**: 인간의 의도와 기계의 실행을 연결하는 중앙 허브입니다. 모든 데이터 패킷은 오퍼레이터의 승인과 규약(Protocols)을 거쳐야만 현실 세계에 반영됩니다.
-- **Circuits (회선)**: 특정 디지털 작업 구역으로 연결되는 통신 채널입니다. (예: GDR 회선, 전략 리서치 회선 등)
-- **Sentinel Unit (센티널 유닛)**: AI의 업무 수행을 실시간으로 감시하고 궤도를 수정하는 **자율주행용 블랙박스 및 항법 장치**입니다.
+[English](#english) | [한국어](#korean)
 
 ---
 
-## 🤖 Sentinel Autopilot (센티널 자율 지휘)
+<a name="english"></a>
+## 🌍 English
 
-우리는 규약을 강제로 묶어두는 '하네스'를 넘어, AI가 스스로 안전하게 비행할 수 있도록 가이드하는 **자율주행(Autopilot)** 시스템을 지향합니다.
+Operator is a system governance framework designed to manage complex harness engineering. It acts as an "extended hand" for **Gemini CLI**, enabling AI to orchestrate large-scale projects while maintaining perfect protocol integrity.
 
-- **Real-time Navigation**: AI가 코드를 생성하거나 명령을 내릴 때, 센티널 유닛이 실시간으로 규약 위반 여부를 스캔하여 최적의 경로로 유도합니다.
-- **Autonomous Correction**: 위험한 경로(보안 위협, 규약 위반)로 진입 시 시스템이 즉시 개입하여 안전한 궤도로 행동을 교정합니다.
-- **Mission Evaluation**: 자율주행이 끝난 후, 센티널은 설정된 미션 목표와 결과물을 대조하여 최종 성공 여부를 판정합니다.
+This project is deeply inspired by the movie *The Matrix*. It represents the ongoing journey of building a sophisticated system to command and control "The Machine." We are looking for passionate contributors who want to join this mission and help shape the future of system orchestration. Your participation is more than welcome.
 
----
-
-## 🛠️ Installation & Setup (설치 및 설정)
-
-### 1. 사전 요구사항 (Prerequisites)
-- **Python**: 3.10 이상 (엔진 구동용)
-- **Node.js**: 18.0 이상 (호버크래프트 UI 구동용)
-- **Git**: 소스 분석 및 형상 관리용
-
-### 2. 가동 절차 (Launch Sequence)
-호버크래프트에 전원을 공급하고 지휘소를 활성화하십시오.
-
-```bash
-# 1. 의존성 설치 및 환경 구축
-cd hovercraft
-npm run setup
-
-# 2. 시스템 기동
-./start.sh  # Windows: start.bat
-```
-
----
-
-## 📜 Protocol Hierarchy (규약 계층 구조)
-
-AI 모델은 업무 수행 시 반드시 아래의 계층적 규약을 상속받아 준수해야 합니다. 이는 메인프레임에 접속하기 위한 필수 보안 승인 단계입니다.
-
-1.  **Level 0: Global Protocols (`mcp_operator/engine/protocols.py`)**
-    - 전 조직의 절대 원칙 (예: 정보의 완전성, 보안 우선, 선 보고 후 실행).
-2.  **Level 1: Unit Protocols (`registry/units/*/protocols.json`)**
-    - 특정 기술 스택 전용 수칙 (예: Python PEP 8, Swift MVVM Convention).
-3.  **Level 2: Circuit Protocols (`registry/circuits/registry/.../protocols.py`)**
-    - 개별 프로젝트 전용 도메인 수칙 (예: 프로젝트 아키텍처 가이드라인).
-
----
-
-## 🤖 AI 에이전트 연동 가이드 (AI Integration)
-
-### 1. MCP 서버 등록 (Config)
-에이전트 설정 파일에 아래 구성을 추가하여 연결하십시오.
+### 🔗 Integration with Gemini CLI
+Add the following to your `mcp.json` to link Gemini CLI with the Operator Engine:
 
 ```json
 {
   "mcpServers": {
     "operator": {
-      "command": "/usr/local/bin/python3",
-      "args": ["/path/to/MCP/mcp_operator/main.py"],
+      "command": "python3",
+      "args": ["/absolute/path/to/operator/mcp_operator/engine/server.py"],
       "env": {
-        "PYTHONPATH": "/path/to/MCP",
-        "MCP_ROOT": "/path/to/MCP"
+        "PYTHONPATH": "/absolute/path/to/operator"
       }
     }
   }
 }
 ```
 
-### 2. 표준 작전 절차 (Standard Operating Procedure)
-1.  **Status Scan**: `get_operator_status`로 현재 가용한 회선과 시스템 안정성을 확인합니다.
-2.  **Circuit Link**: 수행할 임무에 맞는 회선으로 접속합니다. `set_active_circuit(name="...")`.
-3.  **Protocol Sync**: `mcp_operator_get_circuit_protocols`를 통해 해당 회선에서 준수해야 할 금기사항을 동기화합니다.
-4.  **Mission Briefing**: `sentinel_set_mission`으로 목표를 정의하여 **Sentinel Autopilot**을 활성화합니다.
+### 🔌 Core Concept: Circuits
+A **Circuit** is a **policy unit for projects or milestones**. 
+- **Setup**: Create a circuit for your project (e.g., `New_App_Launch`) and define its unique protocols.
+- **Isolation**: Each project lives in its own circuit, ensuring rules don't get mixed up.
+- **Milestone Governance**: Establish strict criteria for specific development phases.
+
+### 🎬 Initial Usage
+Once the MCP configuration is complete and Gemini CLI is running, you can command the AI as if you are calling the bridge:
+> **"Operator, connect to [circuit_name]"**
+
+The AI will then establish a link to the specified circuit and automatically load all the user-defined protocols and guides into its active context.
+
+### 🛡️ How to use Sentinel (Practical Workflow)
+The **Sentinel** is your autonomous auditor. Here is how you actually use it:
+
+1. **Deployment**: In the Hovercraft UI, add the `sentinel` unit to your active circuit.
+2. **Commanding the AI**: When giving tasks to Gemini CLI, explicitly instruct it to use Sentinel.
+   - *Example*: "Gemini, **use Sentinel** to implement the login logic."
+   - *Example*: "Proceed with the UI refactoring **via Sentinel protocol**."
+3. **Autonomous Execution**: Once the "Sentinel" command is given, the AI will:
+   - Automatically draft a PRD and ADR.
+   - Self-audit the code against system equations.
+   - Refuse to finish until it achieves a **PASS** status from the Sentinel unit.
+
+### 🚀 Running Hovercraft (Management UI)
+Hovercraft is the visual radar for Gemini CLI's actions.
+1. Run `./start.sh` to initialize.
+2. Access at **`http://localhost:3000`**.
 
 ---
 
-## 🛰️ 주요 지휘 도구 (Core Mission Tools)
+<a name="korean"></a>
+## 🇰🇷 한국어
 
-- **`get_operator_status`**: 시스템 가동 상태 및 회선 목록 조망.
-- **`mcp_operator_mcp_operator_audit_rules`**: 소스 코드가 현재 규약을 준수하는지 정밀 진단.
-- **`sentinel_evaluate`**: 수행된 작업이 설정된 미션 기준을 충족하는지 최종 평가.
-- **`mcp_operator_research_analyze_topic`**: 전략적 리서치 회선에서 특정 주제에 대한 심층 분석 수행.
+오퍼레이터(Operator)는 대규모 프로젝트의 복잡한 하네스 엔지니어링과 협업 규약을 관리하기 위한 프레임워크입니다. 특히 **Gemini CLI**와 결합하여, AI가 시스템의 질서를 유지하며 거대한 코드 베이스를 지휘할 수 있게 합니다.
 
----
+이 프로젝트는 영화 '매트릭스'에서 깊은 영감을 받았으며, '기계(The Machine)'를 지휘하고 통제하는 시스템을 구축해 나가는 과정입니다. 이 여정에 함께하며 시스템의 질서를 만들어갈 분들의 많은 관심과 참여를 기다립니다.
 
-## 🏗️ 시스템 아키텍처 (Architecture Map)
+### 🔗 Gemini CLI 연결 설정
+`mcp.json` 파일에 아래 설정을 추가하여 오퍼레이터 엔진을 연결하십시오:
 
-```text
-/MCP (Command Root)
-├── mcp_operator/               #  Operator Heart (지휘 엔진)
-│   ├── engine/                 #  Sentinel Autopilot (자율 지휘 로직)
-│   └── registry/               #  Circuits & Units Registry (자산 등록소)
-├── hovercraft/                 #  Tactical UI (비주얼 지휘소)
-├── data/                       #  Persistence (로그 및 상태)
-└── scripts/                    #  Automation (운영 도구)
+```json
+{
+  "mcpServers": {
+    "operator": {
+      "command": "python3",
+      "args": ["/절대경로/to/operator/mcp_operator/engine/server.py"],
+      "env": {
+        "PYTHONPATH": "/절대경로/to/operator"
+      }
+    }
+  }
+}
 ```
 
+### 🔌 핵심 개념: 회선 (Circuits)
+**회선(Circuit)**은 단순한 채널이 아닌 **프로젝트 또는 마일스톤 단위의 정책 집합**입니다.
+- **설정 (Setup)**: 진행 중인 프로젝트(예: `신규_앱_런칭`) 전용 회선을 만들고 규약을 정의합니다.
+- **격리 (Isolation)**: 각 프로젝트는 독립된 회선에서 관리되어 서로의 규칙이 충돌하지 않습니다.
+- **마일스톤 거버넌스**: 알파 구현, 보안 감사 등 단계별 성공 기준을 설정합니다.
+
+### 🎬 초기 사용법
+MCP 설정이 완료된 후 Gemini CLI를 실행하여 오퍼레이터에게 다음과 같이 명령하십시오:
+> **"오퍼레이터, [회선이름] 회선 연결해줘"**
+
+명령을 받으면 AI는 즉시 해당 회선으로 연결을 전환하며, 사용자가 미리 설정해둔 모든 가이드와 규약들을 자신의 컨텍스트에 자동으로 탑재합니다.
+
+### 🛡️ 센티널 실전 사용법 (사용자 워크플로우)
+**센티널(Sentinel)**은 사용자의 지시를 받아 AI의 작업을 감시하는 자율 감사관입니다.
+
+1. **유닛 배치**: 호버크래프트 UI에서 관리 중인 회선에 `sentinel` 유닛을 추가합니다.
+2. **AI에게 지시**: Gemini CLI에 업무를 시킬 때, 반드시 **"센티널을 사용하라"**고 명시합니다.
+   - *명령 예시*: "Gemini, **센티널을 사용해서** 로그인 로직을 구현해줘."
+   - *명령 예시*: "**센티널 규약에 따라** UI 리팩토링을 진행해."
+3. **자율 작업 프로세스**: "센티널" 명령을 받은 AI는 다음 과정을 스스로 수행합니다:
+   - 작업 시작 전 기획서(PRD) 및 설계서(ADR) 자동 작성.
+   - 코드를 수정할 때마다 시스템 방정식에 맞는지 실시간 자가 진단.
+   - 센티널 유닛으로부터 **PASS** 판정을 받기 전까지는 작업을 종료하지 않고 완벽함을 추구함.
+
+### 🚀 실행 및 모니터링
+1. `./start.sh` 명령어로 시스템 가동.
+2. 브라우저에서 **`http://localhost:3000`** (Hovercraft UI) 접속.
+
+## 📄 License
+**MIT License** - Anyone can modify and distribute for collaboration excellence.
+
 ---
-**Current Status:**  Hovercraft Online |  AI Uplink: STABLE |  **Sentinel: ACTIVE (Autopilot Mode)**
+*Created by Operator Team for Harness Engineering Excellence via Gemini CLI.*

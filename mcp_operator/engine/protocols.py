@@ -56,12 +56,14 @@ class GlobalProtocols(BaseProtocols):
         """지원되는 언어 목록을 반환합니다."""
         return self._data.get("SUPPORTED_LANGUAGES", [])
 
-    def get_rules(self) -> List[str]:
-        """현재 언어에 해당하는 규칙 리스트를 반환합니다."""
-        lang_data = self._data.get("LANGUAGES", {}).get(self._current_lang, {})
+    @classmethod
+    def get_rules(cls) -> List[str]:
+        """현재 언어에 해당하는 규칙 리스트를 반환합니다. (정적/인스턴스 호출 모두 대응)"""
+        instance = cls()
+        lang_data = instance._data.get("LANGUAGES", {}).get(instance._current_lang, {})
         rules = lang_data.get("RULES", [])
         if not rules:
-            return [f"Protocol 0-0: No rules found for language '{self._current_lang}'"]
+            return [f"Protocol 0-0: No rules found for language '{instance._current_lang}'"]
         return rules
 
     def get_message(self, key: str, **kwargs) -> str:
@@ -76,6 +78,5 @@ class GlobalProtocols(BaseProtocols):
 
     @classmethod
     def get_rules_legacy(cls) -> List[str]:
-        """[LEGACY] 기존 정적 호출 대응용 (기본 언어로 반환)"""
-        instance = cls()
-        return instance.get_rules()
+        """[LEGACY] 기존 정적 호출 대응용"""
+        return cls.get_rules()

@@ -5,7 +5,7 @@ import path from "path";
 export async function GET() {
   const statePath = path.join(process.cwd(), "data", "state.json");
   try {
-    let state = { active_circuit: "mcp", circuits: ["research", "mcp", "gdr"], lang: "ko" };
+    let state = { active_circuit: "mcp", circuits: ["research", "mcp"], lang: "ko" };
     if (fs.existsSync(statePath)) {
       state = JSON.parse(fs.readFileSync(statePath, "utf-8"));
       console.log(`[STATE_FETCH] Loaded state from ${statePath}: active_circuit=${state.active_circuit}`);

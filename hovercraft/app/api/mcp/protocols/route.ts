@@ -42,6 +42,10 @@ export async function GET(req: NextRequest) {
         if (res.overview.units) {
           res.units = res.overview.units.map((u: string) => ({ name: u }));
         }
+        // 회선 고유 미션 우선 할당 (Circuit Specific over Global Sanctuary)
+        if (res.overview.mission) {
+          res.mission = res.overview.mission;
+        }
       }
 
       if (fs.existsSync(protocolsPath)) {
@@ -49,18 +53,45 @@ export async function GET(req: NextRequest) {
         res.protocols = pData.RULES || pData.protocols || pData.rules || [];
       }
 
-      // Mission data (Data Sanctuary)
-      const missionPath = path.join(process.cwd(), "..", "data", "mission.json");
-      if (fs.existsSync(missionPath)) res.mission = JSON.parse(fs.readFileSync(missionPath, "utf-8"));
+      // 3. Fallback: 회선 미션이 없는 경우에만 데이터 안식처(Global Mission) 참조
+      if (!res.mission) {
+        const missionPath = path.join(process.cwd(), "..", "data", "mission.json");
+        if (fs.existsSync(missionPath)) res.mission = JSON.parse(fs.readFileSync(missionPath, "utf-8"));
+      }
 
       return NextResponse.json(res);
     }
 
     if (type === "global") {
-      const globalPath = path.join(process.cwd(), "..", "mcp_operator", "engine", "protocols.json");
-      if (fs.existsSync(globalPath)) {
-        return NextResponse.json({ content: fs.readFileSync(globalPath, "utf-8") });
+      // 1. 시도: 호버크래프트 루트 기준 상위 mcp_operator/engine
+      const possiblePaths = [
+        path.join(process.cwd(), "..", "mcp_operator", "engine", "protocols.json"),
+        path.join(process.cwd(), "mcp_operator", "engine", "protocols.json"),
+        "/Users/silex/workspace/private/MCP/mcp_operator/engine/protocols.json" // 절대 경로 Fallback
+      ];
+
+      let globalPath = "";
+      for (const p of possiblePaths) {
+        if (fs.existsSync(p)) {
+          globalPath = p;
+          break;
+        }
       }
+
+      if (globalPath) {
+        const fileContent = fs.readFileSync(globalPath, "utf-8");
+        try {
+          const jsonData = JSON.parse(fileContent);
+          return NextResponse.json({ 
+            success: true, 
+            data: jsonData,
+            content: fileContent // 에디터용 원본 텍스트 유지
+          });
+        } catch (e) {
+          return NextResponse.json({ success: true, content: fileContent });
+        }
+      }
+      return NextResponse.json({ error: "Global protocols file not found" }, { status: 404 });
     }
 
     return NextResponse.json({ error: "Invalid type or missing parameters" }, { status: 400 });

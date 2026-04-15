@@ -40,10 +40,11 @@ class SentinelAuditor(BaseAuditor):
         """
         results: list[str] = []
         mission_path: str = os.path.join(self.project_root, "mission.json")
+        docs_active_dir: str = os.path.join(self.project_root, "docs", "active")
 
         # 1. 미션 설정 여부 확인 (Protocol S-1)
         if not os.path.exists(mission_path):
-            results.append(" FAIL: Protocol S-1 (Sentinel) - 'sentinel_set_mission'이 선행되지 않았습니다. ")
+            results.append(" 🚨 FAIL: Protocol S-1 (Sentinel) - 'sentinel_set_mission'이 선행되지 않았습니다. ")
             return results
 
         try:
@@ -51,19 +52,46 @@ class SentinelAuditor(BaseAuditor):
                 mission_data: dict = json.load(f)
                 objective: str = mission_data.get("objective", "")
                 criteria: list[str] = mission_data.get("criteria", [])
+                steps: list[dict] = mission_data.get("steps", [])
                 status: str = mission_data.get("status", "IN_PROGRESS")
 
-            # 2. 미션 성공 기준 대조 (Protocol S-2)
+            # 2. [Harness Insight] 정형화된 작업 문서(PRD/ADR/UI_GUIDE) 강제 (Protocol S-7, S-8, S-9)
+            required_docs = {
+                "PRD.md": {"rule": "Protocol S-7 (Planning Wall)", "keywords": ["목적", "흐름", "예외", "검증"]},
+                "UI_GUIDE.md": {"rule": "Protocol S-8 (Design Wall)", "keywords": ["Hex", "Tailwind", "Spacing"]},
+                "ADR.md": {"rule": "Protocol S-9 (Architecture Wall)", "keywords": ["Decision", "Reason", "Trade-off"]}
+            }
+
+            for doc_name, spec in required_docs.items():
+                doc_path = os.path.join(docs_active_dir, doc_name)
+                if not os.path.exists(doc_path):
+                    results.append(f" ❌ FAIL: {spec['rule']} - 필수 문서 '{doc_name}'가 'docs/active/' 폴더에 존재하지 않습니다. 작업을 시작하기 전 'docs/active/'에 문서를 먼저 작성하고 대장님의 승인을 받으십시오. ")
+                else:
+                    with open(doc_path, "r", encoding="utf-8") as df:
+                        doc_content = df.read()
+                        missing_keywords = [k for k in spec["keywords"] if k.lower() not in doc_content.lower()]
+                        if missing_keywords:
+                            results.append(f" ❌ FAIL: {spec['rule']} - '{doc_name}' 내에 필수 항목({', '.join(missing_keywords)})이 누락되었습니다. AI의 짐작을 방지하기 위해 규격을 보강하십시오. ")
+
+            # 3. 미션 성공 기준 및 단계별 완결성 체크
             for criterion in criteria:
                 if criterion.lower() not in content.lower() and status != "PASS":
-                     results.append(f" [Sentinel Check] 미션 기준 [{criterion}] 누락 위험이 감지되었습니다. ")
+                     results.append(f" ⚠️ [Sentinel Check] 미션 기준 [{criterion}] 누락 위험이 감지되었습니다. (Protocol S-1)")
 
-            # 3. 금지 표현 검사 (Global Protocol 0-1 연동)
-            # Sentinel의 자기 참조 감시를 피하기 위해 금지 단어를 분할하여 체크합니다.
+            current_step = next((s for s in steps if s.get("status") == "IN_PROGRESS"), None)
+            if current_step:
+                results.append(f" ℹ️ [Sentinel Context] 현재 단계: {current_step.get('name')} 분석 중...")
+
+            # 4. 금지 표현 검사 (Global Protocol 0-1 연동)
             forbidden_words: list[str] = ["." + ".." , "중" + "략", "생" + "략"]
             for word in forbidden_words:
                 if word in content:
-                    results.append(f" FAIL: Protocol S-2 (Sentinel) - 완전하지 않은 구현({word})은 센티널을 통과할 수 없습니다. ")
+                    results.append(f" ❌ FAIL: Protocol S-2 (Sentinel) - 완전하지 않은 구현({word})은 센티널을 통과할 수 없습니다. ")
+
+        except Exception as e:
+            results.append(f" 🚨 FAIL: 미션 데이터 로드 중 오류 발생: {str(e)}")
+
+        return results
 
         except Exception as e:
             results.append(f" FAIL: 미션 데이터 로드 중 오류 발생: {str(e)}")

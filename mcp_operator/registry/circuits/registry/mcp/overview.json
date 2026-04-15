@@ -5,7 +5,11 @@
     "en": "The core backbone of the MCP Operator system, responsible for command and control of the entire organizational system. Oversees all circuit connections and protocol compliance."
   },
   "dependencies": [],
-  "units": ["python", "markdown", "sentinel"],
+  "units": [
+    "python",
+    "markdown",
+    "sentinel"
+  ],
   "mission": {
     "objective": {
       "ko": "I18N 표준 파서 통합 및 호버크래프트 UI 데이터 정합성 전방위 점검",

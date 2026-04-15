@@ -13,7 +13,8 @@ interface AuditSecurityProps {
 export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus, language }) => {
 
   const [isEditing, setIsEditing] = useState(false);
-  const [globalRules, setGlobalRules] = useState("");
+  const [globalRulesText, setGlobalRulesText] = useState("");
+  const [parsedGlobalRules, setParsedGlobalRules] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   // 실시간 세션 로그 기반 보안 로그 필터링
@@ -35,7 +36,12 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
       const res = await fetch("/api/mcp/protocols?type=global");
       if (res.ok) {
         const data = await res.json();
-        setGlobalRules(data.content || "");
+        setGlobalRulesText(data.content || "");
+        
+        // 언어별 파싱된 룰 추출
+        if (data.data?.LANGUAGES && data.data.LANGUAGES[language]) {
+          setParsedGlobalRules(data.data.LANGUAGES[language].RULES || []);
+        }
       }
     } catch {
       // ignore
@@ -43,8 +49,8 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
   };
 
   useEffect(() => {
-    if (isEditing) fetchGlobalProtocols();
-  }, [isEditing]);
+    fetchGlobalProtocols();
+  }, [language]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -54,10 +60,13 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           target: "global_protocols",
-          data: globalRules
+          data: globalRulesText
         })
       });
-      if (res.ok) setIsEditing(false);
+      if (res.ok) {
+        setIsEditing(false);
+        fetchGlobalProtocols(); // 저장 후 갱신
+      }
     } catch {
       alert("Failed to save global protocols.");
     } finally {
@@ -117,9 +126,9 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
                 <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">Global Governance Source</label>
               </div>
               <textarea 
-                value={globalRules}
-                onChange={(e) => setGlobalRules(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl p-8 text-xs font-mono text-rose-200/80 outline-none focus:border-rose-500/40 focus:ring-1 focus:ring-rose-500/20 transition-all resize-none h-[400px] leading-relaxed shadow-inner custom-scrollbar"
+                value={globalRulesText}
+                onChange={(e) => setGlobalRulesText(e.target.value)}
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl p-8 text-xs font-mono text-rose-200/80 outline-none focus:border-rose-500/40 focus:ring-1 focus:ring-rose-500/20 transition-all resize-none h-[600px] leading-relaxed shadow-inner custom-scrollbar"
                 placeholder="# Operator Global Protocols (Source)..."
               />
               <div className="p-5 bg-rose-500/5 border border-rose-500/20 rounded-2xl flex gap-3 items-start">
@@ -131,6 +140,34 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
             </div>
           ) : (
             <div className="space-y-12">
+              {/* System Resource Quick Look */}
+              <section className="grid grid-cols-2 gap-4">
+                <div className="bg-neutral-900/40 border border-neutral-800/60 rounded-3xl p-6 shadow-inner group hover:border-emerald-500/20 transition-all">
+                  <div className="flex justify-between items-center mb-3 px-1">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm text-emerald-500">memory</span>
+                      <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">CPU_LOAD</label>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-emerald-500">24%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden p-0.5 border border-neutral-800">
+                    <div className="h-full bg-emerald-500 rounded-full w-[24%]" />
+                  </div>
+                </div>
+                <div className="bg-neutral-900/40 border border-neutral-800/60 rounded-3xl p-6 shadow-inner group hover:border-amber-500/20 transition-all">
+                  <div className="flex justify-between items-center mb-3 px-1">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm text-amber-500">database</span>
+                      <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">MEM_USAGE</label>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-amber-500">1.2GB</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden p-0.5 border border-neutral-800">
+                    <div className="h-full bg-amber-500 rounded-full w-[45%]" />
+                  </div>
+                </div>
+              </section>
+
               {/* Integrity Score Section */}
               <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-3xl p-8 shadow-inner group hover:border-emerald-500/20 transition-all duration-500">
                 <div className="flex justify-between items-end mb-4 px-1">
@@ -149,6 +186,35 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
                     className={`h-full rounded-full transition-all duration-1000 ${integrityScore < 70 ? 'bg-gradient-to-r from-rose-600 to-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : 'bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]'}`}
                     style={{ width: `${integrityScore}%` }}
                   ></div>
+                </div>
+              </section>
+
+              {/* Global Protocols Section */}
+              <section className="space-y-6">
+                <div className="flex items-center gap-2 px-2">
+                  <span className="material-symbols-outlined text-neutral-500/60 text-lg">gavel</span>
+                  <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">Global Governance Protocols</label>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {parsedGlobalRules.length > 0 ? (
+                    parsedGlobalRules.map((rule, i) => (
+                      <div 
+                        key={i} 
+                        className="p-5 rounded-2xl border border-neutral-800/60 bg-neutral-900/20 hover:bg-neutral-900/40 transition-all group"
+                      >
+                        <div className="flex gap-4 items-start">
+                           <span className="text-[10px] font-mono text-neutral-600 mt-1 font-bold">{(i+1).toString().padStart(2, '0')}</span>
+                           <p className="text-xs text-neutral-400 leading-relaxed font-medium group-hover:text-neutral-200 transition-colors">
+                             {rule}
+                           </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-10 text-center border-2 border-dashed border-neutral-800 rounded-3xl opacity-20">
+                       <p className="text-[10px] font-bold uppercase tracking-widest">No Global Protocols Loaded</p>
+                    </div>
+                  )}
                 </div>
               </section>
 

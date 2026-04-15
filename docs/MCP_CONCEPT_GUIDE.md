@@ -33,7 +33,7 @@ graph TD
     subgraph "Hands & Feet (Actions)"
         MCPServer --> Circuits{🔌 회선 선택<br/>Circuit Manager}
         Circuits -->|mcp| Core[⚙️ 핵심 제어]
-        Circuits -->|gdr| Legacy[💾 레거시 관리]
+        Circuits -->|legacy| Legacy[💾 레거시 관리]
         
         Core --> Units[🛠️ 전문 유닛]
         Units --> P[📝 기획/설계]
@@ -58,7 +58,7 @@ graph TD
 ### 🔌 2. 회선 (Circuits) - "전문 부서"
 업무의 성격에 따라 분리된 채널입니다.
 - **MCP 회선:** 시스템 자체를 관리하고 설정하는 본부 부서.
-- **GDR 회선:** 과거의 유산을 관리하고 연결하는 부서.
+- **Legacy 회선:** 과거의 유산을 관리하고 연결하는 부서.
 - **Research 회선:** 새로운 기술을 탐구하고 분석하는 부서.
 
 ### 🛠️ 3. 유닛 (Units) - "전문 도구"

@@ -1,12 +1,12 @@
 {
-  "OVERVIEW": "소스 코드가 설계의 벽을 넘어 제어할 수 없는 상태로 확장되지 않도록 기술적 품질의 벽을 세우는 유닛입니다. 단순히 기능을 구현하는 것을 넘어, 시스템 전체의 평형(Equilibrium)을 유지할 책임을 가집니다.",
+  "OVERVIEW": {
+    "ko": "실제 코드를 작성하고 기술적 제약 사항을 해결하는 핵심 개발 유닛입니다.",
+    "en": "The core development unit responsible for writing actual code and resolving technical constraints."
+  },
   "RULES": [
-    "C-1 (TDD Reproduction Wall): 모든 기능 구현은 반드시 해당 기능을 실패하게 만드는 테스트 케이스 작성을 선행해야 한다.",
-    "C-2 (Type-First Development): Any 사용을 엄격히 금지한다. 새로운 데이터 구조는 반드시 전역 타입 정의(types/*.ts)를 선행해야 하며, TypeScript의 타입 추론을 최우선으로 활용한다.",
-    "C-3 (Root Cause Fix Mandate): 린트 에러를 eslint-disable이나 ignore 주석으로 은폐하는 행위를 '시스템 기만'으로 간주하고 엄격히 금지한다. 모든 에러는 근본적인 코드 구조 개선을 통해 해결해야 한다.",
-    "C-4 (File-Level Equilibrium): 특정 파일을 수정할 때, 해당 파일 내에 존재하는 모든 기존 린트 에러와 워닝을 함께 해결하여 파일 단위의 평형 상태를 복구해야 한다.",
-    "C-5 (Evidence-Based Reporting): 모든 미션 완료 보고 시 반드시 린트 명령어(예: 'npm run lint')의 실제 실행 결과(Error: 0)를 증거로 제시해야 한다. 주관적인 완료 선언은 규약 위반이다.",
-    "C-6 (Surgical Context Wall): 수정 범위 밖의 파일을 임의로 리팩토링하는 것은 금지하나, 수정 대상 파일 내의 기술적 부채(린트 에러 등)를 해결하는 것은 의무 사항이다.",
-    "C-7 (Rendering Sanity Wall): React Hook 사용 시 렌더링 사이클을 오염시키는 행위(Effect 내 동기 상태 업데이트 등)를 금지하며, 하이드레이션 무결성을 물리적으로 보장해야 한다."
+    {
+      "ko": "Protocol C-1 (Clean Code): 모든 코드는 중복을 최소화하고 가독성이 확보된 클린 코드 원칙을 준수한다.",
+      "en": "Protocol C-1 (Clean Code): All code must minimize redundancy and adhere to clean code principles for readability."
+    }
   ]
 }

@@ -17,7 +17,7 @@ function setup() {
   if (!fs.existsSync(STATE_FILE)) {
     const initialState = {
       active_circuit: "mcp",
-      circuits: ["research", "mcp", "gdr"],
+      circuits: ["research", "mcp"],
       lang: "ko"
     };
     fs.writeFileSync(STATE_FILE, JSON.stringify(initialState, null, 2));

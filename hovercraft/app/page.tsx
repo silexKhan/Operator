@@ -8,8 +8,8 @@ const CoreAccess = dynamic(() => import("@/components/windows/CoreAccess/CoreAcc
 const MissionSpecs = dynamic(() => import("@/components/windows/MissionSpecs/MissionSpecs").then(mod => mod.MissionSpecs), { ssr: false });
 const AuditSecurity = dynamic(() => import("@/components/windows/AuditSecurity/AuditSecurity").then(mod => mod.AuditSecurity), { ssr: false });
 const UnitProtocols = dynamic(() => import("@/components/windows/UnitProtocols/UnitProtocols").then(mod => mod.UnitProtocols), { ssr: false });
-const ResourceMonitor = dynamic(() => import("@/components/windows/ResourceMonitor/ResourceMonitor").then(mod => mod.ResourceMonitor), { ssr: false });
 const SystemLogs = dynamic(() => import("@/components/windows/SystemLogs/SystemLogs").then(mod => mod.SystemLogs), { ssr: false });
+const CircuitDetailView = dynamic(() => import("@/components/windows/CircuitDetailView/CircuitDetailView").then(mod => mod.CircuitDetailView), { ssr: false });
 
 import { ShipInitialization } from "@/components/Initialization/ShipInitialization";
 import { I18N } from "@/constants/i18n";
@@ -27,6 +27,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [selectedCircuit, setSelectedCircuit] = useState<string | null>(null);
   const [circuitDetails, setCircuitDetails] = useState<CircuitDetails | null>(null);
+  const [availableUnits, setAvailableUnits] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [language, setLanguage] = useState<"ko" | "en">("ko");
   const [isEditingCircuit, setIsEditingCircuit] = useState(false);
@@ -98,6 +99,13 @@ export default function Home() {
           if (stateData.lang) {
             setLanguage(stateData.lang);
           }
+        }
+
+        // Fetch all available units
+        const unitsRes = await fetch("/api/mcp/protocols?type=units_list");
+        if (unitsRes.ok) {
+          const unitsData = await unitsRes.json();
+          setAvailableUnits(Array.isArray(unitsData) ? unitsData : (unitsData.units || []));
         }
       } catch (e) {
         console.error("Initial config/state fetch error:", e);
@@ -279,6 +287,56 @@ export default function Home() {
     }
   };
 
+  const handleUpdateCircuitUnits = async (circuitName: string, units: string[]) => {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/mcp/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: "circuit_units",
+          name: circuitName,
+          data: { units }
+        })
+      });
+
+      if (res.ok) {
+        fetchCircuitDetails(circuitName);
+      } else {
+        alert("Failed to update circuit units.");
+      }
+    } catch (e) {
+      console.error("Units update error:", e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdateCircuitProtocols = async (circuitName: string, rules: any[]) => {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/mcp/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target: "protocol",
+          name: circuitName,
+          data: { rules }
+        })
+      });
+
+      if (res.ok) {
+        fetchCircuitDetails(circuitName);
+      } else {
+        alert("Failed to update circuit protocols.");
+      }
+    } catch (e) {
+      console.error("Protocols update error:", e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (!mounted) return <div className="h-screen bg-neutral-950" />;
 
   const displayShipName = shipConfig?.shipName || "NEBUCHADNEZZAR";
@@ -440,29 +498,27 @@ export default function Home() {
               )}
 
               {activeTab === "Circuits" && selectedCircuit && (
-                <div className="h-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="flex items-center gap-5 mb-8 flex-shrink-0">
-                    <button 
-                      onClick={() => setSelectedCircuit(null)}
-                      className="p-3 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded-2xl transition-all active:scale-90 shadow-lg"
-                    >
-                      <span className="material-symbols-outlined">arrow_back</span>
-                    </button>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white uppercase tracking-tighter leading-none">{selectedCircuit}</h3>
-                      <p className="text-[10px] text-emerald-500/60 font-mono mt-2 uppercase tracking-[0.3em] font-bold">Node_Status: Fully_Functional</p>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar pb-10 space-y-8">
-                    {/* Circuit Details content here */}
-                    <div className="p-8 bg-neutral-900/30 border border-neutral-800 rounded-3xl">
-                       <p className="text-sm text-neutral-400 leading-relaxed italic">
-                         {circuitDetails?.overview?.description ? (typeof circuitDetails.overview.description === 'string' ? circuitDetails.overview.description : (circuitDetails.overview.description as any)[language]) : "System configuration for this node is being processed..."}
-                       </p>
-                    </div>
-                  </div>
-                </div>
+                <CircuitDetailView 
+                  name={selectedCircuit} 
+                  details={circuitDetails} 
+                  allUnits={availableUnits}
+                  language={language} 
+                  onBack={() => setSelectedCircuit(null)} 
+                  onUpdateOverview={async (name, desc) => {
+                    setEditingCircuitData({ name, description: desc });
+                    setIsSaving(true);
+                    try {
+                      const res = await fetch("/api/mcp/update", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ target: "overview", name, data: { description: desc } })
+                      });
+                      if (res.ok) fetchCircuitDetails(name);
+                    } finally { setIsSaving(false); }
+                  }}
+                  onUpdateUnits={handleUpdateCircuitUnits}
+                  onUpdateProtocols={handleUpdateCircuitProtocols}
+                />
               )}
 
               {activeTab === "Units" && (
@@ -477,10 +533,7 @@ export default function Home() {
               
               {activeTab === "Monitor" && (
                 <div className="h-full overflow-y-auto pr-2 custom-scrollbar pb-10">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <ResourceMonitor systemStatus={systemStatus} language={language} />
-                    <AuditSecurity logs={logs} systemStatus={systemStatus} language={language} />
-                  </div>
+                  <AuditSecurity logs={logs} systemStatus={systemStatus} language={language} />
                 </div>
               )}
             </div>

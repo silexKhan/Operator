@@ -52,7 +52,7 @@
 - **Diff Preview:** 저장 버튼 클릭 전, 변경된 내용(Before vs After)을 시각적으로 확인하는 창 제공.
 
 ### 5.3 [FEAT] 고급 기능 확장
-- **Circuit Blueprint:** 새로운 회선을 생성할 때 템플릿(GDR용, 리서치용 등) 선택 기능.
+- **Circuit Blueprint:** 새로운 회선을 생성할 때 템플릿(App용, 리서치용 등) 선택 기능.
 - **Audit Visualization:** 보안 위반 이력을 단순히 텍스트가 아닌 타임라인 그래프로 시각화.
 - **Remote Terminal:** 하단 로그 패널에서 엔진으로 직접 명령어를 전송할 수 있는 대화형 CLI 기능 활성화.
 

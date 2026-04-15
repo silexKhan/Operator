@@ -1,8 +1,40 @@
-.venv/
-__pycache__/
-*.pyc
-.DS_Store
-.env
+# Node.js
+node_modules/
+dist/
+.next/
+out/
 build/
-DerivedData/
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+.pytest_cache/
+
+# Operator Data (Private & Runtime)
+logs/
+data/history/
+mcp_operator/data/
+
+# Keep only base state.json, ignore other state files
+# data/state.json 은 초기 가동을 위해 포함하지만, 
+# 실시간 변경되는 세션 정보인 mcp_state.json 등은 제외합니다.
+data/mcp_state.json
+
+# Private Circuits (Individual customized circuits)
+mcp_operator/registry/circuits/registry/gdr/
+mcp_operator/registry/circuits/registry/*/docs/archive/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
