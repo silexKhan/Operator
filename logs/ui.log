@@ -14061,3 +14061,71 @@ Import trace:
 [SSE_WATCH] Detected change in state.json, triggering push.
 [SSE_SEND] Dispatched full state update to client: research
  GET /api/mcp/events 200 in 16.5s (next.js: 12ms, application-code: 16.5s)
+
+
+--- UI RESTART: Wed Apr 15 13:54:45 KST 2026 ---
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 278ms
+
+ GET / 200 in 167ms (next.js: 109ms, application-code: 58ms)
+ GET /api/config 200 in 34ms (next.js: 28ms, application-code: 6ms)
+[SSE_SEND] Dispatched full state update to client: research
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=research
+[STATE_FETCH] Loaded protocols for research: 4 rules found.
+[STATE_FETCH] Loaded overview for research: research
+ GET /api/mcp/state 200 in 16ms (next.js: 13ms, application-code: 3ms)
+ GET /api/mcp/protocols?type=units_list 200 in 16ms (next.js: 13ms, application-code: 3ms)
+ GET /api/mcp/protocols?type=global 200 in 14ms (next.js: 5ms, application-code: 9ms)
+ GET /api/mcp/protocols?type=global 200 in 20ms (next.js: 15ms, application-code: 5ms)
+ POST /api/mcp/update 200 in 58ms (next.js: 48ms, application-code: 10ms)
+ GET /api/mcp/protocols?type=circuit_full&name=mcp 200 in 8ms (next.js: 3ms, application-code: 5ms)
+[SSE_WATCH] Detected change in state.json, triggering push.
+[SSE_SEND] Dispatched full state update to client: mcp
+
+
+--- UI RESTART: Mon Apr 20 07:48:21 KST 2026 ---
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 256ms
+
+ GET / 200 in 175ms (next.js: 112ms, application-code: 63ms)
+ GET /api/config 200 in 36ms (next.js: 30ms, application-code: 6ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+ GET /apple-touch-icon-precomposed.png 404 in 86ms (next.js: 16ms, application-code: 70ms)
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 8 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 19ms (next.js: 14ms, application-code: 5ms)
+ GET /api/mcp/protocols?type=units_list 200 in 28ms (next.js: 13ms, application-code: 15ms)
+ GET /apple-touch-icon.png 404 in 16ms (next.js: 2ms, application-code: 13ms)
+ GET /api/mcp/protocols?type=global 200 in 17ms (next.js: 7ms, application-code: 10ms)
+ GET /api/mcp/protocols?type=global 200 in 23ms (next.js: 17ms, application-code: 5ms)
+ POST /api/mcp/update 200 in 49ms (next.js: 42ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=circuit_full&name=mcp 200 in 5ms (next.js: 1894µs, application-code: 3ms)
+[SSE_WATCH] Detected change in state.json, triggering push.
+[SSE_SEND] Dispatched full state update to client: mcp
+ GET /api/mcp/protocols?type=units_list 200 in 10ms (next.js: 3ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=units_list 200 in 21ms (next.js: 15ms, application-code: 6ms)
+ GET /api/mcp/protocols?type=unit&name=design 200 in 15ms (next.js: 4ms, application-code: 11ms)
+ GET /api/mcp/protocols?type=unit&name=dev 200 in 15ms (next.js: 4ms, application-code: 11ms)
+ GET /api/mcp/protocols?type=unit&name=markdown 200 in 11ms (next.js: 4ms, application-code: 8ms)
+ GET /api/mcp/protocols?type=unit&name=planning 200 in 13ms (next.js: 4ms, application-code: 9ms)
+ GET /api/mcp/protocols?type=unit&name=python 200 in 19ms (next.js: 5ms, application-code: 13ms)
+ GET /api/mcp/protocols?type=unit&name=sentinel 200 in 14ms (next.js: 5ms, application-code: 9ms)
+ GET /api/mcp/protocols?type=unit&name=swift 200 in 9ms (next.js: 2ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=unit&name=swift_mvvm_convention 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/mcp/protocols?type=unit&name=markdown 200 in 8ms (next.js: 3ms, application-code: 6ms)
+ GET /api/mcp/protocols?type=unit&name=planning 200 in 14ms (next.js: 4ms, application-code: 10ms)
+ GET /api/mcp/protocols?type=unit&name=markdown 200 in 11ms (next.js: 5ms, application-code: 6ms)
+ GET /api/mcp/protocols?type=unit&name=planning 200 in 12ms (next.js: 4ms, application-code: 8ms)
+ GET /api/mcp/protocols?type=unit&name=markdown 200 in 10ms (next.js: 4ms, application-code: 6ms)
+ GET /api/mcp/protocols?type=unit&name=planning 200 in 14ms (next.js: 5ms, application-code: 9ms)
+ GET /api/mcp/protocols?type=global 200 in 11ms (next.js: 4ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=global 200 in 20ms (next.js: 14ms, application-code: 6ms)
+ GET /api/mcp/protocols?type=units_list 200 in 13ms (next.js: 5ms, application-code: 8ms)
+ GET /api/mcp/protocols?type=units_list 200 in 21ms (next.js: 14ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=unit&name=sentinel 200 in 10ms (next.js: 3ms, application-code: 7ms)
+ GET /api/mcp/events 200 in 9.4min (next.js: 46ms, application-code: 9.4min)

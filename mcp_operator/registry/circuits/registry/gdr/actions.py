@@ -1,53 +1,27 @@
-#  actions.py - GDR Circuit Domain Actions (Full Specs & JSON Edition)
-import os
-import mcp.types as types
+#  actions.py - GDR Domain Actions (Unified Version)
 from mcp_operator.registry.circuits.base import BaseCircuit
-from mcp_operator.engine.logger import OperatorLogger
-from mcp_operator.common.models import TextResponse
 
 class GdrCircuit(BaseCircuit):
-    def __init__(self, manager):
-        self.manager = manager
-        self.logger = OperatorLogger("GdrCircuit")
-        self.units = ["markdown", "sentinel", "swift"]
+    """[Unified Circuit] GDR 프로젝트를 관리하는 회선입니다."""
+    
+    def __init__(self, manager=None):
+        super().__init__(manager)
+        self.units = ["markdown", "sentinel", "swift", "python"]
 
-    def get_name(self) -> str: return "GDR"
-
-    def get_tools(self) -> list[types.Tool]:
-        return [
-            # GDR 전용 도구
-            types.Tool(name="gdr_get_overview", description="GDR 프로젝트의 요약 정보와 현재 미션 상태를 확인합니다. ", inputSchema={"type": "object", "properties": {}}),
-            types.Tool(name="gdr_audit_code", description="[필수] 수정한 GDR 소스 코드가 규약을 준수하는지 정밀 진단합니다. ", inputSchema={"type": "object", "properties": {"file_path": {"type": "string"}}, "required": ["file_path"]}),
-        ]
-
-    async def call_tool(self, name: str, arguments: dict | None) -> list[types.TextContent]:
-        from mcp_operator.engine.scanner import CodeScanner
-        from mcp_operator.common.utils import get_project_root
-        
-        args = arguments or {}
-        # 도구 접두사 제거
-        func_name = name.replace("gdr_", "")
-        
-        if func_name == "get_overview":
-            from .overview import Overview
-            res = f" [GDR MISSION CENTER]\n- NAME: {Overview.NAME}\n- STATUS: ACTIVE"
-            return TextResponse(res)
-            
-        elif func_name == "audit_code":
-            from mcp_operator.registry.units.swift.auditor import SwiftAuditor
-            auditor = SwiftAuditor(self.logger, self.manager)
-            file_path = args.get("file_path", "")
-            if not os.path.exists(file_path): return TextResponse(f" 존재하지 않는 파일: {file_path}")
-            
-            with open(file_path, "r", encoding="utf-8") as f:
-                report = auditor.audit(file_path, f.read())
-            return TextResponse("\n".join(report) if report else " PASS: 모든 규약을 준수하고 있습니다. ")
-            
-        raise ValueError(f"Tool not found: {name}")
+    def get_name(self) -> str: 
+        return "gdr"
 
     def get_protocols(self):
         from .protocols import Protocols
         return Protocols
+
+    def get_tools(self) -> list:
+        # 모든 도구는 CoreActions를 통해 통합 제공됩니다.
+        return []
+
+    async def call_tool(self, name: str, arguments: dict) -> list:
+        # 특수한 GDR 전용 로직이 필요한 경우만 오버라이드합니다.
+        return await super().call_tool(name, arguments)
 
     def get_blueprint(self):
         from .blueprint import BluePrint

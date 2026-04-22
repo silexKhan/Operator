@@ -1,50 +1,37 @@
 #
-#  auditor.py - Mission Objective Compliance Auditor
+#  auditor.py - Autonomous Mission Pipeline Commander
 #
 
 import os
 import json
+from mcp_operator.common.utils import get_project_root
 from mcp_operator.engine.interfaces import BaseAuditor
 
 class SentinelAuditor(BaseAuditor):
-    """설정된 미션 목적과 소스 코드의 일치성을 검사하는 감시관 유닛입니다.
+    """자율 7단계 파이프라인을 지휘하고 무결성을 검증하는 지휘관 유닛입니다.
 
-    대장님(사용자)의 의도가 최종 산출물에 정확히 반영되었는지
-    미션 데이터를 기반으로 기술적, 논리적 무결성을 검증합니다.
+    단순 감사를 넘어 기획, 설계, TDD, 구현, 검증의 전 과정을 통제하며
+    대장님(사용자)의 의도가 완벽히 반영되도록 파이프라인을 드라이브합니다.
     """
 
     def __init__(self, logger: object = None, circuit_manager: object = None) -> None:
-        """SentinelAuditor 인스턴스를 초기화합니다.
-
-        Args:
-            logger (object, optional): 시스템 로그를 기록할 로거 인스턴스. Defaults to None.
-            circuit_manager (object, optional): 회선 관리 객체. Defaults to None.
-        """
         super().__init__(logger)
         self.circuit_manager = circuit_manager
-        # 프로젝트 루트 경로 확보
-        self.project_root: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        # 프로젝트 루트 경로 확보 (공통 유틸리티 사용)
+        self.project_root: str = get_project_root()
 
     def audit(self, file_path: str, content: str = "") -> list[str]:
-        """주어진 파일 경로와 내용을 미션 목적과 대조하여 감사를 수행합니다.
-
-        Args:
-            file_path (str): 감사를 수행할 대상 파일의 경로.
-            content (str, optional): 파일의 리터럴 텍스트 내용. Defaults to "".
-
-        Returns:
-            list[str]: 감사 결과 리스트. 실패 시 사유를 포함하며 성공 시 빈 리스트를 반환합니다.
-
-        Raises:
-            FileNotFoundError: mission.json 파일이 존재하지 않을 경우.
-        """
+        """7단계 파이프라인 준수 여부를 감사하고 다음 단계 지침을 하달합니다."""
         results: list[str] = []
         mission_path: str = os.path.join(self.project_root, "mission.json")
         docs_active_dir: str = os.path.join(self.project_root, "docs", "active")
+        
+        # docs/active 폴더 보장
+        os.makedirs(docs_active_dir, exist_ok=True)
 
-        # 1. 미션 설정 여부 확인 (Protocol S-1)
+        # 1. 미션 설정 여부 확인 (Step 0)
         if not os.path.exists(mission_path):
-            results.append(" 🚨 FAIL: Protocol S-1 (Sentinel) - 'sentinel_set_mission'이 선행되지 않았습니다. ")
+            results.append(" 🚨 [COMMANDER] 미션이 설정되지 않았습니다. 'sentinel_set_mission'으로 목적을 먼저 정의하십시오. ")
             return results
 
         try:
@@ -52,48 +39,50 @@ class SentinelAuditor(BaseAuditor):
                 mission_data: dict = json.load(f)
                 objective: str = mission_data.get("objective", "")
                 criteria: list[str] = mission_data.get("criteria", [])
-                steps: list[dict] = mission_data.get("steps", [])
                 status: str = mission_data.get("status", "IN_PROGRESS")
 
-            # 2. [Harness Insight] 정형화된 작업 문서(PRD/ADR/UI_GUIDE) 강제 (Protocol S-7, S-8, S-9)
+            # 2. [Step 1 & 2] 기획 및 설계 문서 강제 (Planning & Design Wall)
+            # Sentinel은 문서가 없으면 직접 작성을 명령합니다.
             required_docs = {
-                "PRD.md": {"rule": "Protocol S-7 (Planning Wall)", "keywords": ["목적", "흐름", "예외", "검증"]},
-                "UI_GUIDE.md": {"rule": "Protocol S-8 (Design Wall)", "keywords": ["Hex", "Tailwind", "Spacing"]},
-                "ADR.md": {"rule": "Protocol S-9 (Architecture Wall)", "keywords": ["Decision", "Reason", "Trade-off"]}
+                "PRD.md": {"rule": "Protocol S-3 (Planning Automation)", "desc": "기획서 (목적/흐름/예외/검증)"},
+                "ADR.md": {"rule": "Protocol S-4 (Design Spec)", "desc": "기술 결정서 (Decision/Reason/Trade-off)"},
+                "UI_GUIDE.md": {"rule": "Protocol S-4 (Design Spec)", "desc": "UI 가이드 (Hex/Tailwind/Spacing)"}
             }
 
+            missing_docs = []
             for doc_name, spec in required_docs.items():
                 doc_path = os.path.join(docs_active_dir, doc_name)
                 if not os.path.exists(doc_path):
-                    results.append(f" ❌ FAIL: {spec['rule']} - 필수 문서 '{doc_name}'가 'docs/active/' 폴더에 존재하지 않습니다. 작업을 시작하기 전 'docs/active/'에 문서를 먼저 작성하고 대장님의 승인을 받으십시오. ")
-                else:
-                    with open(doc_path, "r", encoding="utf-8") as df:
-                        doc_content = df.read()
-                        missing_keywords = [k for k in spec["keywords"] if k.lower() not in doc_content.lower()]
-                        if missing_keywords:
-                            results.append(f" ❌ FAIL: {spec['rule']} - '{doc_name}' 내에 필수 항목({', '.join(missing_keywords)})이 누락되었습니다. AI의 짐작을 방지하기 위해 규격을 보강하십시오. ")
+                    missing_docs.append(f"{doc_name} ({spec['desc']})")
+            
+            if missing_docs:
+                results.append(f" 📑 [STEP 1-2: Documentation] 필수 문서가 누락되었습니다: {', '.join(missing_docs)}")
+                results.append(f" 💡 [GUIDE] Sentinel은 자율 지휘 모드입니다. 지금 즉시 'docs/active/' 폴더에 위 문서들의 초안을 작성하십시오. ")
+                return results
 
-            # 3. 미션 성공 기준 및 단계별 완결성 체크
+            # 3. [Step 3] TDD Fencing (Test Scaffolding)
+            # 실제 코드를 수정하기 전에 테스트 파일이 먼저 생성되었는지 확인합니다.
+            test_files = [f for f in os.listdir(self.project_root) if "test" in f.lower() or "spec" in f.lower()]
+            if not test_files and status != "PASS":
+                results.append(" 🧪 [STEP 3: TDD] 구현 전 테스트 스캐폴딩이 발견되지 않았습니다. (Protocol S-5)")
+                results.append(" 💡 [GUIDE] 먼저 'Red Phase'로 진입하여 실패하는 테스트 코드를 작성하십시오. ")
+
+            # 4. [Step 4-5] 구현 및 감사 (Audit)
             for criterion in criteria:
                 if criterion.lower() not in content.lower() and status != "PASS":
-                     results.append(f" ⚠️ [Sentinel Check] 미션 기준 [{criterion}] 누락 위험이 감지되었습니다. (Protocol S-1)")
+                     results.append(f" ⚠️ [STEP 4: Dev] 미션 기준 [{criterion}] 누락 위험이 감지되었습니다. (Protocol S-1)")
 
-            current_step = next((s for s in steps if s.get("status") == "IN_PROGRESS"), None)
-            if current_step:
-                results.append(f" ℹ️ [Sentinel Context] 현재 단계: {current_step.get('name')} 분석 중...")
-
-            # 4. 금지 표현 검사 (Global Protocol 0-1 연동)
+            # 금지 표현 검사 (Global Protocol 0-1)
             forbidden_words: list[str] = ["." + ".." , "중" + "략", "생" + "략"]
             for word in forbidden_words:
                 if word in content:
-                    results.append(f" ❌ FAIL: Protocol S-2 (Sentinel) - 완전하지 않은 구현({word})은 센티널을 통과할 수 없습니다. ")
+                    results.append(f" ❌ [STEP 5: Audit] 부적절한 구현({word})이 발견되었습니다. 생략 없이 모든 코드를 작성하십시오. ")
+
+            # 5. [Step 7] Clean Desk 제안
+            if status == "PASS":
+                results.append(" 🧹 [STEP 7: Archive] 모든 검증이 완료되었습니다. 'docs/active/'의 문서들을 'docs/archive/'로 이동시켜 작업을 정리하십시오. ")
 
         except Exception as e:
-            results.append(f" 🚨 FAIL: 미션 데이터 로드 중 오류 발생: {str(e)}")
-
-        return results
-
-        except Exception as e:
-            results.append(f" FAIL: 미션 데이터 로드 중 오류 발생: {str(e)}")
+            results.append(f" 🚨 [SENTINEL ERROR] 파이프라인 엔진 오류: {str(e)}")
 
         return results

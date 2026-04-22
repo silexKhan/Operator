@@ -882,3 +882,573 @@
  [12:45:45.687] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
  [2026-04-15 12:45:45.688] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 7486)
  [12:45:45.688] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-15 16:16:17.357] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 18689)
+ [2026-04-15 16:16:17.358] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 18689)
+ [2026-04-15 16:16:17.358] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 18689)
+ [16:16:17.358] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-15 16:16:17.360] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 18689)
+ [16:16:17.360] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [16:16:17.361] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-15 16:16:17.362] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 18689)
+ [16:16:17.362] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 08:35:54.373] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 3647)
+ [2026-04-16 08:35:54.373] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 3647)
+ [2026-04-16 08:35:54.373] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 3647)
+ [08:35:54.374] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 08:35:54.377] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 3647)
+ [08:35:54.377] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [08:35:54.379] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 08:35:54.380] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 3647)
+ [08:35:54.380] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 08:46:09.212] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 8281)
+ [2026-04-16 08:46:09.212] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 8281)
+ [2026-04-16 08:46:09.213] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 8281)
+ [08:46:09.213] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 08:46:09.214] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 8281)
+ [08:46:09.214] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [08:46:09.215] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 08:46:09.217] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 8281)
+ [08:46:09.217] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 11:22:02.304] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 95135)
+ [2026-04-16 11:22:02.304] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 95135)
+ [2026-04-16 11:22:02.304] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 95135)
+ [11:22:02.304] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 11:22:02.306] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 95135)
+ [11:22:02.306] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [11:22:02.307] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 11:22:02.308] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 95135)
+ [11:22:02.308] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 12:42:52.608] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 48542)
+ [2026-04-16 12:42:52.608] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 48542)
+ [2026-04-16 12:42:52.608] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 48542)
+ [12:42:52.609] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 12:42:52.610] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 48542)
+ [12:42:52.610] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:42:52.611] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 12:42:52.613] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 48542)
+ [12:42:52.613] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 13:03:10.035] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 55324)
+ [2026-04-16 13:03:10.035] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 55324)
+ [2026-04-16 13:03:10.035] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 55324)
+ [13:03:10.035] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 13:03:10.037] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 55324)
+ [13:03:10.037] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [13:03:10.038] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 13:03:10.039] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 55324)
+ [13:03:10.039] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 13:03:48.695] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 55877)
+ [2026-04-16 13:03:48.695] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 55877)
+ [2026-04-16 13:03:48.695] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 55877)
+ [13:03:48.695] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 13:03:48.697] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 55877)
+ [13:03:48.697] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [13:03:48.698] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 13:03:48.699] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 55877)
+ [13:03:48.699] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 14:56:01.187] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 12804)
+ [2026-04-16 14:56:01.188] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 12804)
+ [2026-04-16 14:56:01.188] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 12804)
+ [14:56:01.188] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 14:56:01.190] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 12804)
+ [14:56:01.190] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:56:01.191] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 14:56:01.193] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 12804)
+ [14:56:01.193] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [15:42:43.729] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [15:42:43.730] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 15:42:43.733] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 12804)
+ [15:42:43.733] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [15:42:43.734] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 15:42:43.736] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 12804)
+ [15:42:43.737] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-16 15:43:04.191] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 28986)
+ [2026-04-16 15:43:04.191] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 28986)
+ [2026-04-16 15:43:04.191] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 28986)
+ [15:43:04.192] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-16 15:43:04.193] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 28986)
+ [15:43:04.193] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [15:43:04.194] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-16 15:43:04.194] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 28986)
+ [15:43:04.195] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-17 08:30:32.479] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 76426)
+ [2026-04-17 08:30:32.479] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 76426)
+ [2026-04-17 08:30:32.479] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 76426)
+ [08:30:32.480] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-17 08:30:32.481] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 76426)
+ [08:30:32.482] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [08:30:32.483] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-17 08:30:32.484] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 76426)
+ [08:30:32.484] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-17 09:51:38.460] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 7496)
+ [2026-04-17 09:51:38.460] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 7496)
+ [2026-04-17 09:51:38.460] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 7496)
+ [09:51:38.461] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-17 09:51:38.462] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 7496)
+ [09:51:38.462] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [09:51:38.463] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-17 09:51:38.465] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 7496)
+ [09:51:38.465] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-17 11:52:43.716] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 77806)
+ [2026-04-17 11:52:43.716] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 77806)
+ [2026-04-17 11:52:43.716] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 77806)
+ [11:52:43.717] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-17 11:52:43.718] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 77806)
+ [11:52:43.718] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [11:52:43.719] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-17 11:52:43.720] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 77806)
+ [11:52:43.721] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-17 18:29:29.429] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 45900)
+ [2026-04-17 18:29:29.429] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 45900)
+ [2026-04-17 18:29:29.430] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 45900)
+ [18:29:29.430] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-17 18:29:29.431] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 45900)
+ [18:29:29.432] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [18:29:29.433] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-17 18:29:29.434] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 45900)
+ [18:29:29.434] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-19 08:08:34.979] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 1944)
+ [2026-04-19 08:08:34.979] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 1944)
+ [2026-04-19 08:08:34.979] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 1944)
+ [08:08:34.980] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-19 08:08:34.981] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 1944)
+ [08:08:34.982] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [08:08:34.983] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-19 08:08:34.984] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 1944)
+ [08:08:34.984] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-19 08:09:11.593] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 2428)
+ [2026-04-19 08:09:11.594] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 2428)
+ [2026-04-19 08:09:11.594] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 2428)
+ [08:09:11.594] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-19 08:09:11.595] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 2428)
+ [08:09:11.595] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [08:09:11.596] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-19 08:09:11.597] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 2428)
+ [08:09:11.597] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-20 07:06:30.771] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 3167)
+ [2026-04-20 07:06:30.771] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 3167)
+ [2026-04-20 07:06:30.771] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 3167)
+ [07:06:30.772] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-20 07:06:30.773] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 3167)
+ [07:06:30.773] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [07:06:30.775] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-20 07:06:30.776] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 3167)
+ [07:06:30.776] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-21 09:05:19.075] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 23878)
+ [2026-04-21 09:05:19.076] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 23878)
+ [2026-04-21 09:05:19.076] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 23878)
+ [09:05:19.076] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-21 09:05:19.078] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 23878)
+ [09:05:19.078] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [09:05:19.079] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-21 09:05:19.080] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 23878)
+ [09:05:19.081] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-21 09:07:04.292] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 24896)
+ [2026-04-21 09:07:04.292] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 24896)
+ [2026-04-21 09:07:04.292] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24896)
+ [09:07:04.293] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-21 09:07:04.294] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 24896)
+ [09:07:04.294] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [09:07:04.295] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-21 09:07:04.296] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 24896)
+ [09:07:04.296] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-21 12:06:20.557] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 5460)
+ [2026-04-21 12:06:20.558] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 5460)
+ [2026-04-21 12:06:20.559] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 5460)
+ [12:06:20.559] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-21 12:06:20.568] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 5460)
+ [12:06:20.569] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:06:20.573] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-21 12:06:20.577] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 5460)
+ [12:06:20.577] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-21 12:33:41.308] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 15631)
+ [2026-04-21 12:33:41.308] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 15631)
+ [2026-04-21 12:33:41.308] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15631)
+ [12:33:41.309] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-21 12:33:41.312] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15631)
+ [12:33:41.314] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:33:41.315] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-21 12:33:41.316] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15631)
+ [12:33:41.316] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 08:32:32.576] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 21379)
+ [2026-04-22 08:32:32.577] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 21379)
+ [2026-04-22 08:32:32.577] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 21379)
+ [08:32:32.577] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 08:32:32.579] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 21379)
+ [08:32:32.579] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [08:32:32.580] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 08:32:32.581] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 21379)
+ [08:32:32.581] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 10:21:24.718] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 4610)
+ [2026-04-22 10:21:24.718] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 4610)
+ [2026-04-22 10:21:24.718] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 4610)
+ [10:21:24.719] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 10:21:24.721] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 4610)
+ [10:21:24.722] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [10:21:24.724] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 10:21:24.725] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 4610)
+ [10:21:24.725] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 12:37:08.197] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 74946)
+ [2026-04-22 12:37:08.198] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 74946)
+ [2026-04-22 12:37:08.198] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 74946)
+ [12:37:08.198] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:37:08.200] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:37:08.200] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:37:08.202] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:37:08.202] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:37:08.202] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [12:40:31.313] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [12:40:31.314] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:40:31.325] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:40:31.325] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:40:31.326] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:40:31.327] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:40:31.328] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [12:43:58.011] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [12:43:58.012] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:43:58.013] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:43:58.014] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:43:58.015] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:43:58.016] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:43:58.016] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [12:44:12.617] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [12:44:12.618] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:44:12.619] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:44:12.619] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:44:12.620] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:44:12.620] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 74946)
+ [12:44:12.621] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 12:44:51.536] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 78015)
+ [2026-04-22 12:44:51.536] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 78015)
+ [2026-04-22 12:44:51.536] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 78015)
+ [12:44:51.537] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:44:51.538] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 78015)
+ [12:44:51.538] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:44:51.539] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:44:51.540] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 78015)
+ [12:44:51.540] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 12:50:17.405] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 80092)
+ [2026-04-22 12:50:17.406] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 80092)
+ [2026-04-22 12:50:17.406] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 80092)
+ [12:50:17.406] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:50:17.410] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 80092)
+ [12:50:17.412] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:50:17.413] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:50:17.415] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 80092)
+ [12:50:17.415] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 12:50:37.208] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 80357)
+ [2026-04-22 12:50:37.208] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 80357)
+ [2026-04-22 12:50:37.208] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 80357)
+ [12:50:37.209] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:50:37.210] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 80357)
+ [12:50:37.212] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:50:37.214] [OPERATOR] [CircuitManager]       ├─  회선 로드 실패 (mcp_operator.registry.circuits.registry.mcp.actions): module 'mcp.types' has no attribute 'TextResponse'
+ [2026-04-22 12:50:37.216] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 80357)
+ [12:50:37.217] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [12:55:28.389] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [12:55:28.389] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 12:55:28.391] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 80357)
+ [12:55:28.391] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [12:55:28.395] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 12:55:28.395] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 80357)
+ [12:55:28.396] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [14:04:30.053] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [14:04:30.054] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:04:30.056] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 80357)
+ [14:04:30.056] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:04:30.060] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:04:30.062] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 80357)
+ [14:04:30.062] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:06:33.201] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 10531)
+ [14:06:33.201] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:06:33.203] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 10531)
+ [14:06:33.203] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:06:33.204] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:06:33.205] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 10531)
+ [14:06:33.205] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:06:33.205] [OPERATOR] [Test] ▶ 서버 실행 (PID: 10531)
+ [2026-04-22 14:06:43.125] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 10594)
+ [14:06:43.125] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:06:43.126] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 10594)
+ [14:06:43.126] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:06:43.127] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:06:43.128] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 10594)
+ [14:06:43.128] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:06:43.128] [OPERATOR] [Test] ▶ 서버 실행 (PID: 10594)
+ [2026-04-22 14:07:03.294] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 10719)
+ [14:07:03.294] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:07:03.296] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 10719)
+ [14:07:03.296] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:07:03.296] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:07:03.297] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 10719)
+ [14:07:03.297] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:07:03.298] [OPERATOR] [Test] ▶ 서버 실행 (PID: 10719)
+ [14:18:03.134] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [14:18:03.135] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:18:03.136] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 80357)
+ [14:18:03.136] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:18:03.137] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:18:03.138] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 80357)
+ [14:18:03.138] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:19:03.224] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15278)
+ [14:19:03.224] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:19:03.225] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15278)
+ [14:19:03.226] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:19:03.228] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:19:03.229] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15278)
+ [14:19:03.229] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:19:03.229] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15278)
+ [2026-04-22 14:19:28.126] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15464)
+ [14:19:28.126] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:19:28.127] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15464)
+ [14:19:28.128] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:19:28.128] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:19:28.129] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15464)
+ [14:19:28.129] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:19:39.302] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15529)
+ [14:19:39.302] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:19:39.303] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15529)
+ [14:19:39.304] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:19:39.304] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:19:39.305] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15529)
+ [14:19:39.305] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:19:39.305] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15529)
+ [2026-04-22 14:19:49.374] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15584)
+ [14:19:49.374] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:19:49.376] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15584)
+ [14:19:49.376] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:19:49.377] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:19:49.377] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15584)
+ [14:19:49.378] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:19:49.378] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15584)
+ [2026-04-22 14:19:58.142] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15658)
+ [14:19:58.142] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:19:58.144] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15658)
+ [14:19:58.144] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:19:58.145] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:19:58.145] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15658)
+ [14:19:58.145] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:19:58.146] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15658)
+ [2026-04-22 14:20:11.580] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15755)
+ [14:20:11.580] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:20:11.581] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15755)
+ [14:20:11.582] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:20:11.582] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:20:11.583] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15755)
+ [14:20:11.583] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:20:11.584] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15755)
+ [2026-04-22 14:20:26.960] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15847)
+ [14:20:26.960] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:20:26.962] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15847)
+ [14:20:26.962] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:20:26.962] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:20:26.963] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15847)
+ [14:20:26.963] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:20:26.964] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15847)
+ [2026-04-22 14:20:35.609] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15904)
+ [14:20:35.610] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:20:35.611] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15904)
+ [14:20:35.611] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:20:35.612] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:20:35.612] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15904)
+ [14:20:35.613] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:20:35.613] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15904)
+ [2026-04-22 14:20:50.579] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 15994)
+ [14:20:50.579] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:20:50.580] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 15994)
+ [14:20:50.580] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:20:50.581] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:20:50.582] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 15994)
+ [14:20:50.582] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:20:50.582] [OPERATOR] [Test] ▶ 서버 실행 (PID: 15994)
+ [2026-04-22 14:22:56.530] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 16819)
+ [14:22:56.530] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:22:56.532] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 16819)
+ [14:22:56.532] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:22:56.532] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:22:56.533] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 16819)
+ [14:22:56.533] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:22:56.534] [OPERATOR] [Test] ▶ 서버 실행 (PID: 16819)
+ [2026-04-22 14:23:14.679] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 16935)
+ [14:23:14.680] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:23:14.681] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 16935)
+ [14:23:14.681] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:23:14.682] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:23:14.682] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 16935)
+ [14:23:14.683] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:23:14.683] [OPERATOR] [Test] ▶ 서버 실행 (PID: 16935)
+ [2026-04-22 14:23:32.596] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 17053)
+ [14:23:32.597] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:23:32.598] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 17053)
+ [14:23:32.598] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:23:32.599] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:23:32.600] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 17053)
+ [14:23:32.600] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:23:32.600] [OPERATOR] [Test] ▶ 서버 실행 (PID: 17053)
+ [2026-04-22 14:25:37.306] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 17828)
+ [2026-04-22 14:25:37.306] [OPERATOR] [Sentinel] ▶ 서버 실행 (PID: 17828)
+ [2026-04-22 14:25:37.307] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 17828)
+ [14:25:37.307] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:25:37.308] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 17828)
+ [14:25:37.308] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:25:37.309] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:25:37.310] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 17828)
+ [14:25:37.310] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [14:29:53.571] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [14:29:53.572] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:29:53.574] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 17828)
+ [14:29:53.575] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:29:53.576] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:29:53.577] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 17828)
+ [14:29:53.577] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:30:11.944] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 19549)
+ [14:30:11.944] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [2026-04-22 14:30:11.946] [OPERATOR] [ResearchCircuit] ▶ 서버 실행 (PID: 19549)
+ [14:30:11.946] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: Research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:30:11.949] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [2026-04-22 14:30:11.956] [OPERATOR] [GdrCircuit] ▶ 서버 실행 (PID: 19549)
+ [14:30:11.956] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: GDR (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:30:11.957] [OPERATOR] [Test] ▶ 서버 실행 (PID: 19549)
+ [14:31:47.364] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [14:31:47.364] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:31:47.367] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:31:47.369] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:31:47.373] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [14:38:13.151] [OPERATOR] [MasterOperator]       ├─  🔄 [SYSTEM] 내부 엔진 리로드를 시작합니다...
+ [14:38:13.152] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:38:13.153] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:38:13.154] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:38:13.155] [OPERATOR] [CircuitManager]       ├─  회선 연결 완료: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:38:51.847] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 22822)
+ [14:38:51.848] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:38:51.849] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:38:51.850] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:38:51.850] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:38:51.851] [OPERATOR] [Audit] ▶ 서버 실행 (PID: 22822)
+ [2026-04-22 14:38:52.169] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 22823)
+ [14:38:52.169] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:38:52.170] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:38:52.171] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:38:52.172] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:38:52.172] [OPERATOR] [Audit] ▶ 서버 실행 (PID: 22823)
+ [2026-04-22 14:38:52.482] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 22828)
+ [14:38:52.483] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:38:52.484] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:38:52.484] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:38:52.485] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:38:52.485] [OPERATOR] [Audit] ▶ 서버 실행 (PID: 22828)
+ [2026-04-22 14:38:52.794] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 22831)
+ [14:38:52.794] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:38:52.795] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:38:52.796] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:38:52.797] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:38:52.797] [OPERATOR] [Audit] ▶ 서버 실행 (PID: 22831)
+ [2026-04-22 14:38:53.114] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 22832)
+ [14:38:53.115] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:38:53.116] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research (mcp_operator.registry.circuits.registry.research.actions)
+ [14:38:53.116] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp (mcp_operator.registry.circuits.registry.mcp.actions)
+ [14:38:53.117] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr (mcp_operator.registry.circuits.registry.gdr.actions)
+ [2026-04-22 14:38:53.117] [OPERATOR] [Audit] ▶ 서버 실행 (PID: 22832)
+ [2026-04-22 14:41:45.678] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 23940)
+ [14:41:45.678] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:45.679] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:45.680] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:45.681] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:45.681] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 23940)
+ [2026-04-22 14:41:45.990] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 23944)
+ [14:41:45.991] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:45.992] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:45.993] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:45.994] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:45.994] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 23944)
+ [2026-04-22 14:41:46.301] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 23945)
+ [14:41:46.301] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:46.303] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:46.303] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:46.304] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:46.305] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 23945)
+ [2026-04-22 14:41:46.617] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 23948)
+ [14:41:46.617] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:46.619] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:46.619] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:46.620] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:46.620] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 23948)
+ [2026-04-22 14:41:46.931] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 23950)
+ [14:41:46.931] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:46.933] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:46.933] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:46.934] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:46.935] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 23950)
+ [2026-04-22 14:41:57.914] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24019)
+ [14:41:57.914] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:57.915] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:57.916] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:57.917] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:57.917] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 24019)
+ [2026-04-22 14:41:58.218] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24030)
+ [14:41:58.219] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:58.220] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:58.221] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:58.222] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:58.222] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 24030)
+ [2026-04-22 14:41:58.532] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24031)
+ [14:41:58.532] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:58.533] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:58.534] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:58.535] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:58.535] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 24031)
+ [2026-04-22 14:41:58.845] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24035)
+ [14:41:58.845] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:58.846] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:58.847] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:58.848] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:58.848] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 24035)
+ [2026-04-22 14:41:59.155] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24038)
+ [14:41:59.155] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:41:59.156] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:41:59.157] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:41:59.158] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:41:59.158] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 24038)
+ [2026-04-22 14:42:15.033] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24133)
+ [14:42:15.034] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:42:15.035] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:42:15.035] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:42:15.037] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 14:42:15.037] [OPERATOR] [FinalAudit] ▶ 서버 실행 (PID: 24133)
+ [2026-04-22 14:44:03.632] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 24948)
+ [2026-04-22 14:44:03.633] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 24948)
+ [14:44:03.633] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:44:03.634] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:44:03.635] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:44:03.636] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [14:44:14.342] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [14:44:14.343] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [14:44:14.344] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [14:44:14.346] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 15:03:10.808] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 32416)
+ [2026-04-22 15:03:10.808] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 32416)
+ [15:03:10.809] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:03:10.810] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:03:10.811] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:03:10.812] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [16:47:33.278] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [16:47:33.279] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [16:47:33.280] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [16:47:33.281] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [16:49:22.663] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [16:49:22.665] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [16:49:22.666] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [16:49:22.668] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [16:52:19.403] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [16:52:19.404] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [16:52:19.405] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [16:52:19.406] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [16:55:19.459] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [16:55:19.462] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [16:55:19.474] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [16:55:19.477] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [2026-04-22 16:55:45.287] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 78877)
+ [2026-04-22 16:55:45.287] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 78877)
+ [16:55:45.288] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [16:55:45.289] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [16:55:45.290] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [16:55:45.291] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr

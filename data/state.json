@@ -1,5 +1,5 @@
 {
-  "lang": "ko",
-  "active_circuit": "mcp",
-  "last_sync": ""
+    "active_circuit_override": "mcp",
+    "current_path": "",
+    "last_verified": "2026-04-22"
 }

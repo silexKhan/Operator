@@ -1,1 +1,3 @@
-# Core Swift Language Support
+from .auditor import SwiftAuditor
+
+__all__ = ["SwiftAuditor"]
