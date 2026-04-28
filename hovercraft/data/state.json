@@ -1,9 +1,10 @@
 {
-  "active_circuit": "mcp",
+  "active_circuit": "golfzon5path",
   "circuits": [
     "research",
     "mcp",
-    "gdr"
+    "gdr",
+    "golfzon5path"
   ],
   "lang": "en"
 }

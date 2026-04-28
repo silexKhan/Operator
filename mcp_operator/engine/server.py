@@ -112,14 +112,13 @@ class OperatorServer:
             types.Tool(name="reload_operator", description="엔진 리로드", inputSchema={"type": "object"}),
             types.Tool(
                 name="mcp_operator_get", 
-                description="통합 정보 조회 (overview, protocol, spec, mission, status)", 
+                description="통합 정보 조회 (기본값: 전체 시스템 리포트)", 
                 inputSchema={
                     "type": "object", 
                     "properties": {
-                        "target": {"type": "string", "description": "대상 (overview, protocol, spec, mission, status)"},
+                        "target": {"type": "string", "description": "대상 (overview, protocol, spec, mission, global_protocol, status, all). 미지정 시 전체 조회."},
                         "name": {"type": "string", "description": "회선/유닛명 (미지정 시 활성 회선)"}
-                    }, 
-                    "required": ["target"]
+                    }
                 }
             ),
             types.Tool(

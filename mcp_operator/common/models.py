@@ -12,6 +12,7 @@ T = TypeVar('T')
 @unique
 class CommandTarget(str, Enum):
     """[Specification] 통합 지휘 API의 관리 대상 정의 (P-6)"""
+    ALL = "all"
     PROTOCOL = "protocol"
     OVERVIEW = "overview"
     BLUEPRINT = "blueprint"
@@ -21,10 +22,11 @@ class CommandTarget(str, Enum):
     UNIT = "unit"
     STATUS = "status"
     STATE = "state"
+    GLOBAL_PROTOCOL = "global_protocol"
 
 class UnifiedRequest(BaseModel):
     """[Specification] 통합 요청 스키마 (P-2)"""
-    target: CommandTarget = Field(..., description="조작 대상 객체")
+    target: CommandTarget = Field(CommandTarget.ALL, description="조작 대상 객체 (기본값: all)")
     name: Optional[str] = Field(None, description="대상 객체의 이름 (회선명, 유닛명 등)")
     data: Optional[Dict[str, Any]] = Field(None, description="업데이트 또는 생성 시 전달할 데이터")
     context: Optional[Dict[str, Any]] = Field(None, description="조회 시 필터링 또는 추가 컨텍스트")

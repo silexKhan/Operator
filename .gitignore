@@ -27,6 +27,7 @@ data/mcp_state.json
 
 # Private Circuits (Individual customized circuits)
 mcp_operator/registry/circuits/registry/gdr/
+mcp_operator/registry/circuits/registry/golfzon5path/
 mcp_operator/registry/circuits/registry/*/docs/archive/
 
 # OS

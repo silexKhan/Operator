@@ -34,11 +34,11 @@ class CoreActions:
     # [Unified Command API] MCP 2.0 통합 지휘 인터페이스 (Protocol P-7)
     # -------------------------------------------------------------------------
 
-    def get_handler(self, target: str, name: Optional[str] = None, context: Optional[dict] = None) -> List[types.TextContent]:
+    def get_handler(self, target: Optional[str] = None, name: Optional[str] = None, context: Optional[dict] = None) -> List[types.TextContent]:
         """[Unified API] 메타데이터 통합 조회.
         
         Args:
-            target (str): 조회 대상 (overview, protocol, etc.).
+            target (Optional[str]): 조회 대상 (overview, protocol, etc. 기본값: all).
             name (Optional[str]): 대상 이름.
             context (Optional[dict]): 추가 컨텍스트.
             
@@ -46,8 +46,15 @@ class CoreActions:
             List[types.TextContent]: MCP 응답 데이터.
         """
         try:
+            # Enum 로드 이슈 방지를 위한 문자열 직접 비교 우선 처리
+            if target == "global_protocol":
+                path = os.path.join(get_project_root(), "mcp_operator", "engine", "protocols.json")
+                return JsonResponse(read_json_safely(path) or {})
+
             t_enum = CommandTarget(target)
             match t_enum:
+                case CommandTarget.ALL:
+                    return self.get_handler(None, name, context)
                 case CommandTarget.STATUS:
                     return self.get_operator_status()
                 case CommandTarget.OVERVIEW:
@@ -56,8 +63,23 @@ class CoreActions:
                     return JsonResponse(target_obj.load_overview())
                 case CommandTarget.PROTOCOL:
                     target_obj = self._resolve_component(name)
-                    if not target_obj: return self.get_global_protocols()
-                    return JsonResponse({"name": target_obj.get_name(), "protocols": target_obj.load_protocols()})
+                    from mcp_operator.engine.protocols import GlobalProtocols
+                    global_rules = GlobalProtocols.get_rules()
+                    
+                    if not target_obj: 
+                        return JsonResponse({
+                            "GLOBAL_PROTOCOLS": global_rules,
+                            "NOTICE": "특정 회선이 지정되지 않아 공통 규약만 표시합니다."
+                        })
+                        
+                    local_rules = target_obj.load_protocols()
+                    return JsonResponse({
+                        "GLOBAL_PROTOCOLS": global_rules,
+                        "SPECIFIC_PROTOCOLS": {
+                            "name": target_obj.get_name(),
+                            "rules": local_rules
+                        }
+                    })
                 case CommandTarget.BLUEPRINT:
                     return self.get_blueprint(name or "")
                 case CommandTarget.SPEC:
@@ -66,6 +88,9 @@ class CoreActions:
                     return self.get_mission_logic()
                 case CommandTarget.STATE:
                     path = os.path.join(get_project_root(), "data", "state.json")
+                    return JsonResponse(read_json_safely(path) or {})
+                case CommandTarget.GLOBAL_PROTOCOL:
+                    path = os.path.join(get_project_root(), "mcp_operator", "engine", "protocols.json")
                     return JsonResponse(read_json_safely(path) or {})
                 case _:
                     return TextResponse(f" Unsupported GET Target: {target}")
@@ -85,10 +110,17 @@ class CoreActions:
         """
         if not data: return TextResponse(" Error: 'data' is required for update.")
         try:
+            # Enum 로드 이슈 방지를 위한 문자열 직접 비교 우선 처리
+            if target == "global_protocol":
+                path = os.path.join(get_project_root(), "mcp_operator", "engine", "protocols.json")
+                existing = read_json_safely(path) or {}
+                existing.update(data)
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(existing, f, indent=4, ensure_ascii=False)
+                return TextResponse(" Global Protocols Successfully Updated.")
+
             t_enum = CommandTarget(target)
             match t_enum:
-                case CommandTarget.PROTOCOL:
-                    return self._update_json_logic(name, "protocols.json", {"RULES": data.get("rules", [])})
                 case CommandTarget.OVERVIEW:
                     return self._update_json_logic(name, "overview.json", data)
                 case CommandTarget.MISSION:
@@ -265,7 +297,7 @@ class CoreActions:
             f" Operator Status: Online\n"
             f" Active Circuit: {active.get_name() if active else 'None'}\n"
             f" Registered: {list(self.manager.circuits.keys())}\n"
-            f" [SYSTEM]: 통합 API(get, update, execute)를 사용하십시오. "
+            f" [SYSTEM]: 통합 정보 조회는 'mcp_operator_get'을 사용하십시오 (예: 타겟 없이 호출시 전체 조회)."
         )
         return TextResponse(res)
 
@@ -307,5 +339,9 @@ class CoreActions:
     def set_active_circuit(self, name: str) -> List[types.TextContent]:
         """활성 회선을 전환합니다."""
         if self.manager.set_active_circuit_handler(name):
-            return TextResponse(f" Circuit switched to: {name}")
+            msg = (
+                f" Circuit switched to: {name}\n"
+                f" [TIP]: 'mcp_operator_get'을 타겟 없이 호출하여 회선의 전체 규약과 미션을 확인하십시오."
+            )
+            return TextResponse(msg)
         return TextResponse("Circuit not found.")
