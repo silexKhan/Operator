@@ -1722,3 +1722,59 @@
  [15:11:38.440] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
  [15:11:38.441] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
  [15:11:38.442] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:29:46.126] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 69825)
+ [2026-04-28 15:29:46.126] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 69825)
+ [15:29:46.126] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:29:46.128] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:29:46.128] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:29:46.130] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:29:46.130] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:42:49.978] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 78400)
+ [2026-04-28 15:42:49.978] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 78400)
+ [15:42:49.979] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:42:49.981] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:42:49.983] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:42:49.984] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:42:49.986] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:47:04.645] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 80563)
+ [2026-04-28 15:47:04.645] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 80563)
+ [15:47:04.646] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:47:04.649] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:47:04.655] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:47:04.659] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:47:04.660] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:47:39.204] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 80909)
+ [2026-04-28 15:47:39.205] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 80909)
+ [15:47:39.205] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:47:39.207] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:47:39.207] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:47:39.208] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:47:39.209] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:48:15.653] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 81301)
+ [2026-04-28 15:48:15.653] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 81301)
+ [15:48:15.653] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:48:15.655] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:48:15.655] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:48:15.656] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:48:15.657] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:48:41.020] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 81883)
+ [2026-04-28 15:48:41.020] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 81883)
+ [15:48:41.020] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:48:41.022] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:48:41.022] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:48:41.023] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:48:41.024] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:48:51.360] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 82053)
+ [2026-04-28 15:48:51.360] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 82053)
+ [15:48:51.360] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:48:51.361] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:48:51.362] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:48:51.362] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:48:51.363] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
+ [2026-04-28 15:48:58.120] [OPERATOR] [MasterOperator] ▶ 서버 실행 (PID: 82322)
+ [2026-04-28 15:48:58.120] [OPERATOR] [CircuitManager] ▶ 서버 실행 (PID: 82322)
+ [15:48:58.120] [OPERATOR] [CircuitManager]    ├─  전역 회선(Circuit) 등록소 탐색 시작
+ [15:48:58.121] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: research
+ [15:48:58.122] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: mcp
+ [15:48:58.123] [OPERATOR] [CircuitManager]       ├─  커스텀 회선 연결: gdr
+ [15:48:58.123] [OPERATOR] [CircuitManager]       ├─  기본 회선 연결: golfzon5path
