@@ -6,11 +6,11 @@
   },
   "dependencies": [],
   "units": [
-    "python",
-    "markdown",
-    "sentinel"
-  ],
-  "mission": {
+      "python",
+      "markdown",
+      "sentinel",
+      "planning"
+  ],  "mission": {
     "objective": {
       "ko": "I18N 표준 파서 통합 및 호버크래프트 UI 데이터 정합성 전방위 점검",
       "en": "Integration of I18N standard parser and comprehensive audit of Hovercraft UI data integrity"

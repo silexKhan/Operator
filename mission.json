@@ -1,10 +1,23 @@
 {
-    "objective": "mcp_operator/engine/actions.py 소스 코드의 타입 힌트 및 Docstring 결함을 수정하여 Python Unit 검증을 100% 통과시킨다.",
+    "objective": {
+        "ko": "5월 패치: 멤버십 전용 신규 물리 엔진 적용 전략 수립 및 기획",
+        "en": "May Patch: Membership-Exclusive New Physics Engine Implementation Strategy"
+    },
     "criteria": [
-        "__init__ 함수에 -> None 리턴 타입 및 Docstring 추가",
-        "_parse_overview_py 내 find 함수에 타입 힌트 및 Docstring 추가",
-        "Python Unit Audit 실행 시 모든 경고 제거"
+        {
+            "ko": "멤버십 유효성 검증을 통한 물리 엔진 실시간 스위칭 로직 설계 (Sentinel)",
+            "en": "멤버십 유효성 검증을 통한 물리 엔진 실시간 스위칭 로직 설계 (Sentinel)"
+        },
+        {
+            "ko": "신규 물리 적용 시 스코어 데이터 분리 및 랭킹 정합성 확보 방안 수립 (Planning)",
+            "en": "신규 물리 적용 시 스코어 데이터 분리 및 랭킹 정합성 확보 방안 수립 (Planning)"
+        },
+        {
+            "ko": "인게임 UI 내 신규 물리 적용 상태 표시기(Indicator) 기획 (UX)",
+            "en": "인게임 UI 내 신규 물리 적용 상태 표시기(Indicator) 기획 (UX)"
+        }
     ],
     "status": "PASS",
-    "completed_at": "2026-04-22 14:24:00"
+    "completed_at": "2026-04-28 12:54:41",
+    "target": "engine/i18n"
 }

@@ -1,53 +1,72 @@
 import ast
 import os
+import re
+from typing import List, Optional
 
 class PythonAuditor:
-    """Python 소스 코드의 물리적 무결성을 검증하는 전문 유닛입니다.
+    """Python 소스 코드의 물리적 무결성 및 아키텍처 가이드 준수 여부를 검증하는 유닛입니다.
     
-    단순 텍스트 매칭이 아닌 AST(Abstract Syntax Tree) 분석을 통해 
-    AI의 '키워드 기만'을 방지하고 실제 구현 여부를 증명합니다.
+    자신의 하위 example/ 폴더의 가이드라인을 읽어와서 실제 코드와 대조합니다.
     """
     def __init__(self, logger=None, circuit_manager=None):
         self.logger = logger
+        # 자신의 위치를 기준으로 유닛 경로 확보
+        self.unit_path = os.path.dirname(os.path.abspath(__file__))
+        self.guide_path = os.path.join(self.unit_path, "example", "architecture.md")
 
-    def audit(self, file_path: str, content: str) -> list[str]:
+    def _get_required_patterns(self) -> List[str]:
+        """가이드라인 문서에서 핵심 아키텍처 키워드를 추출합니다."""
+        patterns = []
+        if os.path.exists(self.guide_path):
+            try:
+                with open(self.guide_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    # 가이드라인의 '계층 구조' 섹션에서 키워드 추출 (Service, Repository, Models 등)
+                    found = re.findall(r"\*\*(Service|Repository|Models|BaseModel|Pydantic)\*\*", content)
+                    patterns = list(set(found))
+            except: pass
+        return patterns
+
+    def audit(self, file_path: str, content: str) -> List[str]:
         results = []
-        
-        # MISSION_PIPELINE 호출 시에는 공통 로직이 아니므로 스킵
         if file_path == "MISSION_PIPELINE" or not content:
             return results
 
         try:
-            # 1. AST 파싱을 통한 구문 무결성 확인
             tree = ast.parse(content)
-            
-            # 2. 물리적 선언 존재 확인 (주석 기만 방지)
-            # 함수 정의(FunctionDef), 클래스 정의(ClassDef), 비동기 함수(AsyncFunctionDef)를 모두 체크
             nodes = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))]
             
             if not nodes:
-                results.append(" ❌ [PYTHON PHYSICAL FAIL] 실제 Python 선언문(def/class)이 발견되지 않았습니다. 주석이나 문자열만으로는 구현으로 인정되지 않습니다. ")
+                results.append(" ❌ [PYTHON PHYSICAL FAIL] 실제 Python 선언문(def/class)이 발견되지 않았습니다.")
                 return results
 
-            # 3. 타입 힌트(Type Hints) 및 명세 준수 정밀 검사
+            # 1. 아키텍처 가이드라인 준수 여부 체크
+            required_patterns = self._get_required_patterns()
+            if required_patterns:
+                all_names = " ".join([node.name for node in nodes if hasattr(node, "name")])
+                for pattern in required_patterns:
+                    # 'Models'는 BaseModel 등으로 대체될 수 있으므로 유연하게 체크
+                    if pattern == "Models" or pattern == "Pydantic": continue 
+                    
+                    if pattern not in all_names:
+                        results.append(f" 🏗️ [ARCH FAIL] 가이드라인의 '{pattern}' 패턴이 코드에서 발견되지 않았습니다. 아키텍처 설계를 확인하십시오. ")
+
+            # 2. 타입 힌트 및 명세 준수 검사
             for node in nodes:
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    # 인자 타입 힌트 확인
                     for arg in node.args.args:
                         if arg.arg != "self" and not arg.annotation:
                             results.append(f" ⚠️ [TYPE FAIL] 함수 '{node.name}'의 인자 '{arg.arg}'에 타입 힌트가 누락되었습니다. ")
-                    
-                    # 리턴 타입 힌트 확인
                     if not node.returns:
-                        results.append(f" ⚠️ [TYPE FAIL] 함수 '{node.name}'에 리턴 타입 힌트가 누락되었습니다. (-> Any 라도 명시하십시오) ")
+                        results.append(f" ⚠️ [TYPE FAIL] 함수 '{node.name}'에 리턴 타입 힌트가 누락되었습니다. ")
 
-            # 4. Docstring 존재 여부 확인
+            # 3. Docstring 존재 여부 확인
             for node in nodes:
                 if ast.get_docstring(node) is None:
-                    results.append(f" 📝 [STYLE FAIL] '{node.name}'의 Docstring이 누락되었습니다. 명확한 설명을 추가하십시오. ")
+                    results.append(f" 📝 [STYLE FAIL] '{node.name}'의 Docstring이 누락되었습니다. ")
 
         except SyntaxError as se:
-            results.append(f" 🚨 [SYNTAX ERROR] Python 문법 오류가 발견되었습니다 (Line {se.lineno}): {se.msg}")
+            results.append(f" 🚨 [SYNTAX ERROR] Python 문법 오류 (Line {se.lineno}): {se.msg}")
         except Exception as e:
             results.append(f" 🚨 [AUDIT ERROR] Python 분석 중 예외 발생: {str(e)}")
             

@@ -15,7 +15,8 @@ class OperatorLogger:
         self._broadcast_handler = None
         
         # [통합 로그 경로 설정]
-        self.log_dir = "/Users/silex/workspace/private/MCP/logs"
+        self.project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.log_dir = os.path.join(self.project_root, "logs")
         self.log_file = os.path.join(self.log_dir, "server.log")
         
         # 로그 폴더 생성

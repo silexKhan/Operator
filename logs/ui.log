@@ -14129,3 +14129,104 @@ Import trace:
  GET /api/mcp/protocols?type=units_list 200 in 21ms (next.js: 14ms, application-code: 7ms)
  GET /api/mcp/protocols?type=unit&name=sentinel 200 in 10ms (next.js: 3ms, application-code: 7ms)
  GET /api/mcp/events 200 in 9.4min (next.js: 46ms, application-code: 9.4min)
+
+
+--- UI RESTART: Tue Apr 28 13:11:18 KST 2026 ---
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 377ms
+
+ GET / 200 in 222ms (next.js: 150ms, application-code: 72ms)
+ GET /api/config 200 in 42ms (next.js: 35ms, application-code: 7ms)
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 0 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 23ms (next.js: 18ms, application-code: 5ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+ GET /api/mcp/protocols?type=units_list 200 in 17ms (next.js: 14ms, application-code: 3ms)
+ GET /apple-touch-icon-precomposed.png 404 in 78ms (next.js: 43ms, application-code: 36ms)
+ GET /apple-touch-icon.png 404 in 17ms (next.js: 3ms, application-code: 14ms)
+ GET /api/mcp/protocols?type=global 200 in 14ms (next.js: 5ms, application-code: 9ms)
+ GET /api/mcp/protocols?type=global 200 in 26ms (next.js: 16ms, application-code: 10ms)
+⨯ TypeError: Cannot destructure property 'role' of 'data' as it is undefined.
+    at POST (app/api/mcp/create/route.ts:8:11)
+   6 |   const { name, data } = await req.json();
+   7 |   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+>  8 |   const { role, inherit_global, ...cleanData } = data;
+     |           ^
+   9 |
+  10 |   const circuitPath = path.join(process.cwd(), "..", "mcp_operator", "registry", "circuits...
+  11 |   
+ POST /api/mcp/create 500 in 487ms (next.js: 409ms, application-code: 78ms)
+ POST /api/mcp/create 200 in 39ms (next.js: 32ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=global 200 in 15ms (next.js: 6ms, application-code: 8ms)
+ GET /api/mcp/protocols?type=global 200 in 23ms (next.js: 16ms, application-code: 7ms)
+ POST /api/mcp/create 200 in 13ms (next.js: 3ms, application-code: 10ms)
+ GET /api/mcp/events 200 in 2.1min (next.js: 33ms, application-code: 2.1min)
+ GET / 200 in 42ms (next.js: 8ms, application-code: 34ms)
+ GET /api/config 200 in 5ms (next.js: 1978µs, application-code: 3ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 0 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 5ms (next.js: 1752µs, application-code: 3ms)
+ GET /api/mcp/protocols?type=units_list 200 in 5ms (next.js: 1345µs, application-code: 3ms)
+ GET /api/mcp/events 200 in 117s (next.js: 1586µs, application-code: 117s)
+ GET / 200 in 38ms (next.js: 7ms, application-code: 31ms)
+ GET /api/config 200 in 4ms (next.js: 1362µs, application-code: 3ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 0 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 5ms (next.js: 1416µs, application-code: 3ms)
+ GET /api/mcp/protocols?type=units_list 200 in 4ms (next.js: 1290µs, application-code: 3ms)
+ POST /api/mcp/create 200 in 39ms (next.js: 34ms, application-code: 5ms)
+ GET /api/mcp/protocols?type=global 200 in 13ms (next.js: 5ms, application-code: 8ms)
+ GET /api/mcp/protocols?type=global 200 in 18ms (next.js: 14ms, application-code: 4ms)
+ GET /api/mcp/events 200 in 20.6s (next.js: 1502µs, application-code: 20.6s)
+ GET / 200 in 34ms (next.js: 5ms, application-code: 30ms)
+ GET /api/config 200 in 3ms (next.js: 1173µs, application-code: 1882µs)
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 0 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 5ms (next.js: 1513µs, application-code: 4ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+ GET /api/mcp/protocols?type=units_list 200 in 3ms (next.js: 1168µs, application-code: 2ms)
+ GET /api/mcp/events 200 in 5.1min (next.js: 6ms, application-code: 5.1min)
+ GET / 200 in 45ms (next.js: 11ms, application-code: 34ms)
+ GET /api/config 200 in 8ms (next.js: 4ms, application-code: 4ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 0 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 9ms (next.js: 6ms, application-code: 3ms)
+ GET /api/mcp/protocols?type=units_list 200 in 4ms (next.js: 1737µs, application-code: 3ms)
+ POST /api/mcp/create 200 in 39ms (next.js: 33ms, application-code: 7ms)
+[SSE_WATCH] Detected change in state.json, triggering push.
+[SSE_SEND] Dispatched full state update to client: mcp
+ GET /api/mcp/events 200 in 20.2s (next.js: 1962µs, application-code: 20.2s)
+ GET / 200 in 35ms (next.js: 6ms, application-code: 29ms)
+ GET /api/config 200 in 4ms (next.js: 1628µs, application-code: 3ms)
+[STATE_FETCH] Loaded state from /Users/silex/workspace/private/MCP/hovercraft/data/state.json: active_circuit=mcp
+[STATE_FETCH] Loaded protocols for mcp: 0 rules found.
+[STATE_FETCH] Loaded overview for mcp: mcp
+ GET /api/mcp/state 200 in 7ms (next.js: 1773µs, application-code: 5ms)
+[SSE_SEND] Dispatched full state update to client: mcp
+ GET /api/mcp/protocols?type=units_list 200 in 4ms (next.js: 1316µs, application-code: 3ms)
+ GET /api/mcp/protocols?type=global 200 in 12ms (next.js: 5ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=global 200 in 21ms (next.js: 13ms, application-code: 8ms)
+ POST /api/mcp/update 200 in 51ms (next.js: 47ms, application-code: 4ms)
+ GET /api/mcp/protocols?type=circuit_full&name=golfzon5path 200 in 5ms (next.js: 1963µs, application-code: 3ms)
+[SSE_WATCH] Detected change in state.json, triggering push.
+[SSE_SEND] Dispatched full state update to client: golfzon5path
+ POST /api/mcp/update 200 in 13ms (next.js: 3ms, application-code: 9ms)
+ GET /api/mcp/protocols?type=circuit_full&name=golfzon5path 200 in 8ms (next.js: 3ms, application-code: 5ms)
+ POST /api/mcp/update 200 in 10ms (next.js: 3ms, application-code: 7ms)
+ GET /api/mcp/protocols?type=circuit_full&name=golfzon5path 200 in 8ms (next.js: 2ms, application-code: 6ms)
+ GET /api/mcp/protocols?type=global 200 in 7ms (next.js: 2ms, application-code: 5ms)
+ GET /api/mcp/protocols?type=global 200 in 15ms (next.js: 10ms, application-code: 5ms)
+ POST /api/mcp/update 200 in 20ms (next.js: 5ms, application-code: 15ms)
+[SSE_WATCH] Detected change in state.json, triggering push.
+[SSE_SEND] Dispatched full state update to client: golfzon5path
+ GET /api/mcp/protocols?type=circuit_full&name=golfzon5path 200 in 7ms (next.js: 3ms, application-code: 4ms)
