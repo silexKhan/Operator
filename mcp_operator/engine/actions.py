@@ -349,7 +349,14 @@ class CoreActions:
         return TextResponse(res)
 
     def get_mission_logic(self) -> List[types.TextContent]:
-        """현재 미션 정보를 조회합니다."""
+        """현재 미션 정보를 조회합니다. (활성 회선 미션 우선)"""
+        active = self.manager.get_active_circuit()
+        if active:
+            overview = active.load_json("overview.json")
+            if overview and "mission" in overview:
+                return JsonResponse(overview["mission"])
+        
+        # 폴백: 루트의 mission.json (하위 호환성 유지)
         path = os.path.join(get_project_root(), "mission.json")
         return JsonResponse(read_json_safely(path) or {})
 
