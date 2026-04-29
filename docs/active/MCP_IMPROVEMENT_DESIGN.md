@@ -554,8 +554,6 @@ npm run lint
 ```bash
 python3 -m unittest tests/test_i18n_parser.py
 .venv/bin/python mcp_operator/tests/verify_mcp.py
-python3 test_python_audit.py
-python3 test_planning_unit.py
 ```
 
 Hovercraft:

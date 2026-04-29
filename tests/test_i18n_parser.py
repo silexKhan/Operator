@@ -1,5 +1,5 @@
 import unittest
-from i18n_parser import I18NParser # 구현될 클래스
+from mcp_operator.common.i18n_parser import I18NParser # 이동된 위치에서 임포트
 
 class TestI18NParser(unittest.TestCase):
     def setUp(self):

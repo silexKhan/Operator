@@ -24,8 +24,8 @@ MCP/
 ├── scripts/                   # CLI와 검증 보조 스크립트
 ├── tests/                     # unittest 기반 I18N 테스트
 ├── mission.json               # 루트 글로벌 미션
-├── i18n_parser.py             # Pydantic 기반 ko/en 파서
-└── requirements.txt           # Python 런타임 의존성
+├── requirements.txt           # Python 런타임 의존성
+└── mcp_operator/common/i18n_parser.py # Pydantic 기반 ko/en 파서
 ```
 
 ## 4. 백엔드 엔진 구조
