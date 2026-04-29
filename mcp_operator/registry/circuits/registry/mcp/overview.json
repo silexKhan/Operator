@@ -6,24 +6,30 @@
   },
   "dependencies": [],
   "units": [
-      "python",
-      "markdown",
-      "sentinel",
-      "planning"
-  ],  "mission": {
+    "python",
+    "markdown",
+    "sentinel",
+    "planning"
+  ],
+  "mission": {
     "objective": {
-      "ko": "I18N 표준 파서 통합 및 호버크래프트 UI 데이터 정합성 전방위 점검",
-      "en": "Integration of I18N standard parser and comprehensive audit of Hovercraft UI data integrity"
+      "ko": "MCP 오퍼레이터 커맨드 센터 UI 개편 및 전사 다국어 운영 표준 무결성 확보",
+      "en": "Renovating the MCP Operator Command Center UI and ensuring the integrity of organizational multi-language operational standards"
     },
     "criteria": [
       {
-        "ko": "모든 JSON 데이터의 ko/en 필드 누락 여부 전수 조사 및 수정",
-        "en": "Full audit and correction of missing ko/en fields in all JSON data"
+        "ko": "모든 UI 모듈(Overview, Protocols, Circuits)의 실시간 한영 전환 무결성 검증",
+        "en": "Verify real-time KO/EN switching integrity across all UI modules (Overview, Protocols, Circuits)"
       },
       {
-        "ko": "호버크래프트 UI에서의 실시간 언어 전환 무결성 확보",
-        "en": "Ensuring the integrity of real-time language switching in the Hovercraft UI"
+        "ko": "회선 상세 페이지의 개별 규약 편집 및 팝업 설정 기능의 정상 작동 확인",
+        "en": "Confirm normal operation of individual rule editing and popup configurations in Circuit Detail pages"
+      },
+      {
+        "ko": "전사 회선 및 유닛 데이터의 다국어 표준 규격 준수 상태 최종 점검",
+        "en": "Final audit of multi-language standard compliance for all organizational circuits and unit data"
       }
-    ]
+    ],
+    "status": "RUNNING"
   }
 }

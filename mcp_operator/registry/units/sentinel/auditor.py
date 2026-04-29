@@ -23,23 +23,24 @@ class SentinelAuditor(BaseAuditor):
     def audit(self, file_path: str, content: str = "") -> list[str]:
         """7단계 파이프라인 준수 여부를 감사하고 다음 단계 지침을 하달합니다."""
         results: list[str] = []
-        mission_path: str = os.path.join(self.project_root, "mission.json")
         docs_active_dir: str = os.path.join(self.project_root, "docs", "active")
         
-        # docs/active 폴더 보장
-        os.makedirs(docs_active_dir, exist_ok=True)
+        # 1. 미션 설정 여부 확인 (활성 회선 기반)
+        mission_data = {}
+        if self.circuit_manager:
+            active = self.circuit_manager.get_active_circuit()
+            if active:
+                overview = active.load_overview()
+                mission_data = overview.get("mission", {})
 
-        # 1. 미션 설정 여부 확인 (Step 0)
-        if not os.path.exists(mission_path):
-            results.append(" 🚨 [COMMANDER] 미션이 설정되지 않았습니다. 'sentinel_set_mission'으로 목적을 먼저 정의하십시오. ")
+        if not mission_data:
+            results.append(" 🚨 [COMMANDER] 미션이 설정되지 않았습니다. 회선 overview.json에 미션을 먼저 정의하십시오. ")
             return results
 
         try:
-            with open(mission_path, "r", encoding="utf-8") as f:
-                mission_data: dict = json.load(f)
-                objective: str = mission_data.get("objective", "")
-                criteria: list[str] = mission_data.get("criteria", [])
-                status: str = mission_data.get("status", "IN_PROGRESS")
+            objective: str = mission_data.get("objective", "")
+            criteria: list[str] = mission_data.get("criteria", [])
+            status: str = mission_data.get("status", "IN_PROGRESS")
 
             # 2. [Step 1 & 2] 기획 및 설계 문서 강제 (Planning & Design Wall)
             # Sentinel은 문서가 없으면 직접 작성을 명령합니다.

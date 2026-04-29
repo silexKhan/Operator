@@ -60,11 +60,15 @@ class CoreActions:
                 case CommandTarget.ALL:
                     # [Surgical Fix] 재귀 호출을 제거하고 통합 리포트 생성
                     target_obj = self._resolve_component(name)
-                    mission_path = os.path.join(get_project_root(), "mission.json")
-                    mission_data = read_json_safely(mission_path) or {}
+                    
+                    # [BUG FIX] 루트의 mission.json 대신 활성 회선의 overview.json 미션 참조
+                    active_circuit = self.manager.get_active_circuit()
+                    mission_data = {}
+                    if active_circuit:
+                        overview = active_circuit.load_overview()
+                        mission_data = overview.get("mission", {})
                     
                     from mcp_operator.engine.protocols import GlobalProtocols
-                    active_circuit = self.manager.get_active_circuit()
                     
                     report = {
                         "system_status": {
@@ -148,12 +152,12 @@ class CoreActions:
                 case CommandTarget.OVERVIEW:
                     return self._update_json_logic(name, "overview.json", data)
                 case CommandTarget.MISSION:
-                    path = os.path.join(get_project_root(), "mission.json")
-                    mission = read_json_safely(path) or {}
-                    mission.update(data)
-                    with open(path, "w", encoding="utf-8") as f:
-                        json.dump(mission, f, indent=4, ensure_ascii=False)
-                    return TextResponse(f" Mission Updated: {mission.get('objective')}")
+                    # [BUG FIX] 특정 회선의 미션은 해당 회선의 overview.json에 저장되어야 함
+                    if not name:
+                        active = self.manager.get_active_circuit()
+                        name = active.get_name() if active else "mcp"
+                    
+                    return self._update_json_logic(name, "overview.json", {"mission": data})
                 case CommandTarget.STATE:
                     path = os.path.join(get_project_root(), "data", "state.json")
                     state = read_json_safely(path) or {}
@@ -352,7 +356,7 @@ class CoreActions:
         """현재 미션 정보를 조회합니다. (활성 회선 미션 우선)"""
         active = self.manager.get_active_circuit()
         if active:
-            overview = active.load_json("overview.json")
+            overview = active.load_overview()
             if overview and "mission" in overview:
                 return JsonResponse(overview["mission"])
         

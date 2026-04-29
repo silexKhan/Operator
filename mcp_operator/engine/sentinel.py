@@ -142,15 +142,24 @@ class Sentinel:
         self.logger.log(" 📚 전술 지식 영구 저장 완료 (Learning Loop)", 1)
 
     def _read_mission(self) -> Dict:
-        path = os.path.join(self.project_root, "mission.json")
-        return json.load(open(path, "r", encoding="utf-8")) if os.path.exists(path) else {}
+        """활성 회선의 overview.json에서 미션 정보를 읽어옵니다."""
+        if self.manager:
+            active = self.manager.get_active_circuit()
+            if active:
+                overview = active.load_overview()
+                return overview.get("mission", {})
+        return {}
 
     def _update_mission_status(self, status: str):
-        path = os.path.join(self.project_root, "mission.json")
-        if os.path.exists(path):
-            data = json.load(open(path, "r", encoding="utf-8"))
-            data["status"] = status
-            json.dump(data, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        """활성 회선의 overview.json 내 미션 상태를 업데이트합니다."""
+        if self.manager:
+            active = self.manager.get_active_circuit()
+            if active:
+                overview = active.load_overview() or {}
+                if "mission" in overview:
+                    overview["mission"]["status"] = status
+                    active.save_json("overview.json", overview)
+                    self.logger.log(f" ✅ 미션 상태 업데이트 완료: {status}", 1)
 
     def _decompose_tasks(self, plan: Dict) -> List[Dict]:
         return [{"unit": u} for u in plan["units"]]
