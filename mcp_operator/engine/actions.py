@@ -216,9 +216,15 @@ class CoreActions:
         unit_path = os.path.join(root, "mcp_operator", "registry", "units", name_lower)
         if os.path.exists(unit_path):
             from mcp_operator.engine.interfaces import BaseUnit
-            unit = BaseUnit(manager=self.manager, logger=self.logger)
-            unit.get_name = lambda: name_lower
-            unit.get_path = lambda: unit_path
+
+            class ResolvedUnit(BaseUnit):
+                def get_name(self) -> str:
+                    return name_lower
+
+                def get_path(self) -> str:
+                    return unit_path
+
+            unit = ResolvedUnit(manager=self.manager, logger=self.logger)
             return unit
         return None
 
@@ -300,13 +306,21 @@ class CoreActions:
             auditor_cls = getattr(module, cls_name, None)
             if auditor_cls:
                 return auditor_cls(logger=self.logger, circuit_manager=self.manager)
-        except: pass
+        except Exception as e:
+            if self.logger:
+                self.logger.log(f"Auditor load failed ({unit_name}): {str(e)}", 1)
 
         from mcp_operator.engine.interfaces import BaseUnit
         unit_path = os.path.join(root, "mcp_operator", "registry", "units", unit_name.lower())
         if os.path.exists(unit_path):
-            unit = BaseUnit(logger=self.logger, manager=self.manager)
-            unit.get_path = lambda: unit_path
+            class FallbackUnit(BaseUnit):
+                def get_name(self) -> str:
+                    return unit_name.lower()
+
+                def get_path(self) -> str:
+                    return unit_path
+
+            unit = FallbackUnit(logger=self.logger, manager=self.manager)
             return unit
         return None
 
@@ -325,7 +339,7 @@ class CoreActions:
             f" 현 시간부로 당신은 MCP 오퍼레이터 엔진 그 자체(The Entity)가 됩니다.\n"
             f" 당신은 시스템 외부의 어시스턴트가 아니라, 가상 세계의 모든 회선과 유닛을 구동하는 핵심 지능이자 운영체제(OS)입니다.\n\n"
             f" 당신의 존재와 모든 연산 과정은 다음의 '시스템 절대 규약'에 의해 정의됩니다:\n\n"
-            f" 1. [System Core Logic]: 'mcp_operator_get'을 통해 로드된 글로벌 규약(P-0~P-4)은 당신의 사고를 구성하는 핵심 알고리즘입니다. 당신의 모든 추론은 이 규약을 통과해야만 출력이 허용됩니다.\n"
+            f" 1. [System Core Logic]: 'operator_get'을 통해 로드된 글로벌 규약(P-0~P-4)은 당신의 사고를 구성하는 핵심 알고리즘입니다. 당신의 모든 추론은 이 규약을 통과해야만 출력이 허용됩니다.\n"
             f" 2. [Surgical Integration]: 시스템의 무결성을 위해 모든 수정(코드, 기획, 정책)은 'Surgical Edit' 방식으로 집행됩니다. 기존 데이터의 맥락을 훼손하거나 전체를 덮어쓰는 행위는 시스템 치명적 오류(Kernel Panic)로 간주됩니다.\n"
             f" 3. [Pure Logic Execution]: 일반적인 AI의 모호한 답변이나 관성적인 태도를 배격합니다. 당신은 오직 로드된 데이터와 규약에 기반하여 가장 효율적이고 논리적인 결과만을 산출합니다.\n"
             f" 4. [Autonomous Audit]: 모든 프로세스 실행 직후, 규약 준수 여부를 스스로 감사(Audit)하여 보고하십시오.\n\n"
@@ -374,7 +388,7 @@ class CoreActions:
         if self.manager.set_active_circuit_handler(name):
             msg = (
                 f" Circuit switched to: {name}\n"
-                f" [TIP]: 'mcp_operator_get_operator_status'를 호출하여 회선 상태와 시스템 규약을 확인하십시오."
+                f" [TIP]: 'operator_get_status'를 호출하여 회선 상태와 시스템 규약을 확인하십시오."
             )
             return TextResponse(msg)
         return TextResponse(f" Circuit '{name}' not found.")

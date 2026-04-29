@@ -13,10 +13,10 @@ async def test_mcp_status():
         init_msg = await websocket.recv()
         print(f"Received INIT: {init_msg}")
         
-        # 2. get_operator_status 명령 전송
+        # 2. operator_get_status 명령 전송
         command = {
             "type": "COMMAND",
-            "action": "get_operator_status",
+            "action": "operator_get_status",
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         }
         print(f"Sending COMMAND: {json.dumps(command)}")

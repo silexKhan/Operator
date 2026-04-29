@@ -13,7 +13,7 @@ const CircuitDetailView = dynamic(() => import("@/components/windows/CircuitDeta
 
 import { ShipInitialization } from "@/components/Initialization/ShipInitialization";
 import { I18N } from "@/constants/i18n";
-import { SystemStatus, LogEntry, CircuitDetails, Unit } from "@/types/mcp";
+import { SystemStatus, LogEntry, CircuitDetails, I18nText, ProtocolRule } from "@/types/mcp";
 
 type TabType = "Overview" | "Protocols" | "Units" | "Circuits" | "Monitor";
 
@@ -32,16 +32,12 @@ export default function Home() {
   const [language, setLanguage] = useState<"ko" | "en">("ko");
   const [isEditingCircuit, setIsEditingCircuit] = useState(false);
   const [editingCircuitData, setEditingCircuitData] = useState<CircuitDetails | null>(null);
-  const [selectedCircuitRuleIndex, setSelectedCircuitRuleIndex] = useState<number | null>(null);
-  const [editedCircuitRule, setEditedCircuitRule] = useState("");
-  const [isGlobalProtocolsExpanded, setIsGlobalProtocolsExpanded] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
 
   const [isCreatingCircuit, setIsCreatingCircuit] = useState(false);
   const [newCircuitName, setNewCircuitName] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [pollingRate, setPollingRate] = useState(3000);
-  const [logLimit, setLogLimit] = useState(50);
+  const [logLimit] = useState(50);
 
   const requestMcpStatus = useCallback(() => {
     setLogs((prev) => [...prev, {
@@ -130,7 +126,6 @@ export default function Home() {
       fetchCircuitDetails(selectedCircuit);
     } else {
       setCircuitDetails(null);
-      setSelectedCircuitRuleIndex(null);
     }
   }, [selectedCircuit, language, fetchCircuitDetails]);
 
@@ -233,44 +228,6 @@ export default function Home() {
     }
   };
 
-  const handleSaveIndividualCircuitRule = async () => {
-    if (selectedCircuitRuleIndex === null || !selectedCircuit || !circuitDetails) return;
-    setIsSaving(true);
-    
-    let newRules: string[] = [];
-    if (Array.isArray(circuitDetails.protocols)) {
-      newRules = [...circuitDetails.protocols];
-    } else if (circuitDetails.protocols && typeof circuitDetails.protocols === 'object' && 'RULES' in circuitDetails.protocols) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      newRules = [...(circuitDetails.protocols as any).RULES];
-    }
-
-    newRules[selectedCircuitRuleIndex] = editedCircuitRule;
-
-    try {
-      const res = await fetch("/api/mcp/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          target: "protocol",
-          name: selectedCircuit,
-          data: { rules: newRules }
-        })
-      });
-
-      if (res.ok) {
-        setSelectedCircuitRuleIndex(null);
-        fetchCircuitDetails(selectedCircuit);
-      } else {
-        alert("Failed to update circuit protocol.");
-      }
-    } catch (e) {
-      console.error("Protocol update error:", e);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const handleLanguageChange = async (newLang: "ko" | "en") => {
     setLanguage(newLang);
     try {
@@ -312,7 +269,7 @@ export default function Home() {
     }
   };
 
-  const handleUpdateCircuitProtocols = async (circuitName: string, rules: any[]) => {
+  const handleUpdateCircuitProtocols = async (circuitName: string, rules: ProtocolRule[]) => {
     setIsSaving(true);
     try {
       const res = await fetch("/api/mcp/update", {
@@ -505,7 +462,6 @@ export default function Home() {
                   language={language} 
                   onBack={() => setSelectedCircuit(null)} 
                   onUpdateOverview={async (name, desc) => {
-                    setEditingCircuitData({ name, description: desc });
                     setIsSaving(true);
                     try {
                       const res = await fetch("/api/mcp/update", {
@@ -560,10 +516,10 @@ export default function Home() {
                 <div className="space-y-3">
                   <label className="text-[10px] font-bold text-neutral-600 uppercase tracking-[0.2em] px-1">Description</label>
                   <textarea 
-                    value={editingCircuitData.description ? (typeof editingCircuitData.description === 'string' ? editingCircuitData.description : (editingCircuitData.description as any)[language]) : ""}
+                    value={editingCircuitData.description ? (typeof editingCircuitData.description === 'string' ? editingCircuitData.description : editingCircuitData.description[language] || "") : ""}
                     onChange={(e) => {
                       if (editingCircuitData) {
-                        const newDesc = typeof editingCircuitData.description === 'object' ? { ...editingCircuitData.description, [language]: e.target.value } : e.target.value;
+                        const newDesc: I18nText = typeof editingCircuitData.description === 'object' ? { ...editingCircuitData.description, [language]: e.target.value } : e.target.value;
                         setEditingCircuitData({ ...editingCircuitData, description: newDesc });
                       }
                     }}

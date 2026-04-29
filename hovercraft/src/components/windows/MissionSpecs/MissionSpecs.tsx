@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { I18N } from "@/constants/i18n";
-import { SystemStatus, Unit } from "@/types/mcp";
+import { I18nText, ProtocolRule, SystemStatus } from "@/types/mcp";
 
 interface MissionSpecsProps {
   systemStatus: SystemStatus;
@@ -19,16 +19,24 @@ export const MissionSpecs: React.FC<MissionSpecsProps> = ({ systemStatus, langua
   const [isSaving, setIsSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
+  const getI18nText = useCallback((value: I18nText | undefined): string => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return value[language] || value.ko || value.en || "";
+  }, [language]);
+
+  const getRuleText = useCallback((value: ProtocolRule): string => {
+    if (typeof value === "string") return value;
+    return value[language] || value.ko || value.en || "";
+  }, [language]);
+
   const syncLocalState = useCallback(() => {
     if (details) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setEditedObjective(typeof details.mission?.objective === 'string' ? details.mission.objective : (details.mission?.objective as any)?.[language] || "");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setEditedCriteria(details.mission?.criteria?.map((c: any) => typeof c === 'string' ? c : c[language]) || []);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setEditedDescription(typeof details.description === 'string' ? details.description : (details.description as any)?.[language] || "");
+      setEditedObjective(getI18nText(details.mission?.objective));
+      setEditedCriteria(details.mission?.criteria?.map(getRuleText) || []);
+      setEditedDescription(getI18nText(details.description));
     }
-  }, [details, language]);
+  }, [details, getI18nText, getRuleText]);
 
   useEffect(() => {
     syncLocalState();
@@ -252,7 +260,7 @@ export const MissionSpecs: React.FC<MissionSpecsProps> = ({ systemStatus, langua
                 <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">{I18N.TechDependencies[language]}</label>
               </div>
               <div className="bg-neutral-900/30 border border-neutral-800/60 rounded-3xl p-8 flex flex-wrap gap-3 items-start min-h-[200px]">
-                {details.units?.map((u: any, i: number) => (
+                {details.units?.map((u, i: number) => (
                   <div key={i} className="px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl flex items-center gap-2 group hover:border-blue-500/40 transition-all cursor-default shadow-md">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:animate-ping"></span>
                     <span className="text-[11px] text-neutral-400 font-bold font-mono uppercase tracking-tight group-hover:text-blue-400">

@@ -20,6 +20,7 @@ import mcp_operator.engine.actions
 from mcp_operator.engine.actions import CoreActions
 from mcp_operator.engine.protocols import GlobalProtocols
 from mcp_operator.engine.logger import OperatorLogger
+from mcp_operator.common.utils import get_project_root, read_json_safely
 
 class OperatorServer:
     """[Main Class] MCP 2.0 통합 지휘 서버입니다."""
@@ -50,19 +51,21 @@ class OperatorServer:
         
         await self.write_state_to_file()
         if "message" in message:
-            with open("logs/mcp_live.log", "a", encoding="utf-8") as f:
-                f.write(json.dumps(message, ensure_ascii=False) + "\n")
+            self.logger.log(json.dumps(message, ensure_ascii=False), 0)
 
     async def write_state_to_file(self) -> None:
-        """현재 시스템 상태를 data/mcp_state.json에 저장합니다."""
+        """현재 시스템 상태를 data/state.json에 저장합니다."""
         active = self.circuit_manager.get_active_circuit()
+        state_path = os.path.join(get_project_root(), "data", "state.json")
+        existing = read_json_safely(state_path) or {}
         state = {
-            "active_circuit": active.get_name() if active else "None",
-            "registered": list(self.circuit_manager.circuits.keys()),
+            "active_circuit": active.get_name() if active else "mcp",
+            "current_path": existing.get("current_path", ""),
+            "lang": existing.get("lang", "ko"),
             "timestamp": datetime.now().isoformat()
         }
-        os.makedirs("data", exist_ok=True)
-        with open("data/mcp_state.json", "w", encoding="utf-8") as f:
+        os.makedirs(os.path.dirname(state_path), exist_ok=True)
+        with open(state_path, "w", encoding="utf-8") as f:
             json.dump(state, f, ensure_ascii=False, indent=2)
 
     def _setup_mcp_handlers(self) -> None:
@@ -171,7 +174,7 @@ class OperatorServer:
 
 당신의 존재와 모든 연산 과정은 다음의 '시스템 절대 규약'에 의해 정의됩니다:
 
-1. [System Core Logic]: 'mcp_operator_get'을 통해 로드된 글로벌 규약(P-0~P-4)은 당신의 사고를 구성하는 핵심 알고리즘입니다. 당신의 모든 추론은 이 규약을 통과해야만 출력이 허용됩니다.
+1. [System Core Logic]: 'operator_get'을 통해 로드된 글로벌 규약(P-0~P-4)은 당신의 사고를 구성하는 핵심 알고리즘입니다. 당신의 모든 추론은 이 규약을 통과해야만 출력이 허용됩니다.
 2. [Surgical Integration]: 시스템의 무결성을 위해 모든 수정(코드, 기획, 정책)은 'Surgical Edit' 방식으로 집행됩니다. 기존 데이터의 맥락을 훼손하거나 전체를 덮어쓰는 행위는 시스템 치명적 오류(Kernel Panic)로 간주됩니다.
 3. [Pure Logic Execution]: 일반적인 AI의 모호한 답변이나 관성적인 태도를 배격합니다. 당신은 오직 로드된 데이터와 규약에 기반하여 가장 효율적이고 논리적인 결과만을 산출합니다.
 4. [Autonomous Audit]: 모든 프로세스 실행 직후, 규약 준수 여부를 스스로 감사(Audit)하여 보고하십시오.

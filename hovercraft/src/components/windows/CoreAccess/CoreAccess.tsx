@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { I18N } from "@/constants/i18n";
-import { SystemStatus, Unit } from "@/types/mcp";
+import { ProtocolRule, SystemStatus, Unit } from "@/types/mcp";
 
 interface CoreAccessProps {
   requestMcpStatus: () => void;
@@ -76,7 +76,12 @@ export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, system
     }
   };
 
-  const handleUpdateRules = async (newRules: string[]) => {
+  const getRuleText = (rule: ProtocolRule): string => {
+    if (typeof rule === "string") return rule;
+    return rule[language] || rule.ko || rule.en || "";
+  };
+
+  const handleUpdateRules = async (newRules: ProtocolRule[]) => {
     if (!selectedUnit) return;
     setIsSaving(true);
     try {
@@ -102,7 +107,7 @@ export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, system
 
   const addNewRule = () => {
     if (!selectedUnitData) return;
-    const newRules = [...selectedUnitData.rules, "New Operational Rule"];
+    const newRules = [...(selectedUnitData.rules || []), "New Operational Rule"];
     setSelectedUnitData({ ...selectedUnitData, rules: newRules });
     setEditingRuleIndex(newRules.length - 1);
     setEditedRuleText("New Operational Rule");
@@ -174,11 +179,11 @@ export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, system
                   )}
                 </div>
                 <textarea
-                  value={typeof selectedUnitData.mission === "string" ? selectedUnitData.mission : selectedUnitData.mission[language]}
+                  value={!selectedUnitData.mission ? "" : typeof selectedUnitData.mission === "string" ? selectedUnitData.mission : selectedUnitData.mission[language] || ""}
                   onChange={(e) => {
                     const newMission = typeof selectedUnitData.mission === "string" 
                       ? e.target.value 
-                      : { ...selectedUnitData.mission, [language]: e.target.value };
+                      : { ...(selectedUnitData.mission || {}), [language]: e.target.value };
                     setSelectedUnitData({ ...selectedUnitData, mission: newMission });
                   }}
                   onBlur={handleSaveUnitOverview}
@@ -202,7 +207,7 @@ export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, system
                   </button>
                 </div>
                 <div className="grid grid-cols-1 gap-3">
-                  {selectedUnitData.rules.map((rule, idx) => (
+                  {(selectedUnitData.rules || []).map((rule, idx) => (
                     <div key={idx}>
                       {editingRuleIndex === idx ? (
                         <div className="p-6 bg-neutral-900 border border-emerald-500/50 rounded-2xl space-y-4 shadow-lg shadow-emerald-950/10 animate-in zoom-in-98">
@@ -215,7 +220,7 @@ export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, system
                           <div className="flex justify-end gap-3 pt-2">
                             <button onClick={() => setEditingRuleIndex(null)} className="px-4 py-1.5 text-[10px] text-neutral-500 font-bold uppercase hover:text-white transition-colors">Cancel Action</button>
                             <button onClick={() => {
-                              const nextRules = [...selectedUnitData.rules];
+                              const nextRules = [...(selectedUnitData.rules || [])];
                               nextRules[idx] = editedRuleText;
                               handleUpdateRules(nextRules);
                             }} className="px-6 py-1.5 bg-emerald-600 text-black text-[10px] font-bold rounded-lg uppercase tracking-widest hover:bg-emerald-500 shadow-md active:scale-95 transition-all">Apply Protocol</button>
@@ -225,13 +230,13 @@ export const CoreAccess: React.FC<CoreAccessProps> = ({ requestMcpStatus, system
                         <button 
                           onClick={() => { 
                             setEditingRuleIndex(idx); 
-                            setEditedRuleText(typeof rule === "string" ? rule : rule[language]); 
+                            setEditedRuleText(getRuleText(rule)); 
                           }}
                           className="w-full text-left p-6 bg-neutral-900/40 border border-neutral-800/60 rounded-2xl hover:border-emerald-500/30 hover:bg-neutral-900/60 transition-all duration-300 flex gap-5 group"
                         >
                           <span className="text-emerald-500/40 font-mono text-xs mt-0.5">{String(idx + 1).padStart(2, '0')}</span>
                           <p className="text-sm text-neutral-400 group-hover:text-neutral-200 leading-relaxed flex-1">
-                            {typeof rule === "string" ? rule : rule[language]}
+                            {getRuleText(rule)}
                           </p>
                           <span className="material-symbols-outlined text-sm text-neutral-700 opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
                         </button>

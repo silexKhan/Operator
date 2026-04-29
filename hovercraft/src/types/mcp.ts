@@ -1,7 +1,11 @@
+export type I18nText = string | { [key: string]: string | undefined };
+export type ProtocolRule = string | { [key: string]: string };
+
 export interface Unit {
   name: string;
-  mission: string | { ko: string; en: string };
-  rules: (string | { ko: string; en: string })[];
+  path?: string;
+  mission?: I18nText;
+  rules?: ProtocolRule[];
 }
 
 export interface Action {
@@ -10,19 +14,42 @@ export interface Action {
 }
 
 export interface Mission {
-  objective: string | { [key: string]: string };
-  criteria: (string | { [key: string]: string })[];
+  objective: I18nText;
+  criteria: ProtocolRule[];
+}
+
+export interface CircuitOverview {
+  name: string;
+  description?: I18nText;
+  dependencies?: string[];
+  units?: string[];
+  mission?: Mission;
+  [key: string]: unknown;
+}
+
+export interface ProtocolFile {
+  OVERVIEW?: unknown;
+  RULES?: ProtocolRule[];
+  rules?: ProtocolRule[];
+  protocols?: ProtocolRule[];
+}
+
+export interface SystemState {
+  active_circuit: string;
+  current_path?: string;
+  lang?: "ko" | "en";
 }
 
 export interface CircuitDetails {
   name: string;
-  description?: string | { [key: string]: string };
-  protocols: string[] | { RULES: string[] };
+  overview?: CircuitOverview | null;
+  description?: I18nText;
+  protocols: ProtocolRule[] | { RULES: ProtocolRule[] };
   global_protocols?: {
     title: string;
     rules: string[];
   };
-  units: Unit[];
+  units: Unit[] | string[];
   actions: Action[];
   mission?: Mission;
   audit_logs?: AuditLog[];

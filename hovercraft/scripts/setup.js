@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = path.join(__dirname, "..");
+const ROOT = path.join(__dirname, "..", "..");
 const DATA_DIR = path.join(ROOT, "data");
 const STATE_FILE = path.join(DATA_DIR, "state.json");
 
@@ -17,7 +17,7 @@ function setup() {
   if (!fs.existsSync(STATE_FILE)) {
     const initialState = {
       active_circuit: "mcp",
-      circuits: ["research", "mcp"],
+      current_path: "",
       lang: "ko"
     };
     fs.writeFileSync(STATE_FILE, JSON.stringify(initialState, null, 2));

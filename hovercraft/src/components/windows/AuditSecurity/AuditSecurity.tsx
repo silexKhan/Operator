@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { I18N } from "@/constants/i18n";
+import React, { useState, useEffect, useCallback } from "react";
 import { AuditLog, SystemStatus } from "@/types/mcp";
 
 interface AuditSecurityProps {
@@ -31,7 +30,7 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
   const violationCount = auditHistory.filter((a: AuditLog) => a.status === 'VIOLATION').length;
   const integrityScore = Math.max(0, 100 - (violationCount * 15));
 
-  const fetchGlobalProtocols = async () => {
+  const fetchGlobalProtocols = useCallback(async () => {
     try {
       const res = await fetch("/api/mcp/protocols?type=global");
       if (res.ok) {
@@ -46,11 +45,11 @@ export const AuditSecurity: React.FC<AuditSecurityProps> = ({ logs, systemStatus
     } catch {
       // ignore
     }
-  };
+  }, [language]);
 
   useEffect(() => {
     fetchGlobalProtocols();
-  }, [language]);
+  }, [fetchGlobalProtocols]);
 
   const handleSave = async () => {
     setIsSaving(true);

@@ -1,6 +1,6 @@
 import { SystemStatus, CircuitDetails } from "@/types/mcp";
 
-class McpClient {
+export class McpClient {
   private baseUrl: string = "/api/mcp";
 
   async getStatus(): Promise<SystemStatus> {
@@ -13,7 +13,7 @@ class McpClient {
     const res = await fetch(`${this.baseUrl}/state`);
     if (!res.ok) throw new Error("Failed to fetch circuits");
     const data = await res.json();
-    return data.registered_circuits || [];
+    return data.registered_circuits || data.circuits || [];
   }
 
   async getCircuitDetails(name: string): Promise<CircuitDetails> {
@@ -35,17 +35,9 @@ class McpClient {
     return res.ok;
   }
 
-  async callTool(circuit: string, tool: string, _arguments: Record<string, unknown>): Promise<unknown> {
-    const res = await fetch(`${this.baseUrl}/execute`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        circuit,
-        action: tool,
-        params: _arguments
-      })
-    });
-    if (!res.ok) throw new Error("Tool execution failed");
+  async getDashboard(): Promise<unknown> {
+    const res = await fetch(this.baseUrl);
+    if (!res.ok) throw new Error("Failed to fetch dashboard");
     return res.json();
   }
 }

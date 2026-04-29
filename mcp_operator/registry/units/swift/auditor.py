@@ -11,9 +11,9 @@ class SwiftAuditor:
     [Swift Specialist] Swift 언어의 결벽증적 타입 안전성과 Protocol 기반 설계를 검증하는 유닛입니다.
     자신의 하위 example/ 가이드라인을 물리적으로 참조합니다.
     """
-    def __init__(self, logger=None, manager=None):
+    def __init__(self, logger=None, circuit_manager=None, manager=None):
         self.logger = logger
-        self.manager = manager
+        self.manager = circuit_manager or manager
         self.unit_path = os.path.dirname(os.path.abspath(__file__))
         self.guide_path = os.path.join(self.unit_path, "example", "architecture.md")
 

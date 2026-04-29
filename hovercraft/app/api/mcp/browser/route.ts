@@ -1,30 +1,27 @@
-import { NextResponse } from 'next/server';
-import { McpClient } from '@/lib/mcpClient';
+import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import { resolveWithinMcpRoot } from "@/lib/operatorPaths";
 
-/**
- * [사용자] 서버의 물리적 디렉토리 구조를 탐색하는 API입니다.
- * McpClient를 통해 안정적인 스트림 데이터 수집을 보장합니다.
- */
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
-  const targetPath = searchParams.get('path') || '.';
-
-  const client = new McpClient();
+  const targetPath = searchParams.get("path") || ".";
 
   try {
-    const results = await client.callTools({
-      browser: {
-        name: "mcp_operator_browse_directory",
-        args: { path: targetPath }
-      }
-    });
+    const current = resolveWithinMcpRoot(targetPath);
+    if (!fs.existsSync(current) || !fs.statSync(current).isDirectory()) {
+      return NextResponse.json({ error: "Path not found" }, { status: 404 });
+    }
 
-    return NextResponse.json(results.browser || { current: targetPath, folders: [], files: [] });
+    const entries = fs.readdirSync(current).filter((entry) => !entry.startsWith("."));
+    const folders = entries.filter((entry) => fs.statSync(path.join(current, entry)).isDirectory());
+    const files = entries.filter((entry) => fs.statSync(path.join(current, entry)).isFile());
 
+    return NextResponse.json({ current, folders, files });
   } catch (error) {
-    console.error('Browser Bridge Error:', error);
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Path traversal failed' 
+    console.error("Browser API Error:", error);
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : "Path traversal failed",
     }, { status: 500 });
   }
 }

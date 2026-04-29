@@ -142,8 +142,8 @@ class CircuitManager:
         try:
             if is_circuit:
                 instance = BaseCircuit(self)
-                instance.get_name = lambda: name
-                instance.get_path = lambda: dirpath
+                instance.get_name = lambda name=name: name
+                instance.get_path = lambda dirpath=dirpath: dirpath
                 self.circuits[name.lower()] = instance
                 self.logger.log(f" 기본 회선 연결: {name}", 1)
         except Exception as e:
@@ -161,7 +161,7 @@ class CircuitManager:
             for _, obj in inspect.getmembers(module):
                 if inspect.isclass(obj) and issubclass(obj, BaseCircuit) and obj is not BaseCircuit:
                     instance = obj(self)
-                    instance.get_path = lambda: dirpath
+                    instance.get_path = lambda dirpath=dirpath: dirpath
                     self.circuits[instance.get_name().lower()] = instance
                     self.logger.log(f" 커스텀 회선 연결: {instance.get_name()}", 1)
         except Exception as e:
@@ -169,9 +169,11 @@ class CircuitManager:
 
     def _save_state_handler(self) -> None:
         """현재 매니저 상태를 파일에 저장합니다."""
+        existing = read_json_safely(self.state_file) or {}
         state = {
-            "active_circuit_override": self.active_circuit_override,
-            "current_path": self.current_path
+            "active_circuit": self.active_circuit_override,
+            "current_path": self.current_path,
+            "lang": existing.get("lang", "ko")
         }
         os.makedirs(os.path.dirname(self.state_file), exist_ok=True)
         write_json_safely(self.state_file, state)
@@ -180,5 +182,5 @@ class CircuitManager:
         """저장된 상태를 로드합니다."""
         state = read_json_safely(self.state_file)
         if state:
-            self.active_circuit_override = state.get("active_circuit_override")
+            self.active_circuit_override = state.get("active_circuit") or state.get("active_circuit_override")
             self.current_path = state.get("current_path", "")

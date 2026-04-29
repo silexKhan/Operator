@@ -35,6 +35,16 @@ class BaseCircuit(BaseComponent):
         Returns:
             List[str]: 유닛 명칭 리스트.
         """
+        overview_units = self.load_overview().get("units", [])
+        if isinstance(overview_units, list):
+            normalized_units = []
+            for unit in overview_units:
+                if isinstance(unit, str):
+                    normalized_units.append(unit)
+                elif isinstance(unit, dict) and isinstance(unit.get("name"), str):
+                    normalized_units.append(unit["name"])
+            if normalized_units:
+                return normalized_units
         return self.units
 
     def get_protocols(self) -> Optional[Any]:

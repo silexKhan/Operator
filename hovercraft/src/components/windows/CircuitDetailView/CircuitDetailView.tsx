@@ -1,22 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
+import { CircuitDetails, CircuitOverview, I18nText, ProtocolRule } from "@/types/mcp";
 
 interface CircuitDetailViewProps {
   name: string;
-  details: {
-    overview?: {
-      description?: string | Record<string, string>;
-    };
-    protocols?: string[] | { RULES: any[] };
-    units?: (string | { name: string })[];
-  } | null;
+  details: CircuitDetails | null;
   allUnits?: string[];
   language: "ko" | "en";
   onBack: () => void;
-  onUpdateOverview: (name: string, description: string | Record<string, string>) => Promise<void>;
+  onUpdateOverview: (name: string, description: I18nText) => Promise<void>;
   onUpdateUnits: (name: string, units: string[]) => Promise<void>;
-  onUpdateProtocols: (name: string, rules: any[]) => Promise<void>;
+  onUpdateProtocols: (name: string, rules: ProtocolRule[]) => Promise<void>;
 }
 
 export const CircuitDetailView: React.FC<CircuitDetailViewProps> = ({ 
@@ -30,34 +25,28 @@ export const CircuitDetailView: React.FC<CircuitDetailViewProps> = ({
   const [editProtocolText, setEditProtocolText] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const overview = details?.overview || {};
-  const currentProtocols = details?.protocols && 'RULES' in details.protocols ? details.protocols.RULES : (Array.isArray(details?.protocols) ? details.protocols : []);
+  const overview: Partial<CircuitOverview> = details?.overview || {};
+  const currentProtocols: ProtocolRule[] = details?.protocols && !Array.isArray(details.protocols) && 'RULES' in details.protocols ? details.protocols.RULES : (Array.isArray(details?.protocols) ? details.protocols : []);
   
   const currentUnits = useMemo(() => 
     (details?.units || []).map(u => typeof u === 'string' ? u : u.name),
     [details?.units]
   );
 
-  const getI18nText = (data: any): string => {
+  const getI18nText = (data: unknown): string => {
     if (!data) return "";
     if (typeof data === 'string') return data;
-    if (typeof data === 'object') {
-      return data[language] || data['ko'] || data['en'] || data['name'] || JSON.stringify(data);
+    if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+      const map = data as Record<string, unknown>;
+      const value = map[language] || map.ko || map.en || map.name;
+      return typeof value === "string" ? value : JSON.stringify(data);
     }
     return String(data);
   };
 
-  useEffect(() => {
-    if (activeModal === "overview") {
-      setEditDesc(getI18nText(overview.description));
-    } else if (activeModal === "units") {
-      setSelectedUnits(currentUnits);
-    }
-  }, [activeModal, language]);
-
   const handleSaveOverview = async () => {
     setIsSaving(true);
-    const newDesc = typeof overview.description === 'object' ? { ...overview.description, [language]: editDesc } : editDesc;
+    const newDesc: I18nText = typeof overview.description === 'object' && overview.description !== null ? { ...overview.description, [language]: editDesc } : editDesc;
     await onUpdateOverview(name, newDesc);
     setIsSaving(false);
     setActiveModal(null);
@@ -151,7 +140,7 @@ export const CircuitDetailView: React.FC<CircuitDetailViewProps> = ({
         <section className="space-y-4">
           <div className="flex items-center justify-between px-1">
             <label className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">Node Strategic Overview</label>
-            <button onClick={() => setActiveModal("overview")} className="flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-lg text-[9px] font-bold text-neutral-500 hover:text-emerald-500 transition-all">
+            <button onClick={() => { setEditDesc(getI18nText(overview.description)); setActiveModal("overview"); }} className="flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-lg text-[9px] font-bold text-neutral-500 hover:text-emerald-500 transition-all">
               <span className="material-symbols-outlined text-xs">edit_square</span> EDIT_DESCRIPTION
             </button>
           </div>
@@ -191,7 +180,7 @@ export const CircuitDetailView: React.FC<CircuitDetailViewProps> = ({
         <section className="space-y-6 pb-20">
            <div className="flex items-center justify-between px-1">
               <label className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">Neural Sub-Units (Imported)</label>
-              <button onClick={() => setActiveModal("units")} className="flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-lg text-[9px] font-bold text-neutral-500 hover:text-emerald-500 transition-all">
+              <button onClick={() => { setSelectedUnits(currentUnits); setActiveModal("units"); }} className="flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-lg text-[9px] font-bold text-neutral-500 hover:text-emerald-500 transition-all">
                 <span className="material-symbols-outlined text-xs">link</span> UPDATE_LINKAGE
               </button>
            </div>

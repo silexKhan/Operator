@@ -9,7 +9,7 @@ class McpCircuit(BaseCircuit):
 
     def __init__(self, manager=None):
         super().__init__(manager)
-        self.units = ["planning", "design", "dev", "sentinel", "python"]
+        self.units = ["python", "markdown", "sentinel", "planning"]
 
     def get_name(self) -> str:
         return "mcp"

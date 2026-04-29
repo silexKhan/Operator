@@ -9,8 +9,9 @@ class PlanningAuditor:
     2. 목차(TOC)와 상세 기획 헤더의 일치성
     3. 문서의 계층적 무결성
     """
-    def __init__(self, logger=None, manager=None):
+    def __init__(self, logger=None, circuit_manager=None, manager=None):
         self.logger = logger
+        self.circuit_manager = circuit_manager or manager
         self.unit_path = os.path.dirname(os.path.abspath(__file__))
         self.guide_path = os.path.join(self.unit_path, "example", "architecture.md")
 
