@@ -1,15 +1,14 @@
-import type { NextConfig } from "next";
-import path from "path";
+import nextra from 'nextra'
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  turbopack: {
-    root: path.resolve(__dirname),
-  },
+const withNextra = nextra({
+  // theme와 themeConfig 설정
+})
+
+const nextConfig = {
   transpilePackages: ["tailwindcss"],
   typescript: {
     ignoreBuildErrors: false,
   }
-};
+}
 
-export default nextConfig;
+export default withNextra(nextConfig)

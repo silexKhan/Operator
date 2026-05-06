@@ -14267,3 +14267,79 @@ Run kill 32204 to stop it.
  GET /api/mcp/protocols?type=global 200 in 12ms (next.js: 8ms, application-code: 4ms)
 
 thread 'tokio-runtime-worker' (204395) panicked at turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:196:17:
+
+
+--- UI RESTART: Wed May  6 09:29:12 KST 2026 ---
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 297ms
+- Experiments (use with caution):
+  · optimizePackageImports
+
+(node:29071) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+○ Compiling /docs/[[...mdx]] ...
+- [31merror[0m [nextra] Error while loading { pathSegments: [ 'test-page' ] } Error: Cannot find module 'unknown'
+    at async Page (app/docs/[[...mdx]]/page.tsx:10:50)
+   8 | export default async function Page(props: any) {
+   9 |   const params = await props.params
+> 10 |   const { default: MDXContent, toc, metadata } = await importPage(params.mdx)
+     |                                                  ^
+  11 |   return <MDXContent {...props} toc={toc} metadata={metadata} />
+  12 | }
+  13 | {
+  code: 'MODULE_NOT_FOUND'
+}
+⨯ Error: Can't find pageMap for "docs" in route "/docs"
+    at async RootLayout (app/docs/[[...mdx]]/layout.tsx:6:19)
+  4 |
+  5 | export default async function RootLayout({ children }: { children: React.ReactNode }) {
+> 6 |   const pageMap = await getPageMap('/docs')
+    |                   ^
+  7 |   return (
+  8 |     <Layout
+  9 |       navbar={<Navbar logo={themeConfig.logo} />} {
+  digest: '542594226'
+}
+ HEAD /docs/test-page 500 in 4.3s (next.js: 4.1s, application-code: 273ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 219ms
+⚠ Invalid next.config.ts options detected: 
+⚠     Unrecognized key(s) in object: 'turbo' at "experimental"
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+- Experiments (use with caution):
+  · optimizePackageImports
+  ? turbo (invalid experimental key)
+
+
+
+--- UI RESTART: Wed May  6 09:30:18 KST 2026 ---
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 245ms
+⚠ Invalid next.config.ts options detected: 
+⚠     Unrecognized key(s) in object: 'turbo' at "experimental"
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+- Experiments (use with caution):
+  · optimizePackageImports
+  ? turbo (invalid experimental key)
+
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.111.192:3000
+✓ Ready in 224ms
+- Experiments (use with caution):
+  · optimizePackageImports
+
+Error: Requested and resolved page mismatch: /docs////[///[...mdx///]///]/page /docs/[/[...mdx/]/]/page
+    at ignore-listed frames
+⨯ unhandledRejection: Error: Requested and resolved page mismatch: /docs////[///[...mdx///]///]/page /docs/[/[...mdx/]/]/page
+    at ignore-listed frames
+⨯ unhandledRejection:  Error: Requested and resolved page mismatch: /docs////[///[...mdx///]///]/page /docs/[/[...mdx/]/]/page
+    at ignore-listed frames

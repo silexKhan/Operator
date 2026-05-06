@@ -83,15 +83,15 @@ class OperatorServer:
     def _refresh_tool_cache_handler(self) -> None:
         """[Flat Interface] 도구 매핑을 통합 API로 고정합니다."""
         self._tool_map = {
-            "operator_get_status": lambda args: asyncio.to_thread(self.core_actions.get_operator_status),
-            "operator_set_circuit": lambda args: asyncio.to_thread(self.core_actions.set_active_circuit, args.get("name", "")),
-            "operator_connect": lambda args: asyncio.to_thread(self.core_actions.connect_circuit, args.get("name", "")),
-            "operator_reload": lambda args: self.reload_operator_handler(),
-            "operator_get": lambda args: asyncio.to_thread(self.core_actions.get_handler, args.get("target"), args.get("name"), args.get("context")),
-            "operator_update": lambda args: asyncio.to_thread(self.core_actions.update_handler, args.get("target"), args.get("name"), args.get("data")),
-            "operator_create": lambda args: asyncio.to_thread(self.core_actions.create_handler, args.get("target"), args.get("name"), args.get("data")),
-            "operator_execute": lambda args: asyncio.to_thread(self.core_actions.execute_handler, args.get("action"), args.get("params")),
-            "operator_execute_mission": lambda args: asyncio.to_thread(self.core_actions.execute_handler, "mission", args),
+            "get_status": lambda args: asyncio.to_thread(self.core_actions.get_operator_status),
+            "set_circuit": lambda args: asyncio.to_thread(self.core_actions.set_active_circuit, args.get("name", "")),
+            "connect": lambda args: asyncio.to_thread(self.core_actions.connect_circuit, args.get("name", "")),
+            "reload": lambda args: self.reload_operator_handler(),
+            "get": lambda args: asyncio.to_thread(self.core_actions.get_handler, args.get("target"), args.get("name"), args.get("context")),
+            "update": lambda args: asyncio.to_thread(self.core_actions.update_handler, args.get("target"), args.get("name"), args.get("data")),
+            "create": lambda args: asyncio.to_thread(self.core_actions.create_handler, args.get("target"), args.get("name"), args.get("data")),
+            "execute": lambda args: asyncio.to_thread(self.core_actions.execute_handler, args.get("action"), args.get("params")),
+            "execute_mission": lambda args: asyncio.to_thread(self.core_actions.execute_handler, "mission", args),
         }
 
     async def _dispatch_tool_handler(self, name: str, args: dict) -> List[types.TextContent]:
@@ -113,12 +113,12 @@ class OperatorServer:
     def _get_unified_tool_list(self) -> List[types.Tool]:
         """[Flat Interface] AI에게 노출할 통합 도구 명세서를 반환합니다."""
         return [
-            types.Tool(name="operator_connect", description="[AI 전용] 회선 통합 연결. 전환과 동시에 모든 프로토콜, 미션, 페르소나 정보를 한 번에 동기화합니다. 에이전트 최초 접속 시 반드시 이 도구를 사용하십시오.", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
-            types.Tool(name="operator_get_status", description="상태 확인", inputSchema={"type": "object"}),
-            types.Tool(name="operator_set_circuit", description="[UI 전용] 회선 전환 (단순 성공 여부만 반환)", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
-            types.Tool(name="operator_reload", description="엔진 리로드", inputSchema={"type": "object"}),
+            types.Tool(name="connect", description="[AI 전용] 회선 통합 연결. 전환과 동시에 모든 프로토콜, 미션, 페르소나 정보를 한 번에 동기화합니다. 에이전트 최초 접속 시 반드시 이 도구를 사용하십시오.", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
+            types.Tool(name="get_status", description="상태 확인", inputSchema={"type": "object"}),
+            types.Tool(name="set_circuit", description="[UI 전용] 회선 전환 (단순 성공 여부만 반환)", inputSchema={"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}),
+            types.Tool(name="reload", description="엔진 리로드", inputSchema={"type": "object"}),
             types.Tool(
-                name="operator_get", 
+                name="get", 
                 description="통합 정보 조회 (기본값: 전체 시스템 리포트)", 
                 inputSchema={
                     "type": "object", 
@@ -129,21 +129,21 @@ class OperatorServer:
                 }
             ),
             types.Tool(
-                name="operator_update", 
+                name="update", 
                 description="통합 정보 업데이트", 
                 inputSchema={"type": "object", "properties": {"target": {"type": "string"}, "name": {"type": "string"}, "data": {"type": "object"}}, "required": ["target", "data"]}
             ),
             types.Tool(
-                name="operator_create", 
+                name="create", 
                 description="통합 구성 요소(Circuit, Unit) 생성", 
                 inputSchema={"type": "object", "properties": {"target": {"type": "string", "description": "대상 (circuit, unit)"}, "name": {"type": "string", "description": "생성할 이름"}}, "required": ["target", "name"]}
             ),
             types.Tool(
-                name="operator_execute", 
+                name="execute", 
                 description="통합 액션 실행 (audit, mission, reload)", 
                 inputSchema={"type": "object", "properties": {"action": {"type": "string"}, "params": {"type": "object"}}, "required": ["action"]}
             ),
-            types.Tool(name="operator_execute_mission", description="자율 7단계 파이프라인 실행", inputSchema={"type": "object"})
+            types.Tool(name="execute_mission", description="자율 7단계 파이프라인 실행", inputSchema={"type": "object"})
         ]
 
     async def reload_operator_handler(self) -> List[types.TextContent]:

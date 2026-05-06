@@ -12,8 +12,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@shikijs/transformers": "4.0.2",
     "d3": "^7.9.0",
     "next": "16.2.1",
+    "nextra": "4.6.1",
+    "nextra-theme-docs": "4.6.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-force-graph": "^1.48.2",
