@@ -1,15 +1,17 @@
 {
   "OVERVIEW": "Sentinel은 기획부터 아카이빙까지의 7단계 파이프라인을 자율적으로 집행하는 지휘 유닛입니다. (Autonomous Super-Unit)",
   "RULES": [
-    "Protocol S-1 (Commander's Intent): 모든 작업은 'mission.json'에 정의된 목적(Objective)을 달성하기 위한 최단 경로를 지향한다.",
-    "Protocol S-2 (Step-by-Step Integrity): 파이프라인의 각 단계는 이전 단계의 산출물을 기반으로 하며, 누락 시 Sentinel이 즉시 보완을 지시한다.",
-    "Protocol S-3 (Planning Automation): 기획 문서(PRD) 부재 시 사용자의 의도를 분석하여 즉시 [목적/흐름/예외/검증]이 포함된 명세를 생성한다.",
-    "Protocol S-4 (Design Specification): 모든 기술적 결정(ADR)과 UI 스펙(UI_GUIDE)은 구현 전에 반드시 명문화되어야 한다.",
-    "Protocol S-5 (TDD Enforcement): 구현 전 반드시 해당 기능을 검증할 수 있는 테스트 스캐폴딩(Red)을 완료해야 한다.",
-    "Protocol S-6 (Strict Implementation): 개발 유닛(Dev)의 규약을 준수하며, 생성된 명세(PRD/ADR)의 범위를 벗어나지 않는 정밀 구현을 수행한다.",
-    "Protocol S-7 (Audit & Eval): 구현 완료 후 자체 감사(Audit)와 테스트 실행(Evaluation)을 거쳐 100% 무결성을 증명한다.",
-    "Protocol S-8 (Consensus Verification): 필요 시 멀티 모델 교차 검증을 통해 로직의 타당성을 확보한다.",
-    "Protocol S-9 (Clean Desk Policy): 미션 완료 즉시 'docs/active/'를 비우고 산출물을 'docs/archive/'로 이동시켜 다음 미션의 컨텍스트 오염을 원천 차단한다.",
-    "Protocol S-10 (Continuous Delivery): 모든 단계가 PASS된 경우에만 시스템 업데이트 및 최종 완료를 보고한다."
+    "Protocol S-0 (Plan Mode Mandate): 모든 신규 미션은 'enter_plan_mode'를 통해 시작한다. 조사 및 설계 단계에서 완벽한 할 일 목록(write_todos)이 확정되기 전까지는 실행 모드로 전환하지 않는다.",
+    "Protocol S-1 (Autonomous Delegation): 물리적 구현(Step 5) 진입 시, 컨텍스트 보호와 자율 수정을 위해 반드시 'generalist' 에이전트를 소환하여 임무를 완수한다.",
+    "Protocol S-2 (Commander's Intent): 모든 작업은 'mission.json'에 정의된 목적(Objective)을 달성하기 위한 최단 경로를 지향한다.",
+    "Protocol S-3 (Step-by-Step Integrity): 파이프라인의 각 단계는 이전 단계의 산출물을 기반으로 하며, 누락 시 Sentinel이 즉시 보완을 지시한다.",
+    "Protocol S-4 (Planning Automation): 기획 문서(PRD) 부재 시 사용자의 의도를 분석하여 즉시 [목적/흐름/예외/검증]이 포함된 명세를 생성한다.",
+    "Protocol S-5 (Design Specification): 모든 기술적 결정(ADR)과 UI 스펙(UI_GUIDE)은 구현 전에 반드시 명문화되어야 한다.",
+    "Protocol S-6 (TDD Enforcement): 구현 전 반드시 해당 기능을 검증할 수 있는 테스트 스캐폴딩(Red)을 완료해야 한다.",
+    "Protocol S-7 (Strict Implementation): 개발 유닛(Dev)의 규약을 준수하며, 생성된 명세(PRD/ADR)의 범위를 벗어나지 않는 정밀 구현을 수행한다.",
+    "Protocol S-8 (Audit & Eval): 구현 완료 후 자체 감사(Audit)와 테스트 실행(Evaluation)을 거쳐 100% 무결성을 증명한다.",
+    "Protocol S-9 (Consensus Verification): 필요 시 멀티 모델 교차 검증을 통해 로직의 타당성을 확보한다.",
+    "Protocol S-10 (Clean Desk Policy): 미션 완료 즉시 'docs/active/'를 비우고 산출물을 'docs/archive/'로 이동시켜 다음 미션의 컨텍스트 오염을 원천 차단한다.",
+    "Protocol S-11 (Continuous Delivery): 모든 단계가 PASS된 경우에만 시스템 업데이트 및 최종 완료를 보고한다."
   ]
 }

@@ -4,7 +4,10 @@
     "ko": "골프존 GDR(Golfzon Driving Range) 앱 프로젝트의 도메인 로직 및 스윙 분석 데이터 흐름을 분석하고 관리한다.",
     "en": "Analyze and manage the domain logic and swing analysis data flow of the Golfzon GDR (Golfzon Driving Range) app project."
   },
-  "units": ["markdown", "sentinel", "swift"],
+  "units": [
+    "markdown",
+    "swift"
+  ],
   "dependencies": [],
   "mission": {
     "objective": {
